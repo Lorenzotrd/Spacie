@@ -77,6 +77,29 @@ export async function assetUrl(key: string) {
     { expiresIn: 300 },
   );
 }
+/** Reads a stored object's bytes from local disk or object storage. */
+export async function readAsset(key: string): Promise<Buffer> {
+  if (!objectStorage()) return localAsset(key);
+  const object = await client().send(
+    new GetObjectCommand({ Bucket: process.env.R2_BUCKET, Key: key }),
+  );
+  return Buffer.from(await object.Body!.transformToByteArray());
+}
+
+/** Stores bytes the server produced itself (e.g. previews) under a fresh key. */
+export async function storeDerived(bytes: Buffer, mime: string, workspaceId: string) {
+  const key = `${workspaceId}/${randomUUID()}`;
+  if (!objectStorage()) {
+    const target = path.join(dataDir(), "assets", key);
+    await mkdir(path.dirname(target), { recursive: true });
+    await writeFile(target, bytes);
+  } else
+    await client().send(
+      new PutObjectCommand({ Bucket: process.env.R2_BUCKET, Key: key, Body: bytes, ContentType: mime }),
+    );
+  return key;
+}
+
 export async function localAsset(key: string) {
   if (!/^[a-f0-9-]{36}\/[a-f0-9-]{36}$/.test(key))
     throw new Error("Invalid storage key");

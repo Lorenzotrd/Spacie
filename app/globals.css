@@ -1740,3 +1740,15 @@ body {
 .document-body .tiptap h1, .document-body .tiptap h2 { color: #252a33; }
 .document-body .tiptap blockquote { background: #f5f7fc; border-color: #91a6ef; color: #657493; }
 .comment > p { color: #677180; }
+
+/* In-app PDF and office previews (pdf.js canvases) */
+.pdf-preview { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+.pdf-pages { display: flex; flex-direction: column; gap: 16px; width: 100%; }
+.pdf-page {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+.preview-actions { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }

@@ -1,5 +1,6 @@
 import { requirePermission } from "../permissions";
 import type { Action, FileRecord } from "../types";
+import { needsPreview } from "../previews";
 import {
   destination,
   loadFile,
@@ -33,12 +34,13 @@ export async function createEntry(ctx: CommandContext): Promise<CommandResult> {
   const upload = c.action === "upload_asset";
   if (upload && !c.storageKey)
     throw new Error("Upload must finish before creating the file.");
+  const mime = upload ? required(c.mime, "File type") : DOCUMENT_MIME;
   const [row] = await tx.query<{ id: string }>(
-    `insert into files (workspace_id, project_id, folder_id, name, mime, size, content, storage_key, updated_by)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id`,
-    [actor.workspaceId, projectId, folderId, name,
-      upload ? required(c.mime, "File type") : DOCUMENT_MIME,
-      c.size ?? 0, c.content ?? "", c.storageKey ?? null, actor.id],
+    `insert into files (workspace_id, project_id, folder_id, name, mime, size, content, storage_key, updated_by, preview_status)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id`,
+    [actor.workspaceId, projectId, folderId, name, mime,
+      c.size ?? 0, c.content ?? "", c.storageKey ?? null, actor.id,
+      upload && needsPreview(mime) ? "pending" : "none"],
   );
   const file = (await loadFile(tx, actor.workspaceId, row.id))!;
   await saveVersion(ctx, file, upload ? "Uploaded asset" : "Created document");
@@ -104,10 +106,10 @@ async function apply(ctx: CommandContext, f: FileRecord): Promise<FileRecord> {
         [f.id, c.version ?? null],
       );
       if (!version) throw new Error("Version not found");
-      const next = await update("content = $3, storage_key = $4, version = version + 1", [
-        version.content,
-        version.storage_key,
-      ]);
+      const next = await update(
+        `content = $3, storage_key = $4, version = version + 1, preview_key = null, preview_status = $5`,
+        [version.content, version.storage_key, version.storage_key && needsPreview(f.mime) ? "pending" : "none"],
+      );
       await saveVersion(ctx, next, `Restored version ${version.number}`);
       return next;
     }

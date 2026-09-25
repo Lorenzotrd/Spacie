@@ -60,21 +60,34 @@ export async function GET(request: Request) {
       ? await findReadableFile(await db(), actor, id)
       : null;
     if (!file?.storageKey || file.deleted) throw new Error("Asset not found");
+    // `preview=1` serves the PDF rendition of an office file instead of the original.
+    const preview = url.searchParams.has("preview");
+    let key = file.storageKey;
+    let mime = file.mime;
+    if (preview) {
+      const [row] = await (await db()).query<{ preview_key: string | null }>(
+        "select preview_key from files where id = $1 and preview_status = 'ready'",
+        [file.id],
+      );
+      if (!row?.preview_key) throw new Error("Preview not found");
+      key = row.preview_key;
+      mime = "application/pdf";
+    }
     if (!objectStorage()) {
       if (url.searchParams.has("raw")) {
-        const bytes = await localAsset(file.storageKey);
+        const bytes = await localAsset(key);
         return new Response(new Uint8Array(bytes), {
           headers: {
-            "Content-Type": file.mime,
+            "Content-Type": mime,
             "X-Content-Type-Options": "nosniff",
             "Content-Security-Policy": "default-src 'none'; sandbox",
             "Cache-Control": "private, no-store",
           },
         });
       }
-      return Response.json({ url: `/api/assets?id=${file.id}&raw=1` });
+      return Response.json({ url: `/api/assets?id=${file.id}&raw=1${preview ? "&preview=1" : ""}` });
     }
-    return Response.json({ url: await assetUrl(file.storageKey) });
+    return Response.json({ url: await assetUrl(key) });
   } catch (e) {
     return failure(e);
   }

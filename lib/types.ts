@@ -61,6 +61,8 @@ export type FileRecord = {
   version: number;
   deleted: boolean;
   storageKey?: string;
+  /** PDF rendition state for office files: none, pending, processing, ready, failed. */
+  previewStatus?: "none" | "pending" | "processing" | "ready" | "failed";
   content: string;
 };
 export type Version = {

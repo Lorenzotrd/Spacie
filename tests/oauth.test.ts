@@ -123,6 +123,20 @@ test("re-authorizing the same app reuses its agent and replaces its grants", asy
   assert.deepEqual((await snapshot(db, second.agent)).projects.map((p) => p.id), [owlagent]);
 });
 
+test("reconnecting the same app (a new client registration) keeps one agent", async () => {
+  const { db, clientId } = await setup();
+  const a = await authorize(db, clientId, ids.lorenzo);
+  const first = await agentFor(db, (await exchange(db, clientId, a.code, a.verifier)).access_token);
+  const again = (await registerClient(db, { client_name: "Claude", redirect_uris: [redirect] })).client_id;
+  const b = await authorize(db, again, ids.lorenzo);
+  const second = await agentFor(db, (await exchange(db, again, b.code, b.verifier)).access_token);
+  assert.equal(second.agent.id, first.agent.id);
+  const other = (await registerClient(db, { client_name: "ChatGPT", redirect_uris: [redirect] })).client_id;
+  const c = await authorize(db, other, ids.lorenzo);
+  const third = await agentFor(db, (await exchange(db, other, c.code, c.verifier)).access_token);
+  assert.notEqual(third.agent.id, first.agent.id);
+});
+
 test("people can only hand agents what they are allowed to share", async () => {
   const { db, clientId } = await setup();
   await assert.rejects(authorize(db, clientId, ids.sarah, { allProjects: true }), /owners and admins/);

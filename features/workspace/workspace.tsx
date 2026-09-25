@@ -34,6 +34,7 @@ import { FileMenu } from "@/components/ui/dropdown-menu";
 import { useWorkspace } from "./use-workspace";
 import { useFileDetail, useFileSearch } from "./use-file-detail";
 import { DocumentEditor } from "./editor";
+import { PdfPreview } from "./pdf-preview";
 import { Avatar } from "@/components/ui/avatar";
 import { AppSidebar } from "./sidebar";
 import { ActivityFeed, CollaborationPanel } from "./collaboration";
@@ -110,6 +111,7 @@ export default function Workspace() {
   );
   const [moveFolder, setMoveFolder] = useState("");
   const [assetUrl, setAssetUrl] = useState("");
+  const [previewUrl, setPreviewUrl] = useState("");
   const [sort, setSort] = useState(false);
   const upload = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -168,6 +170,15 @@ export default function Workspace() {
         .then((d) => setAssetUrl(d.url ?? ""))
         .catch(() => undefined);
   }, [file?.id, file?.storageKey]);
+  const previewReady = file?.previewStatus === "ready";
+  useEffect(() => {
+    setPreviewUrl("");
+    if (file && previewReady)
+      fetch(`/api/assets?id=${file.id}&preview=1`)
+        .then((r) => r.json())
+        .then((d) => setPreviewUrl(d.url ?? ""))
+        .catch(() => undefined);
+  }, [file?.id, file?.storageKey, previewReady]); // eslint-disable-line react-hooks/exhaustive-deps
   function navigate(projectId: string, folderId: string | null = null) {
     setProject(projectId);
     setFolder(folderId);
@@ -525,11 +536,25 @@ export default function Workspace() {
                   ) : file.mime.startsWith("video/") ? (
                     <video src={assetUrl} controls />
                   ) : file.mime === "application/pdf" ? (
-                    <iframe title={file.name} src={assetUrl} />
+                    <PdfPreview url={assetUrl} title={file.name} />
                   ) : (
-                    <a className="button" href={assetUrl}>
-                      Download {file.name}
-                    </a>
+                    <>
+                      {previewUrl ? (
+                        <PdfPreview url={previewUrl} title={file.name} />
+                      ) : file.previewStatus === "pending" ||
+                        file.previewStatus === "processing" ? (
+                        <p className="subtle-copy">Preparing preview…</p>
+                      ) : file.previewStatus === "failed" ? (
+                        <p className="subtle-copy">
+                          No preview for this file. Download it to open it.
+                        </p>
+                      ) : null}
+                      <div className="preview-actions">
+                        <a className="button" href={assetUrl}>
+                          Download {file.name}
+                        </a>
+                      </div>
+                    </>
                   )}
                 </div>
               ) : (

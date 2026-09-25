@@ -122,15 +122,17 @@ export async function approveAuthorization(
   const code = randomBytes(32).toString("base64url");
   await db.transaction(async (tx) => {
     await tx.query("update workspaces set revision = revision + 1 where id = $1", [human.workspaceId]);
+    // Reconnecting registers a new client each time, so match the same app by name too.
     const [existing] = await tx.query<{ id: string }>(
-      `select id from principals where workspace_id = $1 and type = 'agent'
-       and oauth_client_id = $2 and created_by = $3`,
-      [human.workspaceId, request.client.id, human.id],
+      `select id from principals where workspace_id = $1 and type = 'agent' and created_by = $3
+         and (oauth_client_id = $2 or (oauth_client_id is not null and provider = $4))
+       order by oauth_client_id = $2 desc, created_at limit 1`,
+      [human.workspaceId, request.client.id, human.id, request.client.name.slice(0, 50)],
     );
     const agentId = existing
       ? (await tx.query<{ id: string }>(
-          "update principals set name = $2, status = 'idle' where id = $1 returning id",
-          [existing.id, choice.name],
+          "update principals set name = $2, status = 'idle', oauth_client_id = $3 where id = $1 returning id",
+          [existing.id, choice.name, request.client.id],
         ))[0].id
       : (await tx.query<{ id: string }>(
           `insert into principals (workspace_id, type, name, initials, color, provider, status, created_by, oauth_client_id)
