@@ -121,7 +121,7 @@ export default function LandingPage() {
               aria-label="Open the workspace shown in this preview"
             >
               <Image
-                src="/workspace-preview.png"
+                src="/workspace-preview-blue.png"
                 alt="Spacie workspace: the Rebond strategy document, shared project folders, human and AI teammates, and a conversation between Sarah and Claude Code."
                 width={1440}
                 height={1223}
