@@ -1,22 +1,17 @@
-import { admin, demo } from "./repository";
-const buckets = new Map<string, { count: number; reset: number }>();
+import { db } from "./db/client";
+
+const LIMIT_PER_MINUTE = 120;
+
+/** Fixed one-minute window per principal, shared by every server instance. */
 export async function rateLimit(principalId: string) {
-  if (!demo()) {
-    const { data, error } = await admin().rpc("spacie_rate_limit", {
-      actor_id: principalId,
-    });
-    if (error || !data)
-      throw new Error("Too many requests. Try again in a minute.");
-    return;
-  }
-  const now = Date.now(),
-    bucket = buckets.get(principalId);
-  if (!bucket || bucket.reset < now) {
-    buckets.set(principalId, { count: 1, reset: now + 60000 });
-    return;
-  }
-  if (++bucket.count > 120)
+  const [row] = await (await db()).query<{ hits: number }>(
+    `insert into rate_limits (principal_id, window_start, hits) values ($1, now(), 1)
+     on conflict (principal_id) do update set
+       hits = case when rate_limits.window_start < now() - interval '1 minute' then 1 else rate_limits.hits + 1 end,
+       window_start = case when rate_limits.window_start < now() - interval '1 minute' then now() else rate_limits.window_start end
+     returning hits`,
+    [principalId],
+  );
+  if (!row || row.hits > LIMIT_PER_MINUTE)
     throw new Error("Too many requests. Try again in a minute.");
-  if (buckets.size > 10000)
-    for (const [key, v] of buckets) if (v.reset < now) buckets.delete(key);
 }

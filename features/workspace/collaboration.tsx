@@ -8,7 +8,7 @@ import {
   History,
   X,
 } from "lucide-react";
-import type { PublicState, FileRecord } from "@/lib/types";
+import type { PublicState, FileMeta, FileDetail } from "@/lib/types";
 import type { Command } from "@/lib/service";
 import { Avatar } from "@/components/ui/avatar";
 import { Dialog } from "@/components/ui/dialog";
@@ -70,6 +70,8 @@ export function ActivityFeed({
 export function CollaborationPanel({
   state,
   file,
+  detail,
+  loadVersion,
   projectId,
   tab,
   setTab,
@@ -77,7 +79,9 @@ export function CollaborationPanel({
   onClose,
 }: {
   state: PublicState;
-  file?: FileRecord;
+  file?: FileMeta;
+  detail: FileDetail | null;
+  loadVersion: (number: number) => Promise<string | null>;
   projectId: string;
   tab: string;
   setTab: (tab: string) => void;
@@ -87,10 +91,14 @@ export function CollaborationPanel({
   const [text, setText] = useState("");
   const [reply, setReply] = useState<string | null>(null);
   const [preview, setPreview] = useState<number | null>(null);
-  const comments = state.comments.filter((c) => c.fileId === file?.id);
-  const versions = state.versions
-    .filter((v) => v.fileId === file?.id)
-    .sort((a, b) => b.number - a.number);
+  const [previewContent, setPreviewContent] = useState<string | null>(null);
+  const comments = detail?.comments ?? [];
+  const versions = detail?.versions ?? [];
+  function openPreview(number: number) {
+    setPreview(number);
+    setPreviewContent(null);
+    void loadVersion(number).then(setPreviewContent);
+  }
   async function post() {
     if (!file || !text.trim()) return;
     try {
@@ -194,7 +202,7 @@ export function CollaborationPanel({
               </p>
               <small>{v.message}</small>
               <div>
-                <button onClick={() => setPreview(v.number)}>
+                <button onClick={() => openPreview(v.number)}>
                   Preview & compare
                 </button>
                 {v.number !== file.version && (
@@ -257,15 +265,13 @@ export function CollaborationPanel({
         <div className="version-compare">
           <span>
             Selected:{" "}
-            {versions.find((v) => v.number === preview)?.content.length ?? 0}{" "}
+            {previewContent?.length ?? 0}{" "}
             characters
           </span>
-          <span>Current: {file?.content.length ?? 0} characters</span>
+          <span>Current: {detail?.file.content.length ?? 0} characters</span>
         </div>
         <pre className="version-preview">
-          {versions
-            .find((v) => v.number === preview)
-            ?.content.replace(/<[^>]+>/g, "\n") ||
+          {previewContent?.replace(/<[^>]+>/g, "\n") ||
             "Binary asset snapshot. Download the asset from its file view."}
         </pre>
       </Dialog>

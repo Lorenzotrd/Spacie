@@ -1,6 +1,6 @@
 import { boundedRequest } from "@/lib/http";
 import { authClient, assertSameOrigin } from "@/lib/auth";
-import { demo } from "@/lib/repository";
+import { demo } from "@/lib/config";
 import { z } from "zod";
 import { failure } from "@/lib/http";
 export async function POST(request: Request) {

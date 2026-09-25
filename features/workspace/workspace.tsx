@@ -28,16 +28,17 @@ import {
   X,
 } from "lucide-react";
 import type { PresenceEntry } from "@/lib/presence";
-import type { Action, Principal, FileRecord } from "@/lib/types";
+import type { Action, Principal, FileMeta } from "@/lib/types";
 import { WorkspaceDialogs } from "./dialogs";
 import { FileMenu } from "@/components/ui/dropdown-menu";
 import { useWorkspace } from "./use-workspace";
+import { useFileDetail, useFileSearch } from "./use-file-detail";
 import { DocumentEditor } from "./editor";
 import { Avatar } from "@/components/ui/avatar";
 import { AppSidebar } from "./sidebar";
 import { ActivityFeed, CollaborationPanel } from "./collaboration";
 
-function FileIcon({ file }: { file: FileRecord }) {
+function FileIcon({ file }: { file: FileMeta }) {
   return (
     <span
       className={`file-icon ${file.mime.includes("image") ? "file-type-4" : file.mime.includes("video") ? "file-type-5" : file.mime.includes("pdf") ? "file-type-3" : "file-type-0"}`}
@@ -145,6 +146,11 @@ export default function Workspace() {
     return () => clearInterval(interval);
   }, [selected, currentPrincipalId]);
   const file = state?.files.find((f) => f.id === selected);
+  const { detail, loadVersion } = useFileDetail(
+    file ? file.id : null,
+    state?.revision,
+  );
+  const fileResults = useFileSearch<FileMeta>(search);
   const p = state?.projects.find((x) => x.id === project) ?? state?.projects[0];
   useEffect(() => {
     if (
@@ -170,7 +176,7 @@ export default function Workspace() {
     setQuery("");
     setMobileNav(false);
   }
-  function openFile(f: FileRecord) {
+  function openFile(f: FileMeta) {
     setSelected(f.id);
     setProject(f.projectId);
     setView("space");
@@ -417,9 +423,14 @@ export default function Workspace() {
                       onClick={() => {
                         if (assetUrl) {
                           window.open(assetUrl, "_blank", "noopener");
-                        } else if (file.mime === "application/x-spacie-doc") {
+                        } else if (
+                          file.mime === "application/x-spacie-doc" &&
+                          detail
+                        ) {
                           const url = URL.createObjectURL(
-                            new Blob([file.content], { type: "text/html" }),
+                            new Blob([detail.file.content], {
+                              type: "text/html",
+                            }),
                           );
                           const a = document.createElement("a");
                           a.href = url;
@@ -478,10 +489,12 @@ export default function Workspace() {
                   <span>·</span> {relative(file.updatedAt)}
                 </p>
               </div>
-              {file.mime === "application/x-spacie-doc" ? (
+              {file.mime === "application/x-spacie-doc" && !detail ? (
+                <div className="empty-state">Opening document…</div>
+              ) : file.mime === "application/x-spacie-doc" && detail ? (
                 <DocumentEditor
                   key={file.id}
-                  content={file.content}
+                  content={detail.file.content}
                   onSave={async (content) => {
                     await mutate({
                       action: "update_document",
@@ -933,6 +946,8 @@ export default function Workspace() {
         <CollaborationPanel
           state={state}
           file={file}
+          detail={detail}
+          loadVersion={loadVersion}
           projectId={project}
           tab={right}
           setTab={setRight}
@@ -987,6 +1002,7 @@ export default function Workspace() {
           setMoveFolder,
           setAgent,
           results,
+          fileResults,
         }}
       />
       {error && (

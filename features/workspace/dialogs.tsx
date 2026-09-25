@@ -3,18 +3,20 @@ import type { Dispatch, SetStateAction, RefObject } from "react";
 import { FileText, Folder, Upload, ChevronRight } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Avatar } from "@/components/ui/avatar";
-import type { PublicState, FileRecord, Principal, Action } from "@/lib/types";
+import type { PublicState, FileMeta, Principal, Action } from "@/lib/types";
 import { actions } from "@/lib/types";
 import type { Command } from "@/lib/service";
 type DialogProps = {
   state: PublicState;
-  file: FileRecord | undefined;
+  file: FileMeta | undefined;
   agent: Principal | null;
   busy: boolean;
   submit: () => Promise<void>;
   dialog: (type: string, value?: string) => void;
   upload: RefObject<HTMLInputElement | null>;
-  openFile: (file: FileRecord) => void;
+  openFile: (file: FileMeta) => void;
+  /** Server-side matches on names, document text and comments. */
+  fileResults: FileMeta[];
   navigate: (projectId: string, folderId?: string | null) => void;
   mutate: (
     command: Command,
@@ -87,6 +89,7 @@ export function WorkspaceDialogs({
   setMoveFolder,
   setAgent,
   results,
+  fileResults,
 }: DialogProps) {
   return (
     <Dialog
@@ -189,19 +192,7 @@ export function WorkspaceDialogs({
             {[
               [
                 "Files",
-                state.files
-                  .filter(
-                    (f) =>
-                      !f.deleted &&
-                      (f.name.toLowerCase().includes(results) ||
-                        f.content.toLowerCase().includes(results) ||
-                        state.comments.some(
-                          (c) =>
-                            c.fileId === f.id &&
-                            c.content.toLowerCase().includes(results),
-                        )),
-                  )
-                  .map((f) => ({
+                fileResults.map((f) => ({
                     id: f.id,
                     name: f.name,
                     select: () => openFile(f),

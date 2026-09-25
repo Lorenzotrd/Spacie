@@ -1,21 +1,28 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { PublicState } from "@/lib/types";
-import type { Command } from "@/lib/service";
+import type { Command, CommandResult } from "@/lib/service";
+
+/** Revision checks are one indexed row read; the snapshot is refetched only on change. */
+const POLL_MS = 4000;
+
 export function useWorkspace() {
   const [state, setState] = useState<PublicState | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const refresh = useCallback(async () => {
-    const response = await fetch("/api/workspace", { cache: "no-store" });
+  const revision = useRef<number | null>(null);
+  const refresh = useCallback(async (force = false) => {
+    const since = !force && revision.current !== null ? `?since=${revision.current}` : "";
+    const response = await fetch(`/api/workspace${since}`, { cache: "no-store" });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error);
-    setState(data);
+    if (data.unchanged) return;
+    revision.current = data.revision;
+    setState(data as PublicState);
   }, []);
   useEffect(() => {
-    refresh().catch((e) => setError(e.message));
-    const interval = setInterval(() => refresh().catch(() => undefined), 4000);
+    refresh(true).catch((e) => setError(e.message));
+    const interval = setInterval(() => refresh().catch(() => undefined), POLL_MS);
     return () => clearInterval(interval);
   }, [refresh]);
   useEffect(() => {
@@ -23,39 +30,6 @@ export function useWorkspace() {
     const timer = setTimeout(() => setNotice(""), 3500);
     return () => clearTimeout(timer);
   }, [notice]);
-  const workspaceId = state?.workspace.id,
-    isDemo = state?.demo;
-  useEffect(() => {
-    if (
-      !workspaceId ||
-      isDemo ||
-      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
-      return;
-    const client = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    );
-    const channel = client
-      .channel("workspace-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "workspaces",
-          filter: `id=eq.${workspaceId}`,
-        },
-        () => {
-          void refresh().catch(() => undefined);
-        },
-      )
-      .subscribe();
-    return () => {
-      void client.removeChannel(channel);
-    };
-  }, [workspaceId, isDemo, refresh]);
   const mutate = useCallback(
     async (command: Command) => {
       const response = await fetch("/api/workspace", {
@@ -69,7 +43,7 @@ export function useWorkspace() {
         throw new Error(result.error);
       }
       await refresh();
-      return result as { id?: string; token?: string; version?: number };
+      return result as CommandResult;
     },
     [refresh],
   );

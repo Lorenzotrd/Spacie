@@ -1,47 +1,51 @@
+import { z } from "zod";
 import { boundedRequest } from "@/lib/http";
 import { authenticate, assertSameOrigin } from "@/lib/auth";
 import { requirePermission } from "@/lib/permissions";
 import { assetUrl, localAsset, storeAsset } from "@/lib/storage";
-import { demo, transaction } from "@/lib/repository";
+import { demo } from "@/lib/config";
+import { db } from "@/lib/db/client";
+import { loadAccess } from "@/lib/access";
+import { findReadableFile } from "@/lib/queries";
+import { destination } from "@/lib/service/context";
 import { execute } from "@/lib/service";
 import { rateLimit } from "@/lib/rate-limit";
 import { failure } from "@/lib/http";
 export const runtime = "nodejs";
+const location = z.object({
+  projectId: z.string().uuid(),
+  folderId: z.string().uuid().nullable(),
+});
 export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
-    const { state, actor } = await authenticate(request);
+    const { actor } = await authenticate(request);
     await rateLimit(actor.id);
     const form = await (await boundedRequest(request, 105000000)).formData();
-    const file = form.get("file"),
-      projectId = String(form.get("projectId") ?? ""),
-      folderId = form.get("folderId") ? String(form.get("folderId")) : null;
+    const file = form.get("file");
     if (!(file instanceof File)) throw new Error("Choose a file.");
-    if (
-      !state.projects.some((p) => p.id === projectId) ||
-      (folderId &&
-        !state.folders.some(
-          (f) => f.id === folderId && f.projectId === projectId,
-        ))
-    )
-      throw new Error("Invalid destination");
-    requirePermission(state, actor, "upload", {
-      workspaceId: state.workspace.id,
+    const { projectId, folderId } = location.parse({
+      projectId: form.get("projectId"),
+      folderId: form.get("folderId") || null,
+    });
+    const database = await db();
+    const access = await loadAccess(database, actor);
+    requirePermission(
+      access,
+      actor,
+      "upload",
+      await destination(database, access, projectId, folderId),
+    );
+    const key = await storeAsset(file, actor.workspaceId);
+    const result = await execute(database, actor, {
+      action: "upload_asset",
       projectId,
       folderId,
+      name: file.name,
+      mime: file.type,
+      size: file.size,
+      storageKey: key,
     });
-    const key = await storeAsset(file, state.workspace.id);
-    const result = await transaction(state.workspace.id, (s) =>
-      execute(s, actor, {
-        action: "upload_asset",
-        projectId,
-        folderId,
-        name: file.name,
-        mime: file.type,
-        size: file.size,
-        storageKey: key,
-      }),
-    );
     return Response.json(result);
   } catch (e) {
     return failure(e);
@@ -49,13 +53,13 @@ export async function POST(request: Request) {
 }
 export async function GET(request: Request) {
   try {
-    const { state, actor } = await authenticate(request);
-    const url = new URL(request.url),
-      file = state.files.find(
-        (f) => f.id === url.searchParams.get("id") && !f.deleted,
-      );
-    if (!file?.storageKey) throw new Error("Asset not found");
-    requirePermission(state, actor, "read", file);
+    const { actor } = await authenticate(request);
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id") ?? "";
+    const file = /^[0-9a-f-]{36}$/i.test(id)
+      ? await findReadableFile(await db(), actor, id)
+      : null;
+    if (!file?.storageKey || file.deleted) throw new Error("Asset not found");
     if (demo()) {
       if (url.searchParams.has("raw")) {
         const bytes = await localAsset(file.storageKey);

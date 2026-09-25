@@ -7,7 +7,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { demo } from "./repository";
+import { demo } from "./config";
 const allowed = new Set([
   "image/png",
   "image/jpeg",

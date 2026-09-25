@@ -1,11 +1,17 @@
-import type { Action, Folder, Principal, WorkspaceState } from "./types";
+import type { Action, Folder, Grant, Principal } from "./types";
+/** What an authorization decision needs: the folder tree and the actor's grants. */
+export type AccessContext = {
+  workspace: { id: string };
+  folders: Folder[];
+  grants: Grant[];
+};
 export type Resource = {
   workspaceId: string;
   projectId?: string;
   folderId?: string | null;
 };
 export function can(
-  state: WorkspaceState,
+  state: AccessContext,
   actor: Principal,
   action: Action,
   resource: Resource,
@@ -57,7 +63,7 @@ export function can(
   );
 }
 export function requirePermission(
-  state: WorkspaceState,
+  state: AccessContext,
   actor: Principal,
   action: Action,
   resource: Resource,

@@ -1,13 +1,16 @@
-import { createHash, randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
-import { admin, demo, load } from "./repository";
+import { createClient } from "@supabase/supabase-js";
+import { demo } from "./config";
+import { db } from "./db/client";
+import { columns, fromRow } from "./db/rows";
 import { ids } from "./seed";
-import type { Principal, WorkspaceState } from "./types";
-export const hashToken = (token: string) =>
-  createHash("sha256").update(token).digest("hex");
-export const newToken = () =>
-  `spc_agent_${randomBytes(32).toString("base64url")}`;
+import { hashToken } from "./tokens";
+import type { Principal } from "./types";
+
+export { hashToken, newToken } from "./tokens";
+
+/** Supabase is used for human sign-in (magic links, invitations) only. */
 export async function authClient() {
   const jar = await cookies();
   return createServerClient(
@@ -25,63 +28,60 @@ export async function authClient() {
     },
   );
 }
-export async function authenticate(
-  request: Request,
-): Promise<{ state: WorkspaceState; actor: Principal }> {
+
+export function authAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
+    key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Sign-in is not configured.");
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+async function principalBy(where: string, value: string) {
+  const [row] = await (await db()).query(
+    `select ${columns.principal} from principals where ${where} limit 1`,
+    [value],
+  );
+  return row ? fromRow<Principal>(row) : null;
+}
+
+async function agentFromToken(token: string) {
+  const [row] = await (await db()).query(
+    `select ${columns.principal} from principals
+     where type = 'agent' and status <> 'offline' and (id, workspace_id) = (
+       select principal_id, workspace_id from agent_tokens
+       where token_hash = $1 and revoked_at is null and expires_at > now())`,
+    [hashToken(token)],
+  );
+  return row ? fromRow<Principal>(row) : null;
+}
+
+/** Resolves the calling principal: a bearer agent token, the demo owner, or a signed-in human. */
+export async function authenticate(request: Request): Promise<{ actor: Principal }> {
   const token = request.headers.get("authorization")?.replace(/^Bearer /i, "");
   if (token) {
-    let workspaceId: string | undefined;
-    if (!demo()) {
-      const { data } = await admin()
-        .from("agent_tokens")
-        .select("workspace_id")
-        .eq("token_hash", hashToken(token))
-        .is("revoked_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .maybeSingle();
-      if (!data) throw new Error("UNAUTHORIZED");
-      workspaceId = data.workspace_id;
-    }
-    const state = await load(workspaceId);
-    const record = state.tokens.find(
-      (t) =>
-        t.hash === hashToken(token) &&
-        !t.revokedAt &&
-        new Date(t.expiresAt) > new Date(),
-    );
-    const actor = state.principals.find(
-      (p) => p.id === record?.principalId && p.type === "agent",
-    );
-    if (!record || !actor || actor.status === "offline")
-      throw new Error("UNAUTHORIZED");
-    return { state, actor };
+    const actor = await agentFromToken(token);
+    if (!actor) throw new Error("UNAUTHORIZED");
+    return { actor };
   }
   if (demo()) {
     const host = new URL(request.url).hostname;
     if (!["localhost", "127.0.0.1", "[::1]"].includes(host))
       throw new Error("Demo mode only accepts loopback requests.");
-    const state = await load();
-    return {
-      state,
-      actor: state.principals.find((p) => p.id === ids.lorenzo)!,
-    };
+    const actor = await principalBy("id = $1", ids.lorenzo);
+    if (!actor) throw new Error("UNAUTHORIZED");
+    return { actor };
   }
   const {
     data: { user },
   } = await (await authClient()).auth.getUser();
   if (!user) throw new Error("UNAUTHORIZED");
-  const { data: membership, error } = await admin()
-    .from("workspace_members")
-    .select("workspace_id,principal_id")
-    .eq("user_id", user.id)
-    .limit(1)
-    .maybeSingle();
-  if (error || !membership) throw new Error("No workspace membership.");
-  const state = await load(membership.workspace_id);
-  const actor = state.principals.find((p) => p.id === membership.principal_id);
-  if (!actor) throw new Error("UNAUTHORIZED");
-  return { state, actor };
+  const actor = await principalBy("user_id = $1 and type = 'human'", user.id);
+  if (!actor) throw new Error("UNAUTHORIZED: No workspace membership.");
+  return { actor };
 }
+
 export function assertSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   const configured = process.env.SPACIE_ORIGIN;

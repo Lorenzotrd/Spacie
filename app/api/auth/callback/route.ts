@@ -1,5 +1,6 @@
 import { authClient } from "@/lib/auth";
-import { admin } from "@/lib/repository";
+import { db } from "@/lib/db/client";
+import { bootstrapUser } from "@/lib/db/bootstrap";
 export async function GET(request: Request) {
   const url = new URL(request.url),
     code = url.searchParams.get("code");
@@ -17,15 +18,21 @@ export async function GET(request: Request) {
           type: kind as "invite" | "magiclink" | "email",
         });
     if (!error && data.user) {
-      const { error: setup } = await admin().rpc("spacie_bootstrap", {
-        uid: data.user.id,
-        email_address: data.user.email ?? "",
-        display_name:
+      const ready = await bootstrapUser(await db(), {
+        id: data.user.id,
+        email: data.user.email ?? "",
+        name:
           data.user.user_metadata.full_name ??
           data.user.email?.split("@")[0] ??
           "Teammate",
-      });
-      if (!setup)
+      }).then(
+        () => true,
+        (e) => {
+          console.error("[auth] workspace bootstrap failed", e);
+          return false;
+        },
+      );
+      if (ready)
         return Response.redirect(
           new URL("/workspace", process.env.SPACIE_ORIGIN ?? url.origin),
         );

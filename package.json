@@ -8,36 +8,43 @@
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --test tests/*.test.ts",
+    "db:migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
-    "next": "16.3.6",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "@supabase/supabase-js": "^2.57.0",
-    "@supabase/ssr": "^0.7.0",
     "@aws-sdk/client-s3": "^3.888.0",
     "@aws-sdk/s3-request-presigner": "^3.888.0",
+    "@electric-sql/pglite": "^0.5.8",
     "@modelcontextprotocol/sdk": "1.30.1",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.57.0",
+    "@tiptap/extension-task-item": "^3.4.0",
+    "@tiptap/extension-task-list": "^3.4.0",
     "@tiptap/react": "^3.4.0",
     "@tiptap/starter-kit": "^3.4.0",
-    "@tiptap/extension-task-list": "^3.4.0",
-    "@tiptap/extension-task-item": "^3.4.0",
-    "lucide-react": "^0.468.0",
-    "zod": "^3.25.0",
-    "radix-ui": "^1.4.0",
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.3.0"
+    "lucide-react": "^0.468.0",
+    "next": "16.3.6",
+    "pg": "^8.23.0",
+    "radix-ui": "^1.4.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.3.0",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
+    "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "tailwindcss": "^4.1.0",
-    "@tailwindcss/postcss": "^4.1.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.3.6",
-    "tsx": "^4.20.0"
+    "tailwindcss": "^4.1.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20.9"
   }
 }

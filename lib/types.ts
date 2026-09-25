@@ -107,6 +107,7 @@ export type AgentToken = {
   expiresAt: string;
   revokedAt: string | null;
 };
+/** Full workspace contents: the seed and the legacy JSON demo store use this shape. */
 export type WorkspaceState = {
   workspace: { id: string; name: string; slug: string };
   principals: Principal[];
@@ -120,8 +121,24 @@ export type WorkspaceState = {
   tokens: AgentToken[];
   revision: number;
 };
-export type PublicState = Omit<WorkspaceState, "tokens" | "grants"> & {
-  grants: Grant[];
+/** File listing entry: everything except the document body. */
+export type FileMeta = Omit<FileRecord, "content">;
+export type VersionMeta = Omit<Version, "content">;
+/** What a principal may see of a workspace. Bodies are loaded per file. */
+export type PublicState = {
+  workspace: WorkspaceState["workspace"];
+  revision: number;
   currentPrincipalId: string;
   demo: boolean;
+  principals: Principal[];
+  projects: Project[];
+  folders: Folder[];
+  files: FileMeta[];
+  activity: Activity[];
+  grants: Grant[];
+};
+export type FileDetail = {
+  file: FileRecord;
+  comments: Comment[];
+  versions: VersionMeta[];
 };

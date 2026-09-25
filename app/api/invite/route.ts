@@ -1,34 +1,34 @@
 import { boundedRequest } from "@/lib/http";
-import { authenticate, assertSameOrigin } from "@/lib/auth";
+import { authAdmin, authenticate, assertSameOrigin } from "@/lib/auth";
 import { requirePermission } from "@/lib/permissions";
-import { admin, demo } from "@/lib/repository";
+import { loadAccess } from "@/lib/access";
+import { demo } from "@/lib/config";
+import { db } from "@/lib/db/client";
 import { z } from "zod";
 import { failure } from "@/lib/http";
 export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
-    const { state, actor } = await authenticate(request);
-    requirePermission(state, actor, "manage_members", {
-      workspaceId: state.workspace.id,
+    const { actor } = await authenticate(request);
+    const database = await db();
+    requirePermission(await loadAccess(database, actor), actor, "manage_members", {
+      workspaceId: actor.workspaceId,
     });
-    if (demo()) throw new Error("Connect Supabase to send invitations.");
+    if (demo()) throw new Error("Configure sign-in to send invitations.");
     const input = z
       .object({
         email: z.string().email(),
         role: z.enum(["admin", "member", "viewer"]),
       })
       .parse(await (await boundedRequest(request, 10000)).json());
-    const { error } = await admin().from("invitations").upsert(
-      {
-        workspace_id: state.workspace.id,
-        email: input.email.toLowerCase(),
-        role: input.role,
-        invited_by: actor.id,
-      },
-      { onConflict: "workspace_id,email" },
+    await database.query(
+      `insert into invitations (workspace_id, email, role, invited_by) values ($1, $2, $3, $4)
+       on conflict (workspace_id, email) do update set
+         role = excluded.role, invited_by = excluded.invited_by,
+         created_at = now(), expires_at = now() + interval '7 days'`,
+      [actor.workspaceId, input.email.toLowerCase(), input.role, actor.id],
     );
-    if (error) throw error;
-    const { error: inviteError } = await admin().auth.admin.inviteUserByEmail(
+    const { error: inviteError } = await authAdmin().auth.admin.inviteUserByEmail(
       input.email,
       { redirectTo: `${process.env.SPACIE_ORIGIN}/api/auth/callback` },
     );
