@@ -579,15 +579,18 @@ export default function Workspace() {
           ) : (
             <>
               <div className="main-heading">
-                <div className="project-cover">
-                  <Box size={26} />
-                </div>
                 <div className="title-line">
-                  <h1>
-                    {folder
-                      ? state.folders.find((f) => f.id === folder)?.name
-                      : projectName}
-                  </h1>
+                  <div className="project-cover">
+                    <Box size={19} />
+                  </div>
+                  <div className="title-text">
+                    <h1>
+                      {folder
+                        ? state.folders.find((f) => f.id === folder)?.name
+                        : projectName}
+                    </h1>
+                    {p?.description && <p>{p.description}</p>}
+                  </div>
                   <div className="heading-actions">
                     <div className="avatar-stack">
                       {state.principals.slice(0, 4).map((x) => (
@@ -608,7 +611,6 @@ export default function Workspace() {
                     </button>
                   </div>
                 </div>
-                <p>{p?.description}</p>
               </div>
               <div className="content-tabs">
                 {["All files", "Documents", "Assets", "Activity"].map((t) => (
@@ -629,6 +631,17 @@ export default function Workspace() {
                     )}
                   </button>
                 ))}
+                {tab !== "Activity" && (
+                  <label className="tab-search">
+                    <Search size={15} />
+                    <input
+                      aria-label="Find in this space"
+                      placeholder="Find in this space…"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                    />
+                  </label>
+                )}
               </div>
               <div className="file-content">
                 {tab === "Activity" ? (
@@ -636,15 +649,6 @@ export default function Workspace() {
                 ) : (
                   <>
                     <div className="toolbar">
-                      <div>
-                        <Search size={16} />
-                        <input
-                          aria-label="Find in this space"
-                          placeholder="Find in this space…"
-                          value={query}
-                          onChange={(e) => setQuery(e.target.value)}
-                        />
-                      </div>
                       <button
                         className="icon-button"
                         aria-label="Sort by name"
