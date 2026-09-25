@@ -2,6 +2,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box } from "lucide-react";
+/** Only same-site paths: `next` must never send someone to another origin. */
+function safeNext() {
+  const next = new URLSearchParams(window.location.search).get("next") ?? "";
+  return next.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : "/workspace";
+}
+
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState(""),
@@ -25,7 +31,7 @@ export default function Login() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email, password }),
             });
-            if (r.ok) router.push("/workspace");
+            if (r.ok) router.push(safeNext());
             else setMessage((await r.json()).error?.replace("UNAUTHORIZED: ", ""));
           } catch {
             setMessage("Could not reach the server. Try again.");

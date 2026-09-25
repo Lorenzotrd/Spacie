@@ -70,6 +70,10 @@ export async function agentCredentials(ctx: CommandContext): Promise<CommandResu
     "update agent_tokens set revoked_at = now() where principal_id = $1 and revoked_at is null",
     [agent.id],
   );
+  await tx.query(
+    "update oauth_refresh_tokens set revoked_at = now() where agent_id = $1 and revoked_at is null",
+    [agent.id],
+  );
   if (c.action === "disconnect_agent") {
     await tx.query("update principals set status = 'offline' where id = $1", [agent.id]);
     await record(ctx, "disconnected", agent.name);
