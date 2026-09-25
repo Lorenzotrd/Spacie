@@ -13,6 +13,7 @@ import {
 import { commandSchema, execute, type Command } from "../service";
 import { destination } from "../service/context";
 import { storeAsset } from "../storage";
+import { createUploadLink } from "../upload-links";
 import type { Principal } from "../types";
 
 const MAX_INLINE_UPLOAD = 5 * 1024 * 1024;
@@ -97,7 +98,8 @@ const mutations: Record<string, Mutation> = {
 };
 
 /** Builds a per-request MCP server bound to one authenticated agent. */
-export function buildServer(db: Db, actor: Principal) {
+/** `origin` is the public base URL, used to build upload links. */
+export function buildServer(db: Db, actor: Principal, origin = "") {
   const server = new McpServer({ name: "spacie", version: "0.2.0" });
   const read = (name: string, description: string, input: z.ZodRawShape, run: (args: Record<string, unknown>) => Promise<unknown>) =>
     server.registerTool(name, { description, inputSchema: input }, (args) => guard(() => run(args)));
@@ -163,7 +165,7 @@ export function buildServer(db: Db, actor: Principal) {
     "upload_asset",
     {
       description:
-        "Upload a binary asset up to 5 MB as base64. Larger files: multipart POST /api/assets with the same bearer token.",
+        "Upload a small binary asset (a few KB) inline as base64. For any real file, such as a PDF, deck, image or video you generated in your sandbox, use create_upload_link instead.",
       inputSchema: {
         projectId,
         folderId,
@@ -191,6 +193,25 @@ export function buildServer(db: Db, actor: Principal) {
           storageKey,
         });
       }),
+  );
+  server.registerTool(
+    "create_upload_link",
+    {
+      description:
+        "Get a single-use link to upload a file you produced (PDF, PowerPoint, Word, Excel, image, video, ZIP…) up to 100 MB, " +
+        "straight from your sandbox or terminal. Then run: curl --fail -T <file> \"<url>\". The link expires in 30 minutes. " +
+        "Your sandbox must be allowed to reach this server's domain.",
+      inputSchema: {
+        projectId,
+        folderId,
+        name: z.string().min(1).max(180).describe("File name shown in Spacie, with its extension, e.g. Audit.pdf"),
+        mime: z.string().max(120).describe("e.g. application/pdf, application/vnd.openxmlformats-officedocument.presentationml.presentation, image/png"),
+      },
+    },
+    (args) =>
+      guard(() =>
+        createUploadLink(db, actor, { projectId: args.projectId, folderId: args.folderId ?? null, name: args.name, mime: args.mime }, origin),
+      ),
   );
   return server;
 }

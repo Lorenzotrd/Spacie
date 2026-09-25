@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       state: "working",
       lastSeenAt: new Date().toISOString(),
     });
-    const server = buildServer(await db(), actor);
+    const server = buildServer(await db(), actor, publicOrigin(request));
     const transport = new WebStandardStreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
       enableJsonResponse: true,

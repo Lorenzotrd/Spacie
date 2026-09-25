@@ -26,6 +26,9 @@ const allowed = new Set([
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 ]);
+export const MAX_ASSET_BYTES = 100 * 1024 * 1024;
+export const isAllowedType = (mime: string) => allowed.has(mime);
+
 function client() {
   if (!process.env.R2_ENDPOINT || !process.env.R2_BUCKET)
     throw new Error("R2 storage is not configured");
