@@ -130,6 +130,8 @@ export type PublicState = {
   revision: number;
   currentPrincipalId: string;
   demo: boolean;
+  /** Browser uploads go straight to object storage when it is configured. */
+  directUploads: boolean;
   principals: Principal[];
   projects: Project[];
   folders: Folder[];

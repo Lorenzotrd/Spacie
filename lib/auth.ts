@@ -1,42 +1,12 @@
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import { demo } from "./config";
 import { db } from "./db/client";
 import { columns, fromRow } from "./db/rows";
+import { readCookie, sessionPrincipal, SESSION_COOKIE } from "./accounts";
 import { ids } from "./seed";
 import { hashToken } from "./tokens";
 import type { Principal } from "./types";
 
 export { hashToken, newToken } from "./tokens";
-
-/** Supabase is used for human sign-in (magic links, invitations) only. */
-export async function authClient() {
-  const jar = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => jar.getAll(),
-        setAll: (items) => {
-          items.forEach(({ name, value, options }) =>
-            jar.set(name, value, options),
-          );
-        },
-      },
-    },
-  );
-}
-
-export function authAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
-    key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error("Sign-in is not configured.");
-  return createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
 
 async function principalBy(where: string, value: string) {
   const [row] = await (await db()).query(
@@ -57,13 +27,18 @@ async function agentFromToken(token: string) {
   return row ? fromRow<Principal>(row) : null;
 }
 
-/** Resolves the calling principal: a bearer agent token, the demo owner, or a signed-in human. */
+/** Resolves the calling principal: a bearer agent token, a session cookie, or (demo only) the seeded owner. */
 export async function authenticate(request: Request): Promise<{ actor: Principal }> {
   const token = request.headers.get("authorization")?.replace(/^Bearer /i, "");
   if (token) {
     const actor = await agentFromToken(token);
     if (!actor) throw new Error("UNAUTHORIZED");
     return { actor };
+  }
+  const session = readCookie(request, SESSION_COOKIE);
+  if (session) {
+    const actor = await sessionPrincipal(await db(), session);
+    if (actor) return { actor };
   }
   if (demo()) {
     const host = new URL(request.url).hostname;
@@ -73,13 +48,7 @@ export async function authenticate(request: Request): Promise<{ actor: Principal
     if (!actor) throw new Error("UNAUTHORIZED");
     return { actor };
   }
-  const {
-    data: { user },
-  } = await (await authClient()).auth.getUser();
-  if (!user) throw new Error("UNAUTHORIZED");
-  const actor = await principalBy("user_id = $1 and type = 'human'", user.id);
-  if (!actor) throw new Error("UNAUTHORIZED: No workspace membership.");
-  return { actor };
+  throw new Error("UNAUTHORIZED");
 }
 
 export function assertSameOrigin(request: Request) {

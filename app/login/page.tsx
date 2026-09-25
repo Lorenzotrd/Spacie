@@ -1,8 +1,11 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Box } from "lucide-react";
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState(""),
+    [password, setPassword] = useState(""),
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false);
   return (
@@ -15,29 +18,41 @@ export default function Login() {
         onSubmit={async (e) => {
           e.preventDefault();
           setBusy(true);
+          setMessage("");
           try {
-            const r = await fetch("/api/auth", {
+            const r = await fetch("/api/auth/login", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email }),
+              body: JSON.stringify({ email, password }),
             });
-            const d = await r.json();
-            setMessage(
-              r.ok ? "Check your inbox for your sign-in link." : d.error,
-            );
+            if (r.ok) router.push("/workspace");
+            else setMessage((await r.json()).error?.replace("UNAUTHORIZED: ", ""));
+          } catch {
+            setMessage("Could not reach the server. Try again.");
           } finally {
             setBusy(false);
           }
         }}
       >
         <label className="field-label">
-          Work email
+          Email
           <input
             type="email"
             required
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
+          />
+        </label>
+        <label className="field-label">
+          Password
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </label>
         <button
@@ -45,10 +60,11 @@ export default function Login() {
           className="button primary"
           disabled={busy}
         >
-          {busy ? "Sending…" : "Continue with email"}
+          {busy ? "Signing in…" : "Sign in"}
         </button>
       </form>
       <p role="status">{message}</p>
+      <p className="subtle-copy">New here? Ask a teammate for an invitation link.</p>
     </div>
   );
 }

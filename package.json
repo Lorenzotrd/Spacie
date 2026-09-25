@@ -9,15 +9,14 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "tsx --test tests/*.test.ts",
-    "db:migrate": "tsx scripts/migrate.ts"
+    "db:migrate": "tsx scripts/migrate.ts",
+    "create-owner": "tsx scripts/create-owner.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",
     "@aws-sdk/s3-request-presigner": "^3.888.0",
     "@electric-sql/pglite": "^0.5.8",
     "@modelcontextprotocol/sdk": "1.30.1",
-    "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.57.0",
     "@tiptap/extension-task-item": "^3.4.0",
     "@tiptap/extension-task-list": "^3.4.0",
     "@tiptap/react": "^3.4.0",

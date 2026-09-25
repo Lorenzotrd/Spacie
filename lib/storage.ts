@@ -7,7 +7,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { mkdir, writeFile, readFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { demo } from "./config";
+import { dataDir, objectStorage } from "./config";
 const allowed = new Set([
   "image/png",
   "image/jpeg",
@@ -47,8 +47,8 @@ export async function storeAsset(file: File, workspaceId: string) {
     throw new Error("Files must be smaller than 100 MB.");
   const key = `${workspaceId}/${randomUUID()}`;
   const bytes = Buffer.from(await file.arrayBuffer());
-  if (demo()) {
-    const target = path.join(process.cwd(), "data", "assets", key);
+  if (!objectStorage()) {
+    const target = path.join(dataDir(), "assets", key);
     await mkdir(path.dirname(target), { recursive: true });
     await writeFile(target, bytes);
   } else
@@ -77,7 +77,7 @@ export async function assetUrl(key: string) {
 export async function localAsset(key: string) {
   if (!/^[a-f0-9-]{36}\/[a-f0-9-]{36}$/.test(key))
     throw new Error("Invalid storage key");
-  return readFile(path.join(process.cwd(), "data", "assets", key));
+  return readFile(path.join(dataDir(), "assets", key));
 }
 
 export async function prepareDirectUpload(

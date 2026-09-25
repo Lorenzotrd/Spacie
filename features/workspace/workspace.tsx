@@ -240,7 +240,10 @@ export default function Workspace() {
         });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error);
-        setNotice("Invitation sent");
+        setReplyEmail("");
+        setToken(result.link);
+        setModal("invite-link");
+        return;
       }
       setModal("");
     } catch (e) {
@@ -254,7 +257,7 @@ export default function Workspace() {
     setBusy(true);
     try {
       for (const f of Array.from(files)) {
-        if (state?.demo) {
+        if (!state?.directUploads) {
           const form = new FormData();
           form.append("file", f);
           form.append("projectId", project);

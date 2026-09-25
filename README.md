@@ -8,7 +8,7 @@ A Next.js 16 / React 19 / strict TypeScript application with a three-column work
 
 All data lives in PostgreSQL. The local demo runs the same SQL on an embedded Postgres ([PGlite](https://pglite.dev)) stored in `data/pglite`, so demo, tests, and production share one code path. The demo is single-process, signs you in as the seeded owner, and is disabled in production builds. On first boot it imports a legacy `data/workspace.json` if one exists, otherwise it seeds the SHYFT workspace.
 
-Human sign-in uses Supabase Auth (magic links and invitations); binaries use S3-compatible storage (R2 or Hetzner Object Storage). **Sign-in and object storage have not yet been exercised against live accounts.**
+Sign-in is self-hosted: password accounts, 30-day HttpOnly session cookies, and single-use invitation links that you share by hand (nothing is emailed). Uploads go to local disk, or to S3-compatible storage when a bucket is configured.
 
 ## Run locally
 
@@ -55,15 +55,14 @@ Available tools: `list_workspaces`, `list_projects`, `list_folders`, `list_files
 
 ## Deploy
 
-The app is a Node Next.js server (not a static export or an edge bundle) plus PostgreSQL 15+.
+The app is a Node Next.js server (not a static export or an edge bundle) plus PostgreSQL 15+. No third-party service is required.
 
-1. Provision PostgreSQL: a self-hosted instance (for example on Hetzner) or a Supabase project. Set `DATABASE_URL`. With Supabase, use the direct or session-pooler connection string: the app sets `search_path` per connection, which transaction pooling does not keep. Tables live in the `spacie` schema, which Supabase's REST API does not expose.
-2. Run `npm run db:migrate` (the server also applies pending migrations on boot, under an advisory lock).
-3. Set `SPACIE_DEMO_MODE=false`, `SPACIE_ORIGIN` (exact HTTPS origin), and `SPACIE_UPLOAD_SECRET` (`openssl rand -base64 48`).
-4. Sign-in: create a Supabase project (Auth only is enough), set the three `SUPABASE` variables, set the site URL, and allowlist `/api/auth/callback`. Email sign-in uses PKCE. Invitation templates should use `{{ .SiteURL }}/api/auth/callback?token_hash={{ .TokenHash }}&type=invite`; magic-link templates the equivalent `type=magiclink`.
-5. Storage: create a private bucket and set the `R2_*` variables (any S3-compatible endpoint). Allow `PUT`, `GET`, and `HEAD` from your origin in bucket CORS with `Content-Type` and `Content-Length` headers and exposed `ETag`. Expire objects under each workspace's `staging/` prefix after one day. Uploads are verified and copied to fresh immutable keys before metadata is recorded, so a reused signed PUT URL cannot alter a saved version.
-6. `npm ci && npm run build && next start` behind an HTTPS reverse proxy. The bundled start script binds to loopback; set the host's bind address in its launch command.
-7. Sign in at `/login`. New accounts get a workspace; invited accounts join the inviting workspace.
+1. Provision PostgreSQL and set `DATABASE_URL` (the app sets `search_path` per connection, so use a direct or session-pooled connection).
+2. Set `SPACIE_DEMO_MODE=false`, `SPACIE_ORIGIN` (the exact public HTTPS origin), and `SPACIE_DATA_DIR` (where uploads are stored).
+3. `npm ci && npm run build`, then run `next start` behind an HTTPS reverse proxy. Pending migrations apply on boot under an advisory lock (`npm run db:migrate` does the same by hand).
+4. Create the first workspace: `npm run create-owner -- "Workspace name"` prints a single-use link. Open it to create the owner account.
+5. Invite people from **Share → Create invitation link**. Links are single-use, expire after 7 days, and can be locked to an email.
+6. Optional object storage: set the `R2_*` variables and `SPACIE_UPLOAD_SECRET`. Allow `PUT`, `GET`, and `HEAD` from your origin in bucket CORS with `Content-Type` and `Content-Length` headers and exposed `ETag`, and expire each workspace's `staging/` prefix after one day.
 
 ## Architecture
 
@@ -78,11 +77,11 @@ The app is a Node Next.js server (not a static export or an edge bundle) plus Po
 
 ## Validation
 
-`npm run typecheck`, `npm run lint`, `npm test` (21 tests, run against real Postgres via PGlite: permissions, scoping, version history, stale-write conflicts under concurrency, rollback, credential lifecycle, search, schema integrity, and the MCP tools through an in-memory client), and `npm run build`.
+`npm run typecheck`, `npm run lint`, `npm test` (27 tests, run against real Postgres via PGlite: permissions, scoping, version history, stale-write conflicts under concurrency, rollback, credential lifecycle, sign-in and invitations, search, schema integrity, and the MCP tools through an in-memory client), and `npm run build`.
 
 ## Known limits
 
-- Sign-in (Supabase Auth, SMTP) and object storage still need a live integration pass.
+- No self-service password reset yet (to be added as a server command).
 - Collaboration is optimistic per document, not a character-level CRDT: a conflicting editor gets `CONFLICT` and reloads.
 - One workspace per signed-in account.
 - Project grants are editable when connecting an agent; folder overrides exist in authorization but have no UI yet.

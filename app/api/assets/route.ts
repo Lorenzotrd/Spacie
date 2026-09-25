@@ -3,7 +3,7 @@ import { boundedRequest } from "@/lib/http";
 import { authenticate, assertSameOrigin } from "@/lib/auth";
 import { requirePermission } from "@/lib/permissions";
 import { assetUrl, localAsset, storeAsset } from "@/lib/storage";
-import { demo } from "@/lib/config";
+import { objectStorage } from "@/lib/config";
 import { db } from "@/lib/db/client";
 import { loadAccess } from "@/lib/access";
 import { findReadableFile } from "@/lib/queries";
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
       ? await findReadableFile(await db(), actor, id)
       : null;
     if (!file?.storageKey || file.deleted) throw new Error("Asset not found");
-    if (demo()) {
+    if (!objectStorage()) {
       if (url.searchParams.has("raw")) {
         const bytes = await localAsset(file.storageKey);
         return new Response(new Uint8Array(bytes), {

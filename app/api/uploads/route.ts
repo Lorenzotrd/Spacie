@@ -4,7 +4,7 @@ import { z } from "zod";
 import { authenticate, assertSameOrigin } from "@/lib/auth";
 import { requirePermission } from "@/lib/permissions";
 import { prepareDirectUpload, verifyDirectUpload } from "@/lib/storage";
-import { demo } from "@/lib/config";
+import { objectStorage } from "@/lib/config";
 import { db } from "@/lib/db/client";
 import { loadAccess } from "@/lib/access";
 import { destination } from "@/lib/service/context";
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     assertSameOrigin(request);
     const { actor } = await authenticate(request);
     await rateLimit(actor.id);
-    if (demo()) throw new Error("Direct uploads require R2.");
+    if (!objectStorage()) throw new Error("Direct uploads need object storage; use /api/assets.");
     const database = await db();
     const access = await loadAccess(database, actor);
     const body = await (await boundedRequest(request, 10000)).json();

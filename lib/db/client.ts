@@ -1,6 +1,6 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
-import { demo } from "../config";
+import { dataDir, demo } from "../config";
 import { migrate } from "./migrate";
 import { importSnapshot } from "./import";
 import { seed } from "../seed";
@@ -104,7 +104,7 @@ async function prepareDemo(db: Db) {
   let snapshot: WorkspaceState = seed();
   try {
     snapshot = JSON.parse(
-      await readFile(path.join(process.cwd(), "data", "workspace.json"), "utf8"),
+      await readFile(path.join(dataDir(), "workspace.json"), "utf8"),
     );
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
@@ -120,9 +120,7 @@ export function db(): Promise<Db> {
   const holder = globalThis as Holder;
   holder[key] ??= (async () => {
     if (demo()) {
-      const database = await createEmbeddedDb(
-        path.join(process.cwd(), "data", "pglite"),
-      );
+      const database = await createEmbeddedDb(path.join(dataDir(), "pglite"));
       await prepareDemo(database);
       return database;
     }

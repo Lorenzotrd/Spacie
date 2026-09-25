@@ -1,5 +1,6 @@
 "use client";
 import type { Dispatch, SetStateAction, RefObject } from "react";
+import { useRouter } from "next/navigation";
 import { FileText, Folder, Upload, ChevronRight } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Avatar } from "@/components/ui/avatar";
@@ -91,6 +92,7 @@ export function WorkspaceDialogs({
   results,
   fileResults,
 }: DialogProps) {
+  const router = useRouter();
   return (
     <Dialog
       open={!!modal}
@@ -113,6 +115,7 @@ export function WorkspaceDialogs({
             delete: "Move to trash?",
             connect: "Connect an AI teammate",
             credentials: "Your agent is ready",
+            "invite-link": "Invitation ready",
             agent: agent?.name ?? "AI teammate",
             person: agent?.name ?? "Teammate",
             share: "Invite your team",
@@ -125,6 +128,8 @@ export function WorkspaceDialogs({
           ? "Choose what your AI teammate can do, and where."
           : modal === "credentials"
             ? "Copy this token now. It will never be shown again."
+            : modal === "invite-link"
+              ? "Send this link to your teammate. It works once and expires in 7 days."
             : modal === "share"
               ? "Invite a human teammate to this workspace."
               : modal === "search"
@@ -376,8 +381,33 @@ export function WorkspaceDialogs({
             Generate credentials
           </button>
         </>
+      ) : modal === "invite-link" ? (
+        <>
+          <label className="field-label">
+            Invitation link
+            <input readOnly value={token} onFocus={(e) => e.target.select()} />
+          </label>
+          <button
+            className="button primary modal-submit"
+            onClick={() => {
+              void navigator.clipboard
+                .writeText(token)
+                .then(() => setNotice("Link copied"));
+            }}
+          >
+            Copy link
+          </button>
+        </>
       ) : modal === "credentials" ? (
         <>
+          <label className="field-label">
+            Claude Code: run this once
+            <input
+              readOnly
+              onFocus={(e) => e.target.select()}
+              value={`claude mcp add --transport http spacie ${typeof window !== "undefined" ? window.location.origin : ""}/api/mcp --header "Authorization: Bearer ${token}"`}
+            />
+          </label>
           <label className="field-label">
             Service token
             <input readOnly value={token} />
@@ -517,6 +547,18 @@ export function WorkspaceDialogs({
               ? "You are signed into this workspace."
               : "A member of this shared workspace."}
           </p>
+          {agent.id === state.currentPrincipalId && !state.demo && (
+            <button
+              className="button modal-submit"
+              onClick={() => {
+                void fetch("/api/auth/logout", { method: "POST" }).then(() =>
+                  router.push("/login"),
+                );
+              }}
+            >
+              Sign out
+            </button>
+          )}
         </>
       ) : modal === "share" ? (
         <form
@@ -525,17 +567,10 @@ export function WorkspaceDialogs({
             void submit();
           }}
         >
-          {state.demo && (
-            <p className="warning">
-              Email invitations need a connected Supabase workspace. This local
-              demo does not send email.
-            </p>
-          )}
           <label className="field-label">
-            Email address
+            Email address (optional: locks the link to this person)
             <input
               type="email"
-              required
               value={replyEmail}
               onChange={(e) => setReplyEmail(e.target.value)}
               placeholder="teammate@company.com"
@@ -554,11 +589,8 @@ export function WorkspaceDialogs({
               <option value="admin">Admin</option>
             </select>
           </label>
-          <button
-            className="button primary modal-submit"
-            disabled={busy || state.demo}
-          >
-            Send invitation
+          <button className="button primary modal-submit" disabled={busy}>
+            Create invitation link
           </button>
         </form>
       ) : modal === "workspace" ? (
@@ -576,12 +608,12 @@ export function WorkspaceDialogs({
             <dd>
               {state.demo
                 ? "Local demo. Data persists on this computer."
-                : "Supabase connected"}
+                : "Self-hosted"}
             </dd>
           </dl>
           <p className="subtle-copy">
             {state.demo
-              ? "Demo identities and earlier activity are seeded examples. Connect Supabase and R2 to use live authentication, invitations, and cloud storage."
+              ? "Demo identities and earlier activity are seeded examples. You are signed in as the seeded owner."
               : "Files and agents share the same permission model."}
           </p>
         </>

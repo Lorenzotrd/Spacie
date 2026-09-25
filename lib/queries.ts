@@ -8,7 +8,7 @@ import {
   type ReadableScope,
 } from "./access";
 import { can, type AccessContext } from "./permissions";
-import { demo } from "./config";
+import { demo, objectStorage } from "./config";
 import type {
   Activity,
   Comment,
@@ -97,6 +97,7 @@ export async function snapshot(db: Db, actor: Principal): Promise<PublicState> {
     revision: Number(workspace.revision),
     currentPrincipalId: actor.id,
     demo: demo(),
+    directUploads: objectStorage(),
     principals,
     projects: scope.projects,
     folders: scope.folders,
