@@ -38,9 +38,9 @@ export async function saveVersion(
   message: string,
 ) {
   await tx.query(
-    `insert into file_versions (workspace_id, file_id, number, content, storage_key, actor_id, message)
-     values ($1, $2, $3, $4, $5, $6, $7)`,
-    [actor.workspaceId, file.id, file.version, file.content, file.storageKey ?? null, actor.id, message],
+    `insert into file_versions (workspace_id, file_id, number, content, storage_key, size, mime, actor_id, message)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    [actor.workspaceId, file.id, file.version, file.content, file.storageKey ?? null, file.size, file.mime, actor.id, message],
   );
 }
 

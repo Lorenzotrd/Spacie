@@ -73,6 +73,9 @@ export type Version = {
   number: number;
   content: string;
   storageKey?: string;
+  /** Size and type of this version's bytes; null for versions saved before they were tracked. */
+  size?: number | null;
+  mime?: string | null;
   actorId: string;
   createdAt: string;
   message: string;

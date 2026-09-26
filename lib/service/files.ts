@@ -1,4 +1,4 @@
-import { requirePermission } from "../permissions";
+import { can, requirePermission } from "../permissions";
 import type { Action, FileRecord } from "../types";
 import { needsPreview } from "../previews";
 import {
@@ -35,6 +35,10 @@ export async function createEntry(ctx: CommandContext): Promise<CommandResult> {
   if (upload && !c.storageKey)
     throw new Error("Upload must finish before creating the file.");
   const mime = upload ? required(c.mime, "File type") : DOCUMENT_MIME;
+  if (upload) {
+    const replaced = await uploadNewVersion(ctx, { projectId, folderId, name, mime });
+    if (replaced) return replaced;
+  }
   const [row] = await tx.query<{ id: string }>(
     `insert into files (workspace_id, project_id, folder_id, name, mime, size, content, storage_key, updated_by, preview_status)
      values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id`,
@@ -46,6 +50,36 @@ export async function createEntry(ctx: CommandContext): Promise<CommandResult> {
   await saveVersion(ctx, file, upload ? "Uploaded asset" : "Created document");
   await record(ctx, upload ? "uploaded" : "created", name, { projectId, fileId: file.id });
   return { id: file.id };
+}
+
+/**
+ * Re-uploading a file under the same name (case-insensitive) in the same folder adds a
+ * version to it rather than a duplicate, when the uploader may edit that file.
+ */
+async function uploadNewVersion(
+  ctx: CommandContext,
+  place: { projectId: string; folderId: string | null; name: string; mime: string },
+): Promise<CommandResult | null> {
+  const { tx, actor, access, c } = ctx;
+  const [row] = await tx.query<{ id: string }>(
+    `select id from files
+     where workspace_id = $1 and project_id = $2 and folder_id is not distinct from $3
+       and lower(name) = lower($4) and not deleted and storage_key is not null and mime <> $5
+     order by updated_at desc limit 1 for update`,
+    [actor.workspaceId, place.projectId, place.folderId, place.name, DOCUMENT_MIME],
+  );
+  const existing = row && (await loadFile(tx, actor.workspaceId, row.id));
+  if (!existing || !can(access, actor, "write", existing)) return null;
+  await tx.query(
+    `update files set storage_key = $3, size = $4, mime = $5, version = version + 1,
+       preview_key = null, preview_status = $6, updated_by = $2, updated_at = now()
+     where id = $1`,
+    [existing.id, actor.id, c.storageKey, c.size ?? 0, place.mime, needsPreview(place.mime) ? "pending" : "none"],
+  );
+  const next = (await loadFile(tx, actor.workspaceId, existing.id))!;
+  await saveVersion(ctx, next, "Uploaded a new version");
+  await record(ctx, "uploaded a new version of", next.name, { projectId: next.projectId, fileId: next.id });
+  return { id: next.id, version: next.version };
 }
 
 const permissionFor: Partial<Record<Command["action"], Action>> = {
@@ -101,14 +135,19 @@ async function apply(ctx: CommandContext, f: FileRecord): Promise<FileRecord> {
     case "restore_file":
       return update("deleted = false", []);
     case "restore_version": {
-      const [version] = await tx.query<{ number: number; content: string; storage_key: string | null }>(
-        "select number, content, storage_key from file_versions where file_id = $1 and number = $2",
+      const [version] = await tx.query<{
+        number: number; content: string; storage_key: string | null; size: number | null; mime: string | null;
+      }>(
+        "select number, content, storage_key, size, mime from file_versions where file_id = $1 and number = $2",
         [f.id, c.version ?? null],
       );
       if (!version) throw new Error("Version not found");
+      const mime = version.mime ?? f.mime;
       const next = await update(
-        `content = $3, storage_key = $4, version = version + 1, preview_key = null, preview_status = $5`,
-        [version.content, version.storage_key, version.storage_key && needsPreview(f.mime) ? "pending" : "none"],
+        `content = $3, storage_key = $4, size = $5, mime = $6, version = version + 1,
+         preview_key = null, preview_status = $7`,
+        [version.content, version.storage_key, version.size ?? f.size, mime,
+          version.storage_key && needsPreview(mime) ? "pending" : "none"],
       );
       await saveVersion(ctx, next, `Restored version ${version.number}`);
       return next;

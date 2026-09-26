@@ -14,6 +14,7 @@ import { commandSchema, execute, type Command } from "../service";
 import { destination } from "../service/context";
 import { storeAsset } from "../storage";
 import { createUploadLink } from "../upload-links";
+import { createDownloadLink } from "../download-links";
 import { createShareLink, revokeShareLink } from "../share-links";
 import type { Principal } from "../types";
 
@@ -166,7 +167,7 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
     "upload_asset",
     {
       description:
-        "Upload a small binary asset (a few KB) inline as base64. For any real file, such as a PDF, deck, image or video you generated in your sandbox, use create_upload_link instead.",
+        "Upload a small binary asset (a few KB) inline as base64. Uploading the same name to the same folder adds a new version of that file. For any real file, such as a PDF, deck, image or video you generated in your sandbox, use create_upload_link instead.",
       inputSchema: {
         projectId,
         folderId,
@@ -241,7 +242,8 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
     {
       description:
         "Get a single-use link to upload a file you produced (PDF, PowerPoint, Word, Excel, image, video, ZIP…) up to 100 MB, " +
-        "straight from your sandbox or terminal. Then run: curl --fail -T <file> \"<url>\". The link expires in 30 minutes. " +
+        "straight from your sandbox or terminal. Re-using an existing file's name in the same folder adds a new version of it. " +
+        "Then run: curl --fail -T <file> \"<url>\". The link expires in 30 minutes. " +
         "Your sandbox must be allowed to reach this server's domain.",
       inputSchema: {
         projectId,
@@ -254,6 +256,23 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
       guard(() =>
         createUploadLink(db, actor, { projectId: args.projectId, folderId: args.folderId ?? null, name: args.name, mime: args.mime }, origin),
       ),
+  );
+  server.registerTool(
+    "create_download_link",
+    {
+      description:
+        "Read a stored file that is not a Spacie document (PDF, PowerPoint, Word, Excel, image, CSV…). Returns a link valid " +
+        "15 minutes: run curl --fail -o <name> \"<url>\" in your sandbox or terminal, then open the file there. Small text " +
+        "files are also returned inline as `text`. Pass version (from get_versions) for an older upload, or preview: true " +
+        "for the PDF rendition of an Office file. Your sandbox must be allowed to reach this server's domain.",
+      inputSchema: {
+        id: fileId,
+        version: z.number().int().positive().optional().describe("Older version number; omit for the current one"),
+        preview: z.boolean().optional().describe("PDF rendition of a PowerPoint, Word or Excel file"),
+      },
+    },
+    (args) =>
+      guard(() => createDownloadLink(db, actor, { fileId: args.id, version: args.version, preview: args.preview }, origin)),
   );
   return server;
 }

@@ -67,6 +67,12 @@ export function ActivityFeed({
     </>
   );
 }
+/** Opens one stored version of an uploaded file as a download. */
+async function downloadVersion(fileId: string, number: number) {
+  const r = await fetch(`/api/assets?id=${fileId}&version=${number}&download=1`);
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.url) window.location.assign(data.url);
+}
 export function CollaborationPanel({
   state,
   file,
@@ -202,9 +208,15 @@ export function CollaborationPanel({
               </p>
               <small>{v.message}</small>
               <div>
-                <button onClick={() => openPreview(v.number)}>
-                  Preview & compare
-                </button>
+                {file.storageKey ? (
+                  <button onClick={() => void downloadVersion(file.id, v.number)}>
+                    Download
+                  </button>
+                ) : (
+                  <button onClick={() => openPreview(v.number)}>
+                    Preview & compare
+                  </button>
+                )}
                 {v.number !== file.version && (
                   <button
                     onClick={() =>

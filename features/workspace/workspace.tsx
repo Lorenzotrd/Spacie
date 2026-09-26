@@ -314,6 +314,7 @@ export default function Workspace() {
   async function uploadFiles(files: FileList | null) {
     if (!files?.length) return;
     setBusy(true);
+    let newVersions = 0;
     try {
       for (const f of Array.from(files)) {
         if (!state?.directUploads) {
@@ -327,6 +328,7 @@ export default function Workspace() {
           });
           const result = await response.json();
           if (!response.ok) throw new Error(result.error);
+          if (result.version > 1) newVersions++;
         } else {
           const prepared = await fetch("/api/uploads", {
             method: "POST",
@@ -355,10 +357,15 @@ export default function Workspace() {
           });
           const result = await finished.json();
           if (!finished.ok) throw new Error(result.error);
+          if (result.version > 1) newVersions++;
         }
       }
       await refresh();
-      setNotice("Upload complete");
+      setNotice(
+        newVersions === files.length
+          ? newVersions === 1 ? "Uploaded as a new version" : "Uploaded as new versions"
+          : newVersions ? `Upload complete · ${newVersions} added as new versions` : "Upload complete",
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed");
     } finally {

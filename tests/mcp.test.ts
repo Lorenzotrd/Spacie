@@ -33,6 +33,8 @@ test("MCP exposes documented tools with specific inputs", async () => {
   assert.deepEqual(Object.keys(update.inputSchema.properties ?? {}).sort(), ["baseVersion", "content", "id"]);
   assert.match(update.description ?? "", /baseVersion/);
   assert.ok(tools.some((t) => t.name === "upload_asset"));
+  const download = tools.find((t) => t.name === "create_download_link")!;
+  assert.deepEqual(Object.keys(download.inputSchema.properties ?? {}).sort(), ["id", "preview", "version"]);
 });
 
 test("an agent reads, edits with baseVersion, and gets CONFLICT on stale writes", async () => {
