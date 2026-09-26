@@ -23,7 +23,10 @@ export async function updateAgent(ctx: CommandContext): Promise<CommandResult> {
 
   const current = agentAccess(
     fromRows<Grant>(
-      await tx.query(`select ${columns.grant} from grants where principal_id = $1`, [agent.id]),
+      await tx.query(`select ${columns.grant} from grants where principal_id = $1 and workspace_id = $2`, [
+        agent.id,
+        actor.workspaceId,
+      ]),
     ),
     agent.id,
   );
