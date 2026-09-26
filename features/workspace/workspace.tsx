@@ -662,7 +662,10 @@ export default function Workspace() {
                   </div>
                   <div className="heading-actions">
                     <div className="avatar-stack">
-                      {state.principals.slice(0, 4).map((x) => (
+                      {state.principals
+                        .filter((x) => x.type === "human" || x.status !== "offline")
+                        .slice(0, 4)
+                        .map((x) => (
                         <button
                           key={x.id}
                           onClick={() => {

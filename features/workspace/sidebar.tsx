@@ -177,7 +177,8 @@ export function AppSidebar({
         </button>
       </div>
       {state.principals
-        .filter((x) => x.type === "agent")
+        // Disconnected agents keep their history but leave the sidebar.
+        .filter((x) => x.type === "agent" && x.status !== "offline")
         .map((x) => (
           <button
             key={x.id}
