@@ -14,6 +14,7 @@ import { commandSchema, execute, type Command } from "../service";
 import { destination } from "../service/context";
 import { storeAsset } from "../storage";
 import { createUploadLink } from "../upload-links";
+import { createShareLink, revokeShareLink } from "../share-links";
 import type { Principal } from "../types";
 
 const MAX_INLINE_UPLOAD = 5 * 1024 * 1024;
@@ -193,6 +194,47 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
           storageKey,
         });
       }),
+  );
+  server.registerTool(
+    "create_share_link",
+    {
+      description:
+        "Create a public, read-only link to a file, a folder (with subfolders) or a whole project, for people " +
+        "without a Spacie account (e.g. a client). Pass exactly one of fileId, folderId or projectId. " +
+        "Requires the publish permission. Returns the URL; the owner can turn it off anytime.",
+      inputSchema: {
+        fileId: id.optional().describe("Share one file"),
+        folderId: id.optional().describe("Share a folder and its subfolders"),
+        projectId: projectId.optional().describe("Share a whole project"),
+        expiresInDays: z.union([z.literal(7), z.literal(30), z.literal(90), z.literal(0)]).default(30)
+          .describe("7, 30 or 90 days; 0 never expires"),
+        allowDownload: z.boolean().default(true).describe("Let viewers download the original files"),
+        password: z.string().min(8).max(200).optional().describe("Optional password (8+ characters) viewers must enter"),
+      },
+    },
+    (args) =>
+      guard(async () => {
+        const chosen = [
+          args.fileId && { type: "file" as const, id: args.fileId },
+          args.folderId && { type: "folder" as const, id: args.folderId },
+          args.projectId && { type: "project" as const, id: args.projectId },
+        ].filter((t) => !!t);
+        if (chosen.length !== 1) throw new Error("Pass exactly one of fileId, folderId or projectId.");
+        return createShareLink(db, actor, {
+          target: chosen[0],
+          expiresInDays: args.expiresInDays === 0 ? null : args.expiresInDays,
+          allowDownload: args.allowDownload,
+          password: args.password,
+        }, origin);
+      }),
+  );
+  server.registerTool(
+    "revoke_share_link",
+    {
+      description: "Turn off a public link you created (id from create_share_link).",
+      inputSchema: { id: id.describe("Share link id") },
+    },
+    (args) => guard(() => revokeShareLink(db, actor, args.id)),
   );
   server.registerTool(
     "create_upload_link",

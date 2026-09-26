@@ -1,6 +1,6 @@
 "use client";
 import NextImage from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   Search,
@@ -35,6 +35,7 @@ import { useWorkspace } from "./use-workspace";
 import { useFileDetail, useFileSearch } from "./use-file-detail";
 import { DocumentEditor } from "./editor";
 import { PdfPreview } from "./pdf-preview";
+import type { ShareTargetRef } from "./share-panel";
 import { Avatar } from "@/components/ui/avatar";
 import { AppSidebar } from "./sidebar";
 import { ActivityFeed, CollaborationPanel } from "./collaboration";
@@ -148,6 +149,48 @@ export default function Workspace() {
     return () => clearInterval(interval);
   }, [selected, currentPrincipalId]);
   const file = state?.files.find((f) => f.id === selected);
+  // Deep links: /workspace?project=…&folder=…&file=… mirrors what is open.
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+  const fromUrl = useRef(false);
+  const applyUrl = useCallback(() => {
+    const s = stateRef.current;
+    if (!s) return;
+    const q = new URLSearchParams(window.location.search);
+    const linked = s.files.find((f) => f.id === q.get("file"));
+    const projectId = linked?.projectId ?? q.get("project");
+    if (!projectId || !s.projects.some((p) => p.id === projectId)) return;
+    const folderId = linked ? linked.folderId : q.get("folder");
+    fromUrl.current = true;
+    setProject(projectId);
+    setFolder(folderId && s.folders.some((f) => f.id === folderId && f.projectId === projectId) ? folderId : null);
+    setSelected(linked?.id ?? null);
+    setView("space");
+  }, []);
+  const hydrated = useRef(false);
+  useEffect(() => {
+    if (!state || hydrated.current) return;
+    hydrated.current = true;
+    applyUrl();
+  }, [state, applyUrl]);
+  useEffect(() => {
+    window.addEventListener("popstate", applyUrl);
+    return () => window.removeEventListener("popstate", applyUrl);
+  }, [applyUrl]);
+  useEffect(() => {
+    if (!hydrated.current) return;
+    if (fromUrl.current) {
+      fromUrl.current = false;
+      return;
+    }
+    const q = new URLSearchParams({ project });
+    if (folder) q.set("folder", folder);
+    if (selected) q.set("file", selected);
+    const next = `/workspace?${q}`;
+    if (next !== window.location.pathname + window.location.search) window.history.pushState(null, "", next);
+  }, [project, folder, selected]);
   const { detail, loadVersion } = useFileDetail(
     file ? file.id : null,
     state?.revision,
@@ -324,7 +367,15 @@ export default function Workspace() {
         <Box size={35} />
         <h1>spacie</h1>
         <p>{error || "Opening your workspace…"}</p>
-        {error && <a href="/login">Sign in to your workspace →</a>}
+        {error && (
+          <a
+            href={`/login?next=${encodeURIComponent(
+              typeof window === "undefined" ? "/workspace" : window.location.pathname + window.location.search,
+            )}`}
+          >
+            Sign in to your workspace →
+          </a>
+        )}
       </div>
     );
   const projectName = p?.name ?? "Workspace";
@@ -346,6 +397,18 @@ export default function Workspace() {
       f.name.toLowerCase().includes(query.toLowerCase()),
   );
   const results = search.toLowerCase();
+  const currentFolder = folder ? state.folders.find((f) => f.id === folder) : undefined;
+  const shareTarget: ShareTargetRef | null = file
+    ? { type: "file", id: file.id, name: file.name }
+    : currentFolder
+      ? { type: "folder", id: currentFolder.id, name: currentFolder.name }
+      : p
+        ? { type: "project", id: p.id, name: p.name }
+        : null;
+  const teamQuery = file
+    ? `file=${file.id}`
+    : `project=${project}${currentFolder ? `&folder=${currentFolder.id}` : ""}`;
+  const teamLink = `${typeof window === "undefined" ? "" : window.location.origin}/workspace?${teamQuery}`;
   return (
     <div
       className={`app-shell ${!showRight ? "panel-hidden" : ""} ${mobileNav ? "nav-open" : ""}`}
@@ -1035,6 +1098,8 @@ export default function Workspace() {
           setAgent,
           results,
           fileResults,
+          shareTarget,
+          teamLink,
         }}
       />
       {error && (

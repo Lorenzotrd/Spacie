@@ -22,6 +22,7 @@ export default function Connect() {
   const [access, setAccess] = useState<Access>("write");
   const [allProjects, setAllProjects] = useState(false);
   const [projectIds, setProjectIds] = useState<string[]>([]);
+  const [allowPublish, setAllowPublish] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -59,7 +60,7 @@ export default function Connect() {
         body: JSON.stringify(
           decision === "deny"
             ? { decision, request }
-            : { decision, request, choice: { name, access, allProjects, projectIds } },
+            : { decision, request, choice: { name, access, allProjects, projectIds, allowPublish } },
         ),
       });
       const data = await r.json();
@@ -127,6 +128,12 @@ export default function Connect() {
                 <p className="subtle-copy">You have no projects to share yet.</p>
               )}
             </fieldset>
+            {consent.canWrite && (
+              <label className="check-label">
+                <input type="checkbox" checked={allowPublish} onChange={(e) => setAllowPublish(e.target.checked)} />
+                Can create public share links
+              </label>
+            )}
             <p className="subtle-copy">You will be sent back to {consent.client.redirectHost}.</p>
             <div style={{ display: "flex", gap: 8 }}>
               <button

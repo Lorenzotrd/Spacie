@@ -6,6 +6,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Avatar } from "@/components/ui/avatar";
 import type { PublicState, FileMeta, Principal, Action } from "@/lib/types";
 import { actions } from "@/lib/types";
+import { SharePanel, type ShareTargetRef } from "./share-panel";
 import type { Command } from "@/lib/service";
 type DialogProps = {
   state: PublicState;
@@ -18,6 +19,9 @@ type DialogProps = {
   openFile: (file: FileMeta) => void;
   /** Server-side matches on names, document text and comments. */
   fileResults: FileMeta[];
+  /** What the Share dialog shares: the open file, else the folder, else the project. */
+  shareTarget: ShareTargetRef | null;
+  teamLink: string;
   navigate: (projectId: string, folderId?: string | null) => void;
   mutate: (
     command: Command,
@@ -91,6 +95,8 @@ export function WorkspaceDialogs({
   setAgent,
   results,
   fileResults,
+  shareTarget,
+  teamLink,
 }: DialogProps) {
   const router = useRouter();
   return (
@@ -118,7 +124,7 @@ export function WorkspaceDialogs({
             "invite-link": "Invitation ready",
             agent: agent?.name ?? "AI teammate",
             person: agent?.name ?? "Teammate",
-            share: "Invite your team",
+            share: shareTarget ? `Share ${shareTarget.name}` : "Invite your team",
             workspace: "Your workspace",
           } as Record<string, string>
         )[modal] ?? "Spacie"
@@ -131,7 +137,7 @@ export function WorkspaceDialogs({
             : modal === "invite-link"
               ? "Send this link to your teammate. It works once and expires in 7 days."
             : modal === "share"
-              ? "Invite a human teammate to this workspace."
+              ? "Share with your team, publicly, or invite someone new."
               : modal === "search"
                 ? "Files, document content, comments, spaces, and teammates."
                 : "One shared space. Everything in context."
@@ -561,38 +567,47 @@ export function WorkspaceDialogs({
           )}
         </>
       ) : modal === "share" ? (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void submit();
-          }}
-        >
-          <label className="field-label">
-            Email address (optional: locks the link to this person)
-            <input
-              type="email"
-              value={replyEmail}
-              onChange={(e) => setReplyEmail(e.target.value)}
-              placeholder="teammate@company.com"
-            />
-          </label>
-          <label className="field-label">
-            Role
-            <select
-              value={inviteRole}
-              onChange={(e) =>
-                setInviteRole(e.target.value as typeof inviteRole)
-              }
+        shareTarget ? (
+          <SharePanel
+            target={shareTarget}
+            teamLink={teamLink}
+            onNotice={setNotice}
+            onError={setError}
+          >
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void submit();
+              }}
             >
-              <option value="member">Member</option>
-              <option value="viewer">Viewer</option>
-              <option value="admin">Admin</option>
-            </select>
-          </label>
-          <button className="button primary modal-submit" disabled={busy}>
-            Create invitation link
-          </button>
-        </form>
+              <label className="field-label">
+                Email address (optional: locks the link to this person)
+                <input
+                  type="email"
+                  value={replyEmail}
+                  onChange={(e) => setReplyEmail(e.target.value)}
+                  placeholder="teammate@company.com"
+                />
+              </label>
+              <label className="field-label">
+                Role
+                <select
+                  value={inviteRole}
+                  onChange={(e) =>
+                    setInviteRole(e.target.value as typeof inviteRole)
+                  }
+                >
+                  <option value="member">Member</option>
+                  <option value="viewer">Viewer</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </label>
+              <button className="button primary modal-submit" disabled={busy}>
+                Create invitation link
+              </button>
+            </form>
+          </SharePanel>
+        ) : null
       ) : modal === "workspace" ? (
         <>
           <dl>

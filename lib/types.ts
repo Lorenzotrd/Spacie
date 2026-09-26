@@ -9,6 +9,7 @@ export type Action =
   | "delete"
   | "restore"
   | "create_folder"
+  | "publish"
   | "manage_members";
 export const actions: Action[] = [
   "read",
@@ -21,6 +22,7 @@ export const actions: Action[] = [
   "delete",
   "restore",
   "create_folder",
+  "publish",
   "manage_members",
 ];
 export type Principal = {

@@ -85,8 +85,10 @@ export const consentChoice = z.object({
   access: z.enum(["read", "comment", "write"]),
   allProjects: z.boolean(),
   projectIds: z.array(z.string().uuid()).max(100),
+  /** Lets the agent create public share links (the `publish` permission). */
+  allowPublish: z.boolean().default(false),
 });
-export type ConsentChoice = z.infer<typeof consentChoice>;
+export type ConsentChoice = z.input<typeof consentChoice>;
 
 /** Projects the person can read: the only ones they may share with an agent. */
 export async function shareableProjects(db: Db, human: Principal) {
@@ -108,7 +110,10 @@ export async function approveAuthorization(
 ) {
   if (human.type !== "human") throw new Error("FORBIDDEN: Only people can authorize agents.");
   const allowed = new Set(grantableActions(human));
-  const requested = ACCESS_LEVELS[choice.access].filter((a) => allowed.has(a));
+  const requested: Action[] = [
+    ...ACCESS_LEVELS[choice.access].filter((a) => allowed.has(a)),
+    ...(choice.allowPublish && human.role !== "viewer" ? (["publish"] as Action[]) : []),
+  ];
   // An agent never gets more than its human has on that exact scope (no confused deputy).
   const access = await loadAccess(db, human);
   const permitted = (projectId?: string) =>

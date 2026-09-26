@@ -21,9 +21,9 @@ function derive(password: string, salt: Buffer, o: ScryptOptions & { keylen: num
 }
 
 /** `scrypt$N$r$p$salt$hash`, parameters stored so they can be raised later. */
-export async function hashPassword(password: string) {
-  if (password.length < MIN_PASSWORD)
-    throw new Error(`Use at least ${MIN_PASSWORD} characters for your password.`);
+export async function hashPassword(password: string, minLength = MIN_PASSWORD) {
+  if (password.length < minLength)
+    throw new Error(`Use at least ${minLength} characters for your password.`);
   const salt = randomBytes(16);
   const key = await derive(password, salt, SCRYPT);
   return ["scrypt", SCRYPT.N, SCRYPT.r, SCRYPT.p, salt.toString("base64url"), key.toString("base64url")].join("$");

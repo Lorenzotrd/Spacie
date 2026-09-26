@@ -66,13 +66,13 @@ export async function storeAsset(file: File, workspaceId: string) {
     );
   return key;
 }
-export async function assetUrl(key: string) {
+export async function assetUrl(key: string, disposition = "inline") {
   return getSignedUrl(
     client(),
     new GetObjectCommand({
       Bucket: process.env.R2_BUCKET,
       Key: key,
-      ResponseContentDisposition: "inline",
+      ResponseContentDisposition: disposition,
     }),
     { expiresIn: 300 },
   );
