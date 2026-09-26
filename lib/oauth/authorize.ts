@@ -8,15 +8,11 @@ import type { Action, Principal } from "../types";
 import { findClient, type OAuthClient } from "./clients";
 import { OAuthError } from "./errors";
 import { SCOPE } from "./metadata";
+import { ACCESS_LEVELS } from "../access-levels";
 
 const CODE_TTL_MS = 10 * 60_000;
 
-export type AccessLevel = "read" | "comment" | "write";
-export const ACCESS_LEVELS: Record<AccessLevel, Action[]> = {
-  read: ["read"],
-  comment: ["read", "comment"],
-  write: ["read", "write", "create", "upload", "comment", "rename", "move", "create_folder"],
-};
+export { ACCESS_LEVELS, type AccessLevel } from "../access-levels";
 
 export type AuthorizationRequest = {
   client: OAuthClient;

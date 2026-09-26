@@ -4,6 +4,7 @@ import { execute, commandSchema } from "@/lib/service";
 import { snapshot, workspaceRevision } from "@/lib/queries";
 import { db } from "@/lib/db/client";
 import { rateLimit } from "@/lib/rate-limit";
+import { mcpResource, publicOrigin } from "@/lib/oauth/metadata";
 export const runtime = "nodejs";
 const noStore = { "Cache-Control": "no-store" };
 /** `?since=<revision>` answers `{ unchanged: true }` cheaply when nothing moved. */
@@ -17,7 +18,8 @@ export async function GET(request: Request) {
       if (String(revision) === since)
         return Response.json({ unchanged: true, revision }, { headers: noStore });
     }
-    return Response.json(await snapshot(database, actor), { headers: noStore });
+    const state = await snapshot(database, actor);
+    return Response.json({ ...state, mcpUrl: mcpResource(publicOrigin(request)) }, { headers: noStore });
   } catch (e) {
     return failure(e);
   }

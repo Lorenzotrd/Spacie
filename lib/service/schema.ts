@@ -20,6 +20,7 @@ export const commandSchema = z
       "connect_agent",
       "rotate_token",
       "disconnect_agent",
+      "update_agent",
       "upload_asset",
       "share",
     ]),
@@ -35,6 +36,9 @@ export const commandSchema = z
     scope: z.array(z.string().uuid()).max(100).optional(),
     permissions: z.array(z.enum(actions as [Action, ...Action[]])).optional(),
     fullAccess: z.boolean().optional(),
+    /** update_agent: the agent's level, and whether it may create public links. */
+    access: z.enum(["read", "comment", "write"]).optional(),
+    allowPublish: z.boolean().optional(),
     mime: z.string().max(120).optional(),
     size: z
       .number()
