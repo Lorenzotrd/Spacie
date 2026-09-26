@@ -38,7 +38,7 @@ export default function Workspace() {
   const ctl = useController();
   const router = useRouter();
   const mobile = useIsMobile();
-  const { state, error, setError, notice, dialogProps, dialog, compare, setCompare, upload, uploadFiles } = ctl;
+  const { state, error, setError, notice, offline, dialogProps, dialog, compare, setCompare, upload, uploadFiles } = ctl;
   const { setAgent } = dialogProps;
   const onPerson = useCallback(
     (p: Principal) => {
@@ -72,6 +72,11 @@ export default function Workspace() {
       <WorkspaceDialogs state={state} {...dialogProps} />
       <CompareVersions state={state} target={compare} onClose={() => setCompare(null)} onError={setError} />
       <div className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex flex-col items-center gap-2 px-4 md:bottom-6">
+        {offline && (
+          <div role="status" className="flex items-center gap-2 rounded-xl bg-[#fff6ec] px-4 py-2.5 text-[13px] text-[#8a5a2b] shadow-lg">
+            Connection lost. Showing the last saved state and retrying…
+          </div>
+        )}
         {error && (
           <div role="alert" className="pointer-events-auto flex items-center gap-3 rounded-xl bg-ink py-2.5 pr-2 pl-4 text-[13px] text-white shadow-lg">
             {error}

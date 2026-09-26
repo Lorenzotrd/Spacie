@@ -64,7 +64,7 @@ export function useController() {
   });
 
   const file = state?.files.find((f) => f.id === selected);
-  const { detail, loadVersion } = useFileDetail(file ? file.id : null, state?.revision);
+  const { detail, detailError, retryDetail, loadVersion } = useFileDetail(file ? file.id : null, state?.revision);
   const fileResults = useFileSearch<FileMeta>(search);
 
   const currentPrincipalId = state?.currentPrincipalId;
@@ -203,7 +203,7 @@ export function useController() {
     project, folder, selected, file, currentProject: p, currentFolder, me,
     view, setView, tab, setTab, sort, setSort, grid, setGrid,
     rail, setRail, showRail, setShowRail, presence, busy,
-    detail, loadVersion, fileResults, compare, setCompare,
+    detail, detailError, retryDetail, loadVersion, fileResults, compare, setCompare,
     navigate, openFile, closeFile, setSelected, dialog, shareOne, copyLink, uploadFiles, upload,
     startUpload: () => upload.current?.click(),
     dialogProps: {

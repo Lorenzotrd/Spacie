@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button, IconButton } from "@/components/ui/button";
 import { FileMenu } from "@/components/ui/dropdown-menu";
+import { ErrorState } from "@/components/ui/states";
 import { principalById, relativeTime, typeLabel, versionLabel } from "@/features/workspace/derive";
 import { FileIcon } from "@/features/workspace/file-icon";
 import type { Controller } from "@/features/workspace/use-controller";
@@ -62,6 +63,9 @@ export function FileView({ ctl, file, onCompare }: { ctl: Controller; file: File
           />
         </div>
       </div>
+      {ctl.detailError && !ctl.detail ? (
+        <ErrorState message={ctl.detailError} onRetry={ctl.retryDetail} />
+      ) : (
       <FileBody
         file={file}
         detail={ctl.detail}
@@ -72,6 +76,7 @@ export function FileView({ ctl, file, onCompare }: { ctl: Controller; file: File
           await ctl.mutate({ action: "update_document", id: file.id, content, baseVersion: file.version });
         }}
       />
+      )}
     </div>
   );
 }

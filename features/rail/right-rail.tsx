@@ -40,7 +40,12 @@ export function RightRail({ ctl, onCompare }: { ctl: Controller; onCompare: (fil
   const body = () => {
     if (rail === "activity") return <ActivityList state={state} projectId={ctl.project} fileId={file?.id} />;
     if (file) {
-      if (!detail) return <SkeletonRows rows={3} height="h-14" />;
+      if (!detail)
+        return ctl.detailError ? (
+          <ErrorState message={ctl.detailError} onRetry={ctl.retryDetail} />
+        ) : (
+          <SkeletonRows rows={3} height="h-14" />
+        );
       return rail === "comments" ? (
         <CommentList state={state} comments={detail.comments} mutate={ctl.mutate} onReply={setReply} />
       ) : (

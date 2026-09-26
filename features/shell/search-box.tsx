@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import type { FileMeta, Principal, PublicState } from "@/lib/types";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/components/ui/cn";
-import { useFileSearch } from "@/features/workspace/use-file-detail";
+import { useFileSearchState } from "@/features/workspace/use-file-detail";
 import { FileIcon } from "@/features/workspace/file-icon";
 
 type Result = { kind: "file"; file: FileMeta } | { kind: "person"; person: Principal };
@@ -29,7 +29,7 @@ export function SearchBox({
   const [active, setActive] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const listId = useId();
-  const files = useFileSearch<FileMeta>(query);
+  const { results: files, status } = useFileSearchState<FileMeta>(query);
 
   useEffect(() => {
     const onKey = (e: globalThis.KeyboardEvent) => {
@@ -139,7 +139,15 @@ export function SearchBox({
               )}
             </li>
           ))}
-          {!results.length && <li className="px-2 py-3 text-[13px] text-muted">No matches for “{query}”.</li>}
+          {!results.length && (
+            <li role="status" className="px-2 py-3 text-[13px] text-muted">
+              {status === "loading"
+                ? "Searching…"
+                : status === "error"
+                  ? "Search is unavailable right now. Try again in a moment."
+                  : `No matches for “${query}”.`}
+            </li>
+          )}
         </ul>
       )}
     </div>

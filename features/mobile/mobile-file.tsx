@@ -5,7 +5,7 @@ import type { FileMeta } from "@/lib/types";
 import { AgentMark, Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { FileMenu } from "@/components/ui/dropdown-menu";
-import { SkeletonRows } from "@/components/ui/states";
+import { ErrorState, SkeletonRows } from "@/components/ui/states";
 import { cn } from "@/components/ui/cn";
 import { FileBody } from "@/features/file/file-body";
 import { downloadFile, useAssetUrls } from "@/features/file/use-asset-urls";
@@ -95,7 +95,12 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
         </div>
         <section className="flex flex-col gap-2.5">
           <h2 className="m-0 text-[17px] font-semibold">Versions</h2>
-          {!ctl.detail && <SkeletonRows rows={2} height="h-[68px]" />}
+          {!ctl.detail &&
+            (ctl.detailError ? (
+              <ErrorState message={ctl.detailError} onRetry={ctl.retryDetail} />
+            ) : (
+              <SkeletonRows rows={2} height="h-[68px]" />
+            ))}
           <div role="radiogroup" aria-label="Pick a version to restore" className="flex flex-col gap-2.5">
             {versions.map((v) => {
               const who = principalById(state, v.actorId);
