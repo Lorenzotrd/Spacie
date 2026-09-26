@@ -1,20 +1,59 @@
 @import "tailwindcss";
-:root {
-  --brand-blue: #4568f5;
-  --ink: #202124;
-  --muted: #626c7a;
-  --line: #f0f2f5;
-  --sidebar: #fafbfc;
-  --accent: #edf1ff;
+
+/* Design tokens: every colour, radius and font in the UI comes from here. */
+@theme {
+  --color-app: #f3f2ee;
+  --color-panel: #fdfcfa;
+  --color-card: #ffffff;
+  --color-subtle: #faf9f6;
+  --color-segment: #f1efea;
+  --color-line: #e4e2dc;
+  --color-line-soft: #eae8e2;
+  --color-divider: #f0eee9;
+  --color-ink: #17181c;
+  --color-ink-2: #3b3d44;
+  --color-muted: #6a6c74;
+  --color-accent: #2b59d9;
+  --color-accent-hover: #1e44b0;
+  --color-accent-soft: #eaeffc;
+  --color-accent-tint: #eef2fd;
+  --color-accent-border: #dce4fa;
+  --color-success: #1d6b45;
+  --color-success-soft: #e3f3ea;
+  --color-online: #2e8b57;
+  --color-danger: #a1342a;
+  --color-danger-border: #e8c9c4;
+  --color-code: #17181c;
+  --color-code-line: #2a2c33;
+  --color-code-ink: #e8eaf0;
+  --color-code-muted: #a9acb6;
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-panel: 18px;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
+
+/* Legacy names used by older class-based styles, mapped onto the tokens above. */
+:root {
+  --brand-blue: var(--color-accent);
+  --ink: var(--color-ink);
+  --muted: var(--color-muted);
+  --line: var(--color-divider);
+  --sidebar: var(--color-app);
+  --accent: var(--color-accent-soft);
+}
+
+/* Older class-based styles sit below Tailwind utilities so utilities always win. */
+@layer components {
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
-  background: white;
+  background: var(--color-app);
   color: var(--ink);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
 }
@@ -39,7 +78,7 @@ button:hover {
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #4568f5;
+  outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }
 button:disabled {
@@ -1861,3 +1900,4 @@ body {
 }
 .share-invite summary::-webkit-details-marker { display: none; }
 .share-invite[open] summary { margin-bottom: 12px; }
+}
