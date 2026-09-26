@@ -6,6 +6,8 @@ import type { Principal } from "@/lib/types";
 import { Brand } from "@/features/shell/brand";
 import { CompareVersions } from "@/features/file/compare-versions";
 import { Skeleton } from "@/components/ui/states";
+import { MobileApp } from "@/features/mobile/mobile-app";
+import { useIsMobile } from "./use-media-query";
 import { WorkspaceDialogs } from "./dialogs";
 import { DesktopApp } from "./desktop-app";
 import { useController } from "./use-controller";
@@ -35,6 +37,7 @@ function LoadingScreen({ error }: { error: string }) {
 export default function Workspace() {
   const ctl = useController();
   const router = useRouter();
+  const mobile = useIsMobile();
   const { state, error, setError, notice, dialogProps, dialog, compare, setCompare, upload, uploadFiles } = ctl;
   const { setAgent } = dialogProps;
   const onPerson = useCallback(
@@ -52,7 +55,11 @@ export default function Workspace() {
   if (!state) return <LoadingScreen error={error} />;
   return (
     <>
-      <DesktopApp ctl={ctl} onPerson={onPerson} />
+      {mobile ? (
+        <MobileApp ctl={ctl} onPerson={(id) => { const p = state.principals.find((x) => x.id === id); if (p) onPerson(p); }} />
+      ) : (
+        <DesktopApp ctl={ctl} onPerson={onPerson} />
+      )}
       <input
         ref={upload}
         type="file"

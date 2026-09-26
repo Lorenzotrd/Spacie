@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/states";
 import { ActivityList } from "@/features/rail/activity-list";
-import { principalById, relativeTime } from "./derive";
+import { fileCount, principalById, relativeTime } from "./derive";
 import { FileIcon } from "./file-icon";
 import type { Controller } from "./use-controller";
 
@@ -33,7 +33,7 @@ export function HomeView({ ctl }: { ctl: Controller }) {
             key={p.id}
             type="button"
             onClick={() => ctl.navigate(p.id)}
-            className="flex flex-col gap-4 rounded-card border border-line-soft bg-card p-4 text-left hover:border-line"
+            className="flex flex-col items-start gap-4 rounded-card border border-line-soft bg-card p-4 text-left hover:border-line"
           >
             <span className="flex size-[38px] items-center justify-center rounded-[11px] bg-accent-soft text-accent">
               <Box size={18} aria-hidden />
@@ -41,7 +41,7 @@ export function HomeView({ ctl }: { ctl: Controller }) {
             <span className="flex flex-col gap-0.5">
               <span className="text-[15px] font-semibold">{p.name}</span>
               <span className="text-[13px] text-muted">
-                {state.files.filter((f) => f.projectId === p.id && !f.deleted).length} files
+                {fileCount(state.files, p.id)}
               </span>
             </span>
           </button>

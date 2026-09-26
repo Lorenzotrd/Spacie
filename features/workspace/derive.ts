@@ -134,3 +134,9 @@ export function shortAge(date: string | null, now = Date.now()): string {
 }
 
 export const versionLabel = (n: number) => `${n} version${n === 1 ? "" : "s"}`;
+
+/** "1 file", "6 files": live files in a project. */
+export function fileCount(files: readonly FileMeta[], projectId: string): string {
+  const n = files.filter((f) => f.projectId === projectId && !f.deleted).length;
+  return `${n} file${n === 1 ? "" : "s"}`;
+}
