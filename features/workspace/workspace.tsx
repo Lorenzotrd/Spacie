@@ -113,6 +113,11 @@ export default function Workspace() {
   const [moveFolder, setMoveFolder] = useState("");
   const [assetUrl, setAssetUrl] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
+  /** A file shared from its row menu, without opening it. */
+  const [shareFile, setShareFile] = useState<FileMeta | null>(null);
+  useEffect(() => {
+    if (modal !== "share") setShareFile(null);
+  }, [modal]);
   const [sort, setSort] = useState(false);
   const upload = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -398,15 +403,16 @@ export default function Workspace() {
   );
   const results = search.toLowerCase();
   const currentFolder = folder ? state.folders.find((f) => f.id === folder) : undefined;
-  const shareTarget: ShareTargetRef | null = file
-    ? { type: "file", id: file.id, name: file.name }
+  const shared = shareFile ?? file;
+  const shareTarget: ShareTargetRef | null = shared
+    ? { type: "file", id: shared.id, name: shared.name }
     : currentFolder
       ? { type: "folder", id: currentFolder.id, name: currentFolder.name }
       : p
         ? { type: "project", id: p.id, name: p.name }
         : null;
-  const teamQuery = file
-    ? `file=${file.id}`
+  const teamQuery = shared
+    ? `file=${shared.id}`
     : `project=${project}${currentFolder ? `&folder=${currentFolder.id}` : ""}`;
   const teamLink = `${typeof window === "undefined" ? "" : window.location.origin}/workspace?${teamQuery}`;
   return (
@@ -809,6 +815,20 @@ export default function Workspace() {
                           <FileMenu
                             items={[
                               { label: "Open", onSelect: () => openFile(f) },
+                              {
+                                label: "Share…",
+                                onSelect: () => {
+                                  setShareFile(f);
+                                  dialog("share");
+                                },
+                              },
+                              {
+                                label: "Copy link",
+                                onSelect: () =>
+                                  void navigator.clipboard
+                                    .writeText(`${window.location.origin}/workspace?file=${f.id}`)
+                                    .then(() => setNotice("Link copied")),
+                              },
                               {
                                 label: "Rename",
                                 onSelect: () => {
