@@ -573,6 +573,7 @@ export function WorkspaceDialogs({
           <SharePanel
             target={shareTarget}
             teamLink={teamLink}
+            defaults={state.linkDefaults}
             onNotice={setNotice}
             onError={setError}
           >

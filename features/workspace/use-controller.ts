@@ -58,6 +58,11 @@ export function useController() {
     if (state?.projects.length && !state.projects.some((p) => p.id === project))
       setPlace((p) => ({ ...p, project: state.projects[0].id, folder: null }));
   }, [state, project]);
+  // /workspace?view=trash (linked from Settings > Storage) opens that view once.
+  useEffect(() => {
+    const linked = new URLSearchParams(window.location.search).get("view");
+    if (linked === "trash" || linked === "activity" || linked === "home") setView(linked);
+  }, []);
   useDeepLink(state, place, (next) => {
     setPlace(next);
     setView("space");

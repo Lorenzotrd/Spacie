@@ -5,6 +5,7 @@ import { Button, IconButton } from "@/components/ui/button";
 import { copyText } from "@/components/ui/code-block";
 import { Tabs } from "@/components/ui/tabs";
 import { Toggle } from "@/components/ui/toggle";
+import type { PublicState } from "@/lib/types";
 
 export type ShareTargetRef = { type: "file" | "folder" | "project"; id: string; name: string };
 type Link = {
@@ -50,10 +51,12 @@ function LinkRow({ url, label, onCopy, children }: { url: string; label: string;
 
 /** Share dialog body: team link, public links for this resource, and workspace invitations. */
 export function SharePanel({
-  target, teamLink, onNotice, onError, children,
+  target, teamLink, defaults, onNotice, onError, children,
 }: {
   target: ShareTargetRef;
   teamLink: string;
+  /** Workspace defaults from Settings > Public links. */
+  defaults?: PublicState["linkDefaults"];
   onNotice: (message: string) => void;
   onError: (message: string) => void;
   /** The invitation form, shown in the Invite tab. */
@@ -61,10 +64,13 @@ export function SharePanel({
 }) {
   const [mode, setMode] = useState<Mode>("team");
   const [links, setLinks] = useState<Link[]>([]);
-  const [expiry, setExpiry] = useState<Expiry>("30");
-  const [allowDownload, setAllowDownload] = useState(true);
+  const [expiry, setExpiry] = useState<Expiry>(
+    defaults ? (defaults.expiresInDays === null ? "never" : (String(defaults.expiresInDays) as Expiry)) : "30",
+  );
+  const [allowDownload, setAllowDownload] = useState(defaults?.allowDownload ?? true);
   const [password, setPassword] = useState("");
-  const [settings, setSettings] = useState(false);
+  const askPassword = !!defaults?.askPassword;
+  const [settings, setSettings] = useState(askPassword);
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState("");
 
@@ -115,12 +121,13 @@ export function SharePanel({
     });
     if (link) {
       setPassword("");
-      setSettings(false);
+      setSettings(askPassword);
       copy(link.url, "Public link created and copied");
     }
   }
 
   const what = target.type === "file" ? "this file" : `everything in this ${target.type}`;
+  const needsPassword = askPassword && password.trim().length < 8;
   const summary = [
     expiry === "never" ? "Never expires" : `Expires in ${expiry} days`,
     allowDownload ? "Download allowed" : "View only",
@@ -180,7 +187,7 @@ export function SharePanel({
                   <Tabs label="Expires after" items={EXPIRIES} value={expiry} onChange={setExpiry} stretch />
                 </div>
                 <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-2">
-                  Password (optional)
+                  {askPassword ? "Password" : "Password (optional)"}
                   <input
                     type="password"
                     autoComplete="new-password"
@@ -188,6 +195,7 @@ export function SharePanel({
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="At least 8 characters"
+                    required={askPassword}
                     className="h-10 rounded-control border border-line bg-card px-3 text-sm font-normal text-ink outline-none focus:border-accent"
                   />
                 </label>
@@ -197,8 +205,8 @@ export function SharePanel({
                 </div>
               </div>
             )}
-            <Button variant="primary" size="lg" disabled={busy} onClick={() => void create()} className="w-full">
-              {busy ? "Creating…" : links.length ? "Create another link" : "Create and copy link"}
+            <Button variant="primary" size="lg" disabled={busy || needsPassword} onClick={() => void create()} className="w-full">
+              {busy ? "Creating…" : needsPassword ? "Add a password first" : links.length ? "Create another link" : "Create and copy link"}
             </Button>
           </div>
         </section>
