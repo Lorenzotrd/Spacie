@@ -7,7 +7,8 @@ import type { Principal } from "./types";
 export const SESSION_COOKIE = "spacie_session";
 export const SESSION_TTL_MS = 30 * 86_400_000;
 const INVITE_TTL_MS = 7 * 86_400_000;
-export const MIN_PASSWORD = 10;
+export { MIN_PASSWORD } from "./password-rules";
+import { MIN_PASSWORD } from "./password-rules";
 
 export type Role = "owner" | "admin" | "member" | "viewer";
 

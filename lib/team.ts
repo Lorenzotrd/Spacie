@@ -55,7 +55,7 @@ export async function listTeam(db: Db, actor: Principal): Promise<Team> {
        ) as last_active
      from principals p left join users u on u.id = p.user_id
      where p.workspace_id = $1
-       and ((p.type = 'human' and p.user_id is not null) or (p.type = 'agent' and p.status <> 'offline'))
+       and ((p.type = 'human' and p.removed_at is null) or (p.type = 'agent' and p.status <> 'offline'))
      order by p.type = 'agent', case p.role when 'owner' then 0 when 'admin' then 1 when 'member' then 2 else 3 end,
        p.created_at, p.id`,
     [actor.workspaceId],
@@ -95,7 +95,7 @@ export async function listTeam(db: Db, actor: Principal): Promise<Team> {
 async function editablePerson(tx: Db, actor: Principal, id: string, nextRole?: Editable) {
   const [person] = await tx.query<{ id: string; name: string; role: Role }>(
     `select id, name, role from principals
-     where id = $1 and workspace_id = $2 and type = 'human' and user_id is not null`,
+     where id = $1 and workspace_id = $2 and type = 'human' and removed_at is null`,
     [id, actor.workspaceId],
   );
   if (!person) throw new Error("Member not found");
@@ -127,7 +127,7 @@ export async function removeMember(db: Db, actor: Principal, id: string) {
     const person = await editablePerson(tx, actor, id);
     await tx.query("delete from grants where principal_id = $1", [id]);
     await tx.query("update share_links set revoked_at = now() where created_by = $1 and revoked_at is null", [id]);
-    await tx.query("update principals set user_id = null, role = 'viewer', status = 'offline' where id = $1", [id]);
+    await tx.query("update principals set user_id = null, role = 'viewer', status = 'offline', removed_at = now() where id = $1", [id]);
     await touch(tx, actor, "removed", person.name);
     return { id };
   });

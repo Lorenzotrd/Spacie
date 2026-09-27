@@ -1,25 +1,29 @@
 import { z } from "zod";
 import { boundedRequest, failure } from "@/lib/http";
-import { assertSameOrigin, authenticate } from "@/lib/auth";
-import { MIN_PASSWORD, readCookie, SESSION_COOKIE } from "@/lib/accounts";
+import { assertSameOrigin } from "@/lib/auth";
+import { MIN_PASSWORD, readCookie, SESSION_COOKIE, sessionPrincipal } from "@/lib/accounts";
 import { changePassword, endOtherSessions, getProfile, listSessions, NAME_MAX, updateProfile } from "@/lib/profile";
 import { db } from "@/lib/db/client";
 import { rateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
-/** Account settings only make sense for a signed-in person, never for an agent token. */
-function sessionOf(request: Request) {
+/**
+ * Account settings only make sense for a signed-in person: the actor comes from the
+ * session cookie itself, never from an agent token or the demo fallback.
+ */
+async function signedIn(request: Request) {
   const session = readCookie(request, SESSION_COOKIE);
   if (!session || request.headers.get("authorization"))
     throw new Error("FORBIDDEN: Sign in with your account to change it.");
-  return session;
+  const actor = await sessionPrincipal(await db(), session);
+  if (!actor) throw new Error("UNAUTHORIZED");
+  return { session, actor };
 }
 
 /** The signed-in person's profile and open sessions. */
 export async function GET(request: Request) {
   try {
-    const session = sessionOf(request);
-    const { actor } = await authenticate(request);
+    const { session, actor } = await signedIn(request);
     const database = await db();
     const [profile, sessions] = await Promise.all([getProfile(database, actor), listSessions(database, actor, session)]);
     return Response.json({ profile, sessions }, { headers: { "Cache-Control": "no-store" } });
@@ -42,8 +46,7 @@ const command = z.discriminatedUnion("action", [
 export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
-    const session = sessionOf(request);
-    const { actor } = await authenticate(request);
+    const { session, actor } = await signedIn(request);
     const body = command.parse(await (await boundedRequest(request, 10_000)).json());
     // Password checks get the sign-in limit; everything else the usual one.
     await rateLimit(body.action === "change_password" ? `password:${actor.id}` : actor.id, body.action === "change_password" ? 10 : undefined);

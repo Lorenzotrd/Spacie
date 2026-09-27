@@ -143,6 +143,8 @@ export type PublicState = {
   mcpUrl?: string;
   /** Starting values of the Share dialog for new public links; set by the HTTP route. */
   linkDefaults?: { expiresInDays: 7 | 30 | 90 | null; allowDownload: boolean; askPassword: boolean };
+  /** The viewer is a person signed in with an account (Profile settings apply). */
+  account?: boolean;
   principals: Principal[];
   projects: Project[];
   folders: Folder[];

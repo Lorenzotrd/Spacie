@@ -6,6 +6,7 @@ import { db } from "@/lib/db/client";
 import { rateLimit } from "@/lib/rate-limit";
 import { mcpResource, publicOrigin } from "@/lib/oauth/metadata";
 import { getLinkDefaults } from "@/lib/share-links";
+import { readCookie, sessionPrincipal, SESSION_COOKIE } from "@/lib/accounts";
 export const runtime = "nodejs";
 const noStore = { "Cache-Control": "no-store" };
 /** `?since=<revision>` answers `{ unchanged: true }` cheaply when nothing moved. */
@@ -23,8 +24,11 @@ export async function GET(request: Request) {
       snapshot(database, actor),
       getLinkDefaults(database, actor.workspaceId),
     ]);
+    // Outside demo mode every person has an account; in it, only those signed in with one.
+    const session = readCookie(request, SESSION_COOKIE);
+    const account = actor.type === "human" && (!state.demo || (!!session && !!(await sessionPrincipal(database, session))));
     return Response.json(
-      { ...state, mcpUrl: mcpResource(publicOrigin(request)), linkDefaults },
+      { ...state, mcpUrl: mcpResource(publicOrigin(request)), linkDefaults, account },
       { headers: noStore },
     );
   } catch (e) {

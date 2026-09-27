@@ -62,10 +62,8 @@ export async function POST(request: Request) {
         return Response.json(await revokeShareLink(database, actor, body.id));
       case "restore":
         return Response.json(await restoreShareLink(database, actor, body.id));
-      case "defaults": {
-        const { action: _, ...defaults } = body;
-        return Response.json(await setLinkDefaults(database, actor, defaults));
-      }
+      case "defaults":
+        return Response.json(await setLinkDefaults(database, actor, body));
       case "create":
         return Response.json(await createShareLink(database, actor, body, publicOrigin(request)));
     }

@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box } from "lucide-react";
+import { MIN_PASSWORD } from "@/lib/password-rules";
 
 type Invite = { workspace: string; role: string; email: string | null };
-const MIN_PASSWORD = 10;
 
 export default function Join() {
   const router = useRouter();
