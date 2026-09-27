@@ -174,7 +174,7 @@ export function HowItWorks({ command }: { command: string }) {
                 aria-selected={active}
                 onClick={() => pick(i)}
                 className={cn(
-                  "flex flex-col gap-2 rounded-[18px] border p-[22px] text-left transition-all duration-200",
+                  "flex flex-col items-start justify-start gap-2 rounded-[18px] border p-[22px] text-left transition-all duration-200",
                   active ? "border-line bg-white shadow-[0_12px_30px_-12px_rgba(23,24,28,0.12)]" : "border-transparent opacity-60 hover:opacity-90",
                 )}
               >
@@ -191,7 +191,7 @@ export function HowItWorks({ command }: { command: string }) {
                 </span>
                 <span className="pl-[46px] text-sm leading-[1.55] text-[#55575f]">{s.text}</span>
                 {active && picked === null && (
-                  <span className="mt-1 ml-[46px] h-[3px] overflow-hidden rounded-full bg-accent-soft">
+                  <span className="mt-1 ml-[46px] h-[3px] self-stretch overflow-hidden rounded-full bg-accent-soft">
                     <span key={tick} className="block h-[3px] animate-[lp-fill_5s_linear_both] rounded-full bg-accent" />
                   </span>
                 )}
