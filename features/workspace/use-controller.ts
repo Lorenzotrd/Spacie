@@ -94,6 +94,12 @@ export function useController() {
     setShowRail(true);
     setRail("comments");
   }, []);
+  /** After switching workspace: reload everything and start from its first project. */
+  const reloadWorkspace = useCallback(async () => {
+    setPlace({ project: "", folder: null, selected: null });
+    setView("space");
+    await refresh(true);
+  }, [refresh]);
   const closeFile = useCallback(() => setPlace((p) => ({ ...p, selected: null })), []);
   const setSelected = useCallback((id: string | null) => setPlace((p) => ({ ...p, selected: id })), []);
   const dialog = useCallback((type: string, value = "") => {
@@ -204,7 +210,7 @@ export function useController() {
     view, setView, tab, setTab, sort, setSort, grid, setGrid,
     rail, setRail, showRail, setShowRail, presence, busy,
     detail, detailError, retryDetail, loadVersion, fileResults, compare, setCompare,
-    navigate, openFile, closeFile, setSelected, dialog, shareOne, copyLink, uploadFiles, upload,
+    navigate, openFile, closeFile, reloadWorkspace, setSelected, dialog, shareOne, copyLink, uploadFiles, upload,
     startUpload: () => upload.current?.click(),
     dialogProps: {
       file, agent, busy, submit, dialog, upload, openFile, navigate, mutate, setNotice, setError,

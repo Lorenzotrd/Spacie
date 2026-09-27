@@ -19,6 +19,14 @@ export const columns = {
     allow, full_access as "fullAccess"`,
 } as const;
 
+/** Qualifies each column of a column list with a table alias: `p.id, p.workspace_id as "workspaceId"`. */
+export function prefixed(alias: string, list: string) {
+  return list
+    .split(",")
+    .map((c) => `${alias}.${c.trim()}`)
+    .join(", ");
+}
+
 /** Optional domain fields are omitted rather than serialized as null. */
 const optional = new Set(["provider", "role", "storageKey"]);
 

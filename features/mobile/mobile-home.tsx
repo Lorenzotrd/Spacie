@@ -3,6 +3,7 @@ import { ArrowRight, Box, ChevronRight, Plus } from "lucide-react";
 import { AgentMark } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/states";
 import { SearchBox } from "@/features/shell/search-box";
+import { WorkspaceSwitcher } from "@/features/shell/workspace-switcher";
 import { fileCount, latestAgentAction, principalById, relativeTime } from "@/features/workspace/derive";
 import { FileIcon } from "@/features/workspace/file-icon";
 import type { Controller } from "@/features/workspace/use-controller";
@@ -29,9 +30,20 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
           <span className="text-[13px] text-muted">{state.workspace.name}</span>
           <h1 className="m-0 text-[26px] font-semibold tracking-[-0.02em]">Hi {ctl.me?.name ?? "there"}</h1>
         </div>
-        <span aria-hidden className="flex size-11 items-center justify-center rounded-xl bg-ink text-base font-bold text-white">
-          {state.workspace.name[0]?.toUpperCase()}
-        </span>
+        <WorkspaceSwitcher
+          current={state.workspace}
+          onChanged={ctl.reloadWorkspace}
+          onError={ctl.setError}
+          trigger={
+            <button
+              type="button"
+              aria-label={`Workspace: ${state.workspace.name}. Switch or create a workspace`}
+              className="flex size-11 items-center justify-center rounded-xl bg-ink text-base font-bold text-white"
+            >
+              {state.workspace.name[0]?.toUpperCase()}
+            </button>
+          }
+        />
       </div>
       <SearchBox state={state} onFile={ctl.openFile} onPerson={(p) => onPerson(p.id)} className="[&_label]:h-12 [&_label]:rounded-[14px] [&_input]:text-[15px] [&_kbd]:hidden" />
       {latest?.file && !latest.file.deleted && latest.event.id !== seen && (

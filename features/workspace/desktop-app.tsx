@@ -45,6 +45,8 @@ export function DesktopApp({ ctl, onPerson }: { ctl: Controller; onPerson: (p: P
         setView={ctl.setView}
         onNewProject={() => ctl.dialog("project")}
         onPerson={onPerson}
+        onWorkspaceChanged={ctl.reloadWorkspace}
+        onError={ctl.setError}
       />
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-panel border border-line bg-panel">
         <TopBar

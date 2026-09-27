@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { boundedRequest, failure } from "@/lib/http";
-import { assertSameOrigin } from "@/lib/auth";
-import { acceptInvitation, inspectInvitation, MIN_PASSWORD, sessionCookie } from "@/lib/accounts";
+import { assertSameOrigin, authenticate } from "@/lib/auth";
+import { acceptInvitation, inspectInvitation, MIN_PASSWORD, readCookie, SESSION_COOKIE, sessionCookie } from "@/lib/accounts";
+import { joinWithSession } from "@/lib/workspaces";
 import { db } from "@/lib/db/client";
 import { rateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
@@ -25,13 +26,25 @@ const input = z.object({
   email: z.string().email().max(320),
   password: z.string().min(MIN_PASSWORD).max(500),
 });
+/** Signed-in people join with the token alone; everyone else creates an account. */
+const signedIn = z.object({ token });
 export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
-    const body = input.parse(await (await boundedRequest(request, 10000)).json());
+    const raw = await (await boundedRequest(request, 10000)).json();
+    const session = readCookie(request, SESSION_COOKIE);
+    const hasPassword = typeof raw === "object" && raw !== null && "password" in raw;
+    if (session && !hasPassword) {
+      const body = signedIn.parse(raw);
+      await rateLimit(`join:${body.token.slice(0, 16)}`, 10);
+      const { actor } = await authenticate(request);
+      await joinWithSession(await db(), actor, session, body.token);
+      return Response.json({ ok: true });
+    }
+    const body = input.parse(raw);
     await rateLimit(`join:${body.token.slice(0, 16)}`, 10);
-    const session = await acceptInvitation(await db(), body.token, body);
-    return Response.json({ ok: true }, { headers: { "Set-Cookie": sessionCookie(session) } });
+    const created = await acceptInvitation(await db(), body.token, body);
+    return Response.json({ ok: true }, { headers: { "Set-Cookie": sessionCookie(created) } });
   } catch (e) {
     return failure(e);
   }

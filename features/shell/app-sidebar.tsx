@@ -10,7 +10,8 @@ import { IconButton } from "@/components/ui/button";
 import { cn } from "@/components/ui/cn";
 import { formatBytes, storageUsed } from "@/features/workspace/derive";
 import type { View } from "@/features/workspace/use-controller";
-import { Brand, WorkspaceCard } from "./brand";
+import { Brand } from "./brand";
+import { WorkspaceSwitcher } from "./workspace-switcher";
 
 type Props = {
   state: PublicState;
@@ -23,6 +24,8 @@ type Props = {
   setView: (view: View) => void;
   onNewProject: () => void;
   onPerson: (person: Principal) => void;
+  onWorkspaceChanged: () => Promise<void>;
+  onError: (message: string) => void;
 };
 
 const navItem = "flex h-[38px] items-center gap-2.5 rounded-control px-2.5 text-sm text-ink-2 hover:bg-card/70";
@@ -41,7 +44,9 @@ function NavButton({ icon: Icon, label, active, onClick }: { icon: LucideIcon; l
   );
 }
 
-export function AppSidebar({ state, project, folder, view, presence, me, navigate, setView, onNewProject, onPerson }: Props) {
+export function AppSidebar({
+  state, project, folder, view, presence, me, navigate, setView, onNewProject, onPerson, onWorkspaceChanged, onError,
+}: Props) {
   const online = new Set(presence.map((p) => p.principalId));
   const humans = state.principals.filter((p) => p.type === "human");
   // Disconnected agents keep their history but leave the sidebar.
@@ -50,7 +55,7 @@ export function AppSidebar({ state, project, folder, view, presence, me, navigat
   return (
     <aside className="flex w-64 shrink-0 flex-col gap-5 overflow-y-auto px-1.5 pt-2.5 pb-1.5">
       <Brand />
-      <WorkspaceCard name={state.workspace.name} />
+      <WorkspaceSwitcher current={state.workspace} onChanged={onWorkspaceChanged} onError={onError} />
       <nav aria-label="Main" className="flex flex-col gap-0.5">
         <NavButton icon={House} label="Home" active={view === "home"} onClick={() => setView("home")} />
         <NavButton icon={Activity} label="Activity" active={view === "activity"} onClick={() => setView("activity")} />

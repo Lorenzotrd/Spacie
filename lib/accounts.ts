@@ -1,6 +1,6 @@
 import { randomBytes, scrypt, timingSafeEqual, type ScryptOptions } from "node:crypto";
 import type { Db } from "./db/client";
-import { columns, fromRow } from "./db/rows";
+import { columns, fromRow, prefixed } from "./db/rows";
 import { hashToken } from "./tokens";
 import type { Principal } from "./types";
 
@@ -53,12 +53,17 @@ export async function createSession(db: Db, userId: string) {
   return token;
 }
 
-/** The human principal behind a live session token, or null. */
+/**
+ * The human principal behind a live session token, or null: the membership in the
+ * session's open workspace, else the person's oldest one. Membership is required by
+ * the join, so a session can never open a workspace its person does not belong to.
+ */
 export async function sessionPrincipal(db: Db, token: string): Promise<Principal | null> {
   const [row] = await db.query(
-    `select ${columns.principal} from principals
-     where type = 'human' and user_id = (
-       select user_id from sessions where token_hash = $1 and expires_at > now())
+    `select ${prefixed("p", columns.principal)} from sessions s
+     join principals p on p.user_id = s.user_id and p.type = 'human'
+     where s.token_hash = $1 and s.expires_at > now()
+     order by (p.workspace_id = s.workspace_id) desc nulls last, p.created_at, p.id
      limit 1`,
     [hashToken(token)],
   );
@@ -104,7 +109,7 @@ export async function inspectInvitation(db: Db, token: string) {
   return row ?? null;
 }
 
-const initials = (name: string) =>
+export const initials = (name: string) =>
   name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
 
 /** Creates the account and its workspace membership from a single-use link, then signs in. */

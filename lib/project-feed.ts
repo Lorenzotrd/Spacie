@@ -1,5 +1,5 @@
 import type { Db } from "./db/client";
-import { columns, fromRows } from "./db/rows";
+import { columns, fromRows, prefixed } from "./db/rows";
 import { loadAccess, loadProjects, readableScope, visibleFiles } from "./access";
 import type { Comment, Principal, VersionMeta } from "./types";
 
@@ -43,12 +43,4 @@ export async function projectFeed<K extends FeedKind>(
       params,
     ),
   ) as Feed<K>;
-}
-
-/** Qualifies each column of a plain column list with a table alias. */
-function prefixed(alias: string, list: string) {
-  return list
-    .split(",")
-    .map((c) => `${alias}.${c.trim()}`)
-    .join(", ");
 }
