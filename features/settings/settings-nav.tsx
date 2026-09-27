@@ -48,8 +48,8 @@ export function SettingsNav({
     current.current?.scrollIntoView({ block: "nearest", inline: "center" });
   }, [section]);
   return (
-    <aside className="flex shrink-0 flex-col gap-4 px-1.5 pt-2.5 pb-1.5 md:w-64 md:gap-[22px]">
-      <Link href="/workspace" className="flex h-11 items-center gap-2 rounded-control px-2.5 text-sm text-ink-2 no-underline hover:bg-card/70 md:h-[38px]">
+    <aside className="flex shrink-0 flex-col gap-4 px-1.5 pt-2.5 pb-1.5 md:w-64 md:gap-[1.375rem]">
+      <Link href="/workspace" className="flex h-11 items-center gap-2 rounded-control px-2.5 text-sm text-ink-2 no-underline hover:bg-card/70 md:h-[2.375rem]">
         <ChevronLeft size={17} aria-hidden />
         Back to workspace
       </Link>
@@ -79,7 +79,7 @@ export function SettingsNav({
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex h-11 shrink-0 items-center gap-2.5 rounded-control border px-3 text-sm whitespace-nowrap no-underline md:h-[38px] md:px-2.5",
+                    "flex h-11 shrink-0 items-center gap-2.5 rounded-control border px-3 text-sm whitespace-nowrap no-underline md:h-[2.375rem] md:px-2.5",
                     active
                       ? "border-line bg-card font-medium text-accent-hover"
                       : "border-transparent text-ink-2 hover:bg-card/70 max-md:border-line max-md:bg-card/60",

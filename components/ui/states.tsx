@@ -22,7 +22,7 @@ export function EmptyState({
         <div className="mb-1 flex size-10 items-center justify-center rounded-xl bg-segment text-muted">{icon}</div>
       )}
       <p className="text-sm font-medium text-ink">{title}</p>
-      {hint && <p className="max-w-xs text-[13px] text-muted">{hint}</p>}
+      {hint && <p className="max-w-xs text-[0.8125rem] text-muted">{hint}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
   );
@@ -41,7 +41,7 @@ export function ErrorState({
     <div role="alert" className={cn("flex flex-col items-center gap-2 px-6 py-10 text-center", className)}>
       <AlertCircle size={20} className="text-danger" aria-hidden />
       <p className="text-sm font-medium text-ink">Something went wrong</p>
-      <p className="max-w-xs text-[13px] text-muted">{message}</p>
+      <p className="max-w-xs text-[0.8125rem] text-muted">{message}</p>
       {onRetry && (
         <Button size="sm" onClick={onRetry} className="mt-1">
           Try again
@@ -56,12 +56,12 @@ export function Skeleton({ className }: { className?: string }) {
 }
 
 /** Placeholder rows while a list loads. */
-export function SkeletonRows({ rows = 4, height = "h-[58px]" }: { rows?: number; height?: string }) {
+export function SkeletonRows({ rows = 4, height = "h-[3.625rem]" }: { rows?: number; height?: string }) {
   return (
     <div role="status" aria-label="Loading" className="flex flex-col">
       {Array.from({ length: rows }, (_, i) => (
         <div key={i} className={cn("flex items-center gap-3 border-b border-divider px-4", height)}>
-          <Skeleton className="size-[34px] rounded-[9px]" />
+          <Skeleton className="size-[2.125rem] rounded-[0.5625rem]" />
           <Skeleton className="h-3 w-1/3" />
           <Skeleton className="ml-auto h-3 w-16" />
         </div>

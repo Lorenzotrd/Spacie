@@ -140,14 +140,14 @@ export function SharePanel({
 
       {mode === "team" && (
         <section className="flex flex-col gap-2.5">
-          <p className="m-0 text-[13px] text-muted">For people in this workspace who can already open it.</p>
+          <p className="m-0 text-[0.8125rem] text-muted">For people in this workspace who can already open it.</p>
           <LinkRow url={teamLink} label="team link" onCopy={() => copy(teamLink, "Team link copied")} />
         </section>
       )}
 
       {mode === "public" && (
         <section className="flex flex-col gap-3">
-          <p className="m-0 text-[13px] text-muted">Anyone with the link can view {what}, without an account.</p>
+          <p className="m-0 text-[0.8125rem] text-muted">Anyone with the link can view {what}, without an account.</p>
           {links.map((link) => (
             <div key={link.id} className="flex flex-col gap-1">
               <LinkRow url={link.url} label="public link" onCopy={() => copy(link.url, "Public link copied")}>
@@ -170,12 +170,12 @@ export function SharePanel({
           <div className="flex flex-col gap-3 rounded-xl border border-line-soft p-3">
             <div className="flex items-center gap-2">
               <Globe size={15} className="text-muted" aria-hidden />
-              <span className="min-w-0 flex-1 truncate text-[13px] text-ink-2">{summary}</span>
+              <span className="min-w-0 flex-1 truncate text-[0.8125rem] text-ink-2">{summary}</span>
               <button
                 type="button"
                 aria-expanded={settings}
                 onClick={() => setSettings(!settings)}
-                className="min-h-9 px-1 text-[13px] font-medium text-accent-hover"
+                className="min-h-9 px-1 text-[0.8125rem] font-medium text-accent-hover"
               >
                 {settings ? "Done" : "Change"}
               </button>
@@ -200,7 +200,7 @@ export function SharePanel({
                   />
                 </label>
                 <div className="flex min-h-11 items-center gap-3">
-                  <span className="flex-1 text-[13px] text-ink-2">Allow downloading the original</span>
+                  <span className="flex-1 text-[0.8125rem] text-ink-2">Allow downloading the original</span>
                   <Toggle checked={allowDownload} onChange={setAllowDownload} label="Allow downloading the original" />
                 </div>
               </div>
@@ -214,7 +214,7 @@ export function SharePanel({
 
       {mode === "invite" && (
         <section className="flex flex-col gap-2.5">
-          <p className="m-0 text-[13px] text-muted">Add someone to the whole workspace with a single-use link.</p>
+          <p className="m-0 text-[0.8125rem] text-muted">Add someone to the whole workspace with a single-use link.</p>
           {children}
         </section>
       )}

@@ -16,9 +16,9 @@ function Glyph({ file, folder, size }: { file?: Pick<FileMeta, "mime" | "name">;
 }
 
 const boxes = {
-  sm: "size-[34px] rounded-[9px]",
-  md: "size-10 rounded-[11px]",
-  lg: "size-[42px] rounded-xl",
+  sm: "size-[2.125rem] rounded-[0.5625rem]",
+  md: "size-10 rounded-[0.6875rem]",
+  lg: "size-[2.625rem] rounded-xl",
 };
 
 /** A file's type icon in a neutral tile; pass `folder` for folders. */

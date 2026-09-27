@@ -24,11 +24,11 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
   const whoLabel = (id: string) => (id === state.currentPrincipalId ? "You" : principalById(state, id)?.name ?? "Someone");
 
   return (
-    <div className="flex flex-col gap-[22px] px-5 pt-7 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
+    <div className="flex flex-col gap-[1.375rem] px-5 pt-7 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
       <div className="flex items-center gap-3">
         <div className="flex flex-1 flex-col gap-0.5">
-          <span className="text-[13px] text-muted">{state.workspace.name}</span>
-          <h1 className="m-0 text-[26px] font-semibold tracking-[-0.02em]">Hi {ctl.me?.name ?? "there"}</h1>
+          <span className="text-[0.8125rem] text-muted">{state.workspace.name}</span>
+          <h1 className="m-0 text-[1.625rem] font-semibold tracking-[-0.02em]">Hi {ctl.me?.name ?? "there"}</h1>
         </div>
         <WorkspaceSwitcher
           current={state.workspace}
@@ -45,7 +45,7 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
           }
         />
       </div>
-      <SearchBox state={state} onFile={ctl.openFile} onPerson={(p) => onPerson(p.id)} className="[&_label]:h-12 [&_label]:rounded-[14px] [&_input]:text-[15px] [&_kbd]:hidden" />
+      <SearchBox state={state} onFile={ctl.openFile} onPerson={(p) => onPerson(p.id)} className="[&_label]:h-12 [&_label]:rounded-[0.875rem] [&_input]:text-[0.9375rem] [&_kbd]:hidden" />
       {latest?.file && !latest.file.deleted && latest.event.id !== seen && (
         <button
           type="button"
@@ -53,17 +53,17 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
             markSeen(latest.event.id);
             ctl.openFile(latest.file!);
           }}
-          className="flex flex-col items-stretch gap-3.5 rounded-[18px] bg-accent p-4 text-left text-white"
+          className="flex flex-col items-stretch gap-3.5 rounded-[1.125rem] bg-accent p-4 text-left text-white"
         >
           <span className="flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center rounded-[9px] bg-white/20">
+            <span className="flex size-8 items-center justify-center rounded-[0.5625rem] bg-white/20">
               <AgentMark size={14} />
             </span>
-            <span className="flex-1 text-[13px] font-medium">
+            <span className="flex-1 text-[0.8125rem] font-medium">
               {latest.agent.name} · {relativeTime(latest.event.createdAt)}
             </span>
           </span>
-          <span className="text-[17px] leading-snug font-semibold">
+          <span className="text-[1.0625rem] leading-snug font-semibold">
             {latest.event.action[0].toUpperCase() + latest.event.action.slice(1)} {latest.event.name}
           </span>
           <span className="flex items-center gap-1.5 text-sm font-medium">
@@ -74,7 +74,7 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
       )}
       <section className="flex flex-col gap-3">
         <div className="flex items-center">
-          <h2 className="m-0 flex-1 text-[17px] font-semibold">Projects</h2>
+          <h2 className="m-0 flex-1 text-[1.0625rem] font-semibold">Projects</h2>
           <button type="button" onClick={() => ctl.setView("projects")} className="min-h-11 px-1 text-sm text-accent">
             See all
           </button>
@@ -85,14 +85,14 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
               key={p.id}
               type="button"
               onClick={() => ctl.navigate(p.id)}
-              className="flex w-[200px] shrink-0 flex-col items-start gap-[18px] rounded-2xl border border-[#eceae4] bg-card p-4 text-left"
+              className="flex w-[12.5rem] shrink-0 flex-col items-start gap-[1.125rem] rounded-2xl border border-[#eceae4] bg-card p-4 text-left"
             >
-              <span className="flex size-[38px] items-center justify-center rounded-[11px] bg-accent-soft text-accent">
+              <span className="flex size-[2.375rem] items-center justify-center rounded-[0.6875rem] bg-accent-soft text-accent">
                 <Box size={18} aria-hidden />
               </span>
-              <span className="flex flex-col gap-[3px]">
-                <span className="truncate text-[15px] font-semibold">{p.name}</span>
-                <span className="text-[13px] text-muted">
+              <span className="flex flex-col gap-[0.1875rem]">
+                <span className="truncate text-[0.9375rem] font-semibold">{p.name}</span>
+                <span className="text-[0.8125rem] text-muted">
                   {fileCount(state.files, p.id)}
                 </span>
               </span>
@@ -102,7 +102,7 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
             <button
               type="button"
               onClick={() => ctl.dialog("project")}
-              className="flex w-[130px] shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border-[1.5px] border-dashed border-[#d6d3cb] text-sm text-[#55575f]"
+              className="flex w-[8.125rem] shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border-[0.09375rem] border-dashed border-[#d6d3cb] text-sm text-[#55575f]"
             >
               <Plus size={20} aria-hidden />
               New project
@@ -111,13 +111,13 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
         </div>
       </section>
       <section className="flex flex-col gap-1">
-        <h2 className="m-0 pb-2 text-[17px] font-semibold">Recent</h2>
+        <h2 className="m-0 pb-2 text-[1.0625rem] font-semibold">Recent</h2>
         {recent.map((f) => (
-          <button key={f.id} type="button" onClick={() => ctl.openFile(f)} className="flex min-h-[60px] items-center gap-3 text-left">
+          <button key={f.id} type="button" onClick={() => ctl.openFile(f)} className="flex min-h-[3.75rem] items-center gap-3 text-left">
             <FileIcon file={f} size="md" className="bg-[#f1f0ec]" />
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="truncate text-[15px] font-medium">{f.name}</span>
-              <span className="text-[13px] text-muted">
+              <span className="truncate text-[0.9375rem] font-medium">{f.name}</span>
+              <span className="text-[0.8125rem] text-muted">
                 {whoLabel(f.updatedBy)} · {relativeTime(f.updatedAt)}
               </span>
             </span>

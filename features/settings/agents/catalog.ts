@@ -5,8 +5,10 @@ export type ClientId = "claude" | "claudecode" | "codex" | "hermes" | "openclaw"
 export type ClientGuide = {
   id: ClientId;
   name: string;
-  /** Monogram shown in the logo tile. */
+  /** Monogram, used as the logo's text alternative. */
   initial: string;
+  /** Logo in /public/agents, and its size in a 40px tile (logos have different padding). */
+  logo: { src: string; size: number };
   via: string;
   /** OAuth clients connect from their own app; the others use a token generated here. */
   auth: "oauth" | "token";
@@ -26,6 +28,7 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "claude",
     name: "Claude",
     initial: "C",
+    logo: { src: "/agents/claude.webp", size: 22 },
     via: "claude.ai, Desktop and mobile · MCP connector",
     auth: "oauth",
     steps: [
@@ -40,6 +43,7 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "claudecode",
     name: "Claude Code",
     initial: "CC",
+    logo: { src: "/agents/claude-code.png", size: 26 },
     via: "Terminal, VS Code, JetBrains",
     auth: "oauth",
     steps: [
@@ -54,6 +58,7 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "codex",
     name: "Codex",
     initial: "Cx",
+    logo: { src: "/agents/codex.png", size: 26 },
     via: "CLI and IDE · config.toml",
     auth: "oauth",
     steps: [
@@ -68,6 +73,7 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "hermes",
     name: "Hermes",
     initial: "H",
+    logo: { src: "/agents/hermes.png", size: 34 },
     via: "Your agent on a server · agent token",
     auth: "token",
     steps: [
@@ -82,6 +88,7 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "openclaw",
     name: "OpenClaw",
     initial: "OC",
+    logo: { src: "/agents/openclaw.svg", size: 34 },
     via: "Managed agent · agent token",
     auth: "token",
     steps: [
@@ -96,6 +103,7 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "other",
     name: "Other agent",
     initial: "+",
+    logo: { src: "/agents/mcp.png", size: 26 },
     via: "Any MCP client",
     auth: "token",
     steps: [

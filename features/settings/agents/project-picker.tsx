@@ -17,16 +17,16 @@ export function ProjectPicker({
 }) {
   return (
     <fieldset className="m-0 flex flex-col gap-1 border-0 p-0">
-      <legend className="mb-1.5 text-[13px] font-medium text-ink">Visible projects</legend>
+      <legend className="mb-1.5 text-[0.8125rem] font-medium text-ink">Visible projects</legend>
       {onAllChange && (
-        <label className="flex min-h-10 items-center gap-2.5 text-[13px] text-ink-2">
+        <label className="flex min-h-10 items-center gap-2.5 text-[0.8125rem] text-ink-2">
           <input type="checkbox" className="size-4 accent-accent" checked={!!all} onChange={(e) => onAllChange(e.target.checked)} />
           All projects, including future ones
         </label>
       )}
       {!all &&
         projects.map((p) => (
-          <label key={p.id} className="flex min-h-10 items-center gap-2.5 text-[13px] text-ink-2">
+          <label key={p.id} className="flex min-h-10 items-center gap-2.5 text-[0.8125rem] text-ink-2">
             <input
               type="checkbox"
               className="size-4 accent-accent"

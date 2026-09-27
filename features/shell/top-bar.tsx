@@ -29,7 +29,7 @@ export function TopBar({
 }) {
   return (
     <header className="flex h-16 shrink-0 items-center gap-3 border-b border-[#eeece7] px-6">
-      <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-[13px] text-muted">
+      <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-[0.8125rem] text-muted">
         {crumbs.map((c, i) => {
           const last = i === crumbs.length - 1;
           return (
@@ -48,13 +48,13 @@ export function TopBar({
           );
         })}
       </nav>
-      <SearchBox state={state} onFile={onFile} onPerson={onPerson} className="ml-auto w-[300px]" />
+      <SearchBox state={state} onFile={onFile} onPerson={onPerson} className="ml-auto w-[18.75rem]" />
       {!!members.length && <AvatarStack people={members} />}
-      <Button size="lg" onClick={onShare} className="text-[13px]">
+      <Button size="lg" onClick={onShare} className="text-[0.8125rem]">
         <Link2 size={16} aria-hidden />
         Share
       </Button>
-      <Button size="lg" variant="primary" onClick={onNew} className="text-[13px]">
+      <Button size="lg" variant="primary" onClick={onNew} className="text-[0.8125rem]">
         <Plus size={15} aria-hidden />
         New
       </Button>

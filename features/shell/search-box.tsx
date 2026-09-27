@@ -77,7 +77,7 @@ export function SearchBox({
 
   return (
     <div className={cn("relative", className)}>
-      <label className="flex h-[38px] items-center gap-2.5 rounded-control border border-line bg-card px-3 focus-within:border-accent">
+      <label className="flex h-[2.375rem] items-center gap-2.5 rounded-control border border-line bg-card px-3 focus-within:border-accent">
         <Search size={16} className="text-muted" aria-hidden />
         <input
           ref={input}
@@ -97,16 +97,16 @@ export function SearchBox({
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 120)}
           onKeyDown={onKeyDown}
-          className="w-24 flex-1 border-none bg-transparent text-[13px] text-ink outline-none placeholder:text-muted"
+          className="w-24 flex-1 border-none bg-transparent text-[0.8125rem] text-ink outline-none placeholder:text-muted"
         />
-        <kbd className="rounded-[5px] border border-line px-1.5 py-0.5 font-mono text-[11px] text-muted">⌘K</kbd>
+        <kbd className="rounded-[0.3125rem] border border-line px-1.5 py-0.5 font-mono text-[0.6875rem] text-muted">⌘K</kbd>
       </label>
       {expanded && (
         <ul
           id={listId}
           role="listbox"
           aria-label="Search results"
-          className="absolute top-[calc(100%+6px)] right-0 left-0 z-40 max-h-[360px] overflow-y-auto rounded-xl border border-line bg-card p-1.5 shadow-[0_12px_32px_rgba(23,24,28,0.12)]"
+          className="absolute top-[calc(100%+6px)] right-0 left-0 z-40 max-h-[22.5rem] overflow-y-auto rounded-xl border border-line bg-card p-1.5 shadow-[0_12px_32px_rgba(23,24,28,0.12)]"
         >
           {results.map((r, i) => (
             <li
@@ -118,7 +118,7 @@ export function SearchBox({
               onClick={() => choose(r)}
               onMouseEnter={() => setActive(i)}
               className={cn(
-                "flex min-h-11 cursor-pointer items-center gap-2.5 rounded-lg px-2 text-[13px]",
+                "flex min-h-11 cursor-pointer items-center gap-2.5 rounded-lg px-2 text-[0.8125rem]",
                 i === active && "bg-accent-tint",
               )}
             >
@@ -140,7 +140,7 @@ export function SearchBox({
             </li>
           ))}
           {!results.length && (
-            <li role="status" className="px-2 py-3 text-[13px] text-muted">
+            <li role="status" className="px-2 py-3 text-[0.8125rem] text-muted">
               {status === "loading"
                 ? "Searching…"
                 : status === "error"

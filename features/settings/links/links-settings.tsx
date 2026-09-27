@@ -101,7 +101,7 @@ function LinksBody({
   const icon = (link: WorkspaceShareLink) => {
     if (link.target.type === "project")
       return (
-        <span aria-hidden className="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-[#f3f4f7] text-ink-2">
+        <span aria-hidden className="flex size-[2.125rem] shrink-0 items-center justify-center rounded-[0.5625rem] bg-[#f3f4f7] text-ink-2">
           <Box size={17} strokeWidth={1.8} />
         </span>
       );
@@ -134,7 +134,7 @@ function LinksBody({
           />
         ) : (
           <>
-            <div className={`hidden h-[42px] items-center gap-3 border-b border-[#efede8] bg-subtle px-[18px] text-xs font-medium text-muted md:grid ${COLUMNS}`}>
+            <div className={`hidden h-[2.625rem] items-center gap-3 border-b border-[#efede8] bg-subtle px-[1.125rem] text-xs font-medium text-muted md:grid ${COLUMNS}`}>
               <span>Shared item</span>
               <span>Type</span>
               <span>Expires</span>
@@ -147,7 +147,7 @@ function LinksBody({
               {data.links.map((link) => (
                 <li
                   key={link.id}
-                  className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-[#f3f1ed] px-4 py-3 not-first:border-t md:min-h-16 md:px-[18px] md:py-2 ${COLUMNS}`}
+                  className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-[#f3f1ed] px-4 py-3 not-first:border-t md:min-h-16 md:px-[1.125rem] md:py-2 ${COLUMNS}`}
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     {icon(link)}
@@ -178,7 +178,7 @@ function LinksBody({
                     </Cell>
                     <div className="flex items-center gap-2 max-md:ml-auto">
                       {link.status === "expired" ? (
-                        <span className="text-[13px] text-[#a3a5ac]">Off</span>
+                        <span className="text-[0.8125rem] text-[#a3a5ac]">Off</span>
                       ) : (
                         <Toggle
                           checked={link.status === "active"}
@@ -223,7 +223,7 @@ function LinksBody({
 }
 
 function Cell({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <span className={`text-[13px] text-ink-2 ${className}`}>{children}</span>;
+  return <span className={`text-[0.8125rem] text-ink-2 ${className}`}>{children}</span>;
 }
 
 function DefaultsCard({
@@ -255,7 +255,7 @@ function DefaultsCard({
   const expiry: Expiry = value.expiresInDays === null ? "never" : (String(value.expiresInDays) as Expiry);
   return (
     <SettingsCard title="Defaults for new links">
-      {!canManage && <p className="-mt-2 text-[13px] text-muted">Only owners and admins can change these.</p>}
+      {!canManage && <p className="-mt-2 text-[0.8125rem] text-muted">Only owners and admins can change these.</p>}
       <div className="grid gap-x-10 gap-y-3.5 lg:grid-cols-2">
         <div className="flex flex-col gap-3.5">
           <SettingRow label="Expires after" hint="Links switch off on their own.">

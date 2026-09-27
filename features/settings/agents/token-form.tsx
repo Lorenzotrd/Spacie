@@ -59,7 +59,7 @@ export function TokenForm({
   if (token)
     return (
       <div className="flex flex-col gap-2">
-        <p role="status" className="text-[13px] font-medium text-success">
+        <p role="status" className="text-[0.8125rem] font-medium text-success">
           {name} is ready. Copy this now: the token will not be shown again.
         </p>
         <CodeBlock label={client.codeLabel} code={client.code(mcpUrl, token)} />
@@ -68,8 +68,8 @@ export function TokenForm({
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-3 rounded-xl border border-line-soft bg-subtle p-4">
-      <span className="text-[13px] font-semibold">Generate an agent token</span>
-      <label className="flex flex-col gap-1.5 text-[13px] font-medium text-ink">
+      <span className="text-[0.8125rem] font-semibold">Generate an agent token</span>
+      <label className="flex flex-col gap-1.5 text-[0.8125rem] font-medium text-ink">
         Name in Spacie
         <input
           required
@@ -77,16 +77,16 @@ export function TokenForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Ops agent"
-          className="h-10 rounded-control border border-line bg-card px-3 text-[13px] font-normal outline-none focus:border-accent"
+          className="h-10 rounded-control border border-line bg-card px-3 text-[0.8125rem] font-normal outline-none focus:border-accent"
         />
       </label>
       <div className="flex min-h-11 items-center gap-3">
-        <span className="flex-1 text-[13px] text-ink-2">Can</span>
+        <span className="flex-1 text-[0.8125rem] text-ink-2">Can</span>
         <Tabs label="Access level" items={LEVELS} value={level} onChange={setLevel} />
       </div>
       <ProjectPicker projects={state.projects} selected={projects} onChange={setProjects} all={all} onAllChange={setAll} />
       <div className="flex min-h-11 items-center gap-3">
-        <span className="flex-1 text-[13px] text-ink-2">Can create public links</span>
+        <span className="flex-1 text-[0.8125rem] text-ink-2">Can create public links</span>
         <Toggle checked={publish} onChange={setPublish} label="Allow public links" />
       </div>
       <Button type="submit" variant="primary" size="lg" disabled={busy || !name.trim() || (!all && !projects.length)}>

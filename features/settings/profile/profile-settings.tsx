@@ -88,8 +88,8 @@ function ProfileBody({
       <SettingsCard title="Personal info">
         <form onSubmit={save} className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
-            <Avatar person={me && { ...me, name: name || me.name, initials: (name || me.name)[0] ?? "?" }} size="lg" className="size-16 text-[25px]" />
-            <p className="text-[13px] leading-normal text-muted">Your initial is your avatar everywhere in Spacie. Agents get the blue mark.</p>
+            <Avatar person={me && { ...me, name: name || me.name, initials: (name || me.name)[0] ?? "?" }} size="lg" className="size-16 text-[1.5625rem]" />
+            <p className="text-[0.8125rem] leading-normal text-muted">Your initial is your avatar everywhere in Spacie. Agents get the blue mark.</p>
           </div>
           <Field label="Name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} autoComplete="name" />
           <Field label="Email" value={account.profile.email} readOnly hint="You sign in with this address." />
@@ -132,7 +132,7 @@ function ProfileBody({
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="truncate text-sm font-medium">{device.label}</span>
-                    <span className="text-[13px] text-muted">{seen}</span>
+                    <span className="text-[0.8125rem] text-muted">{seen}</span>
                   </span>
                   {s.current ? (
                     <Pill tone="success">This device</Pill>
@@ -232,7 +232,7 @@ function PasswordDialog({
           hint={mismatch ? "Does not match yet." : undefined}
         />
         {error && (
-          <p role="alert" className="m-0 text-[13px] text-danger">
+          <p role="alert" className="m-0 text-[0.8125rem] text-danger">
             {error}
           </p>
         )}

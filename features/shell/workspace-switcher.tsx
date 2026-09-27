@@ -17,7 +17,7 @@ async function post(body: object): Promise<void> {
 }
 
 const Tile = ({ name, className }: { name: string; className?: string }) => (
-  <span aria-hidden className={cn("flex shrink-0 items-center justify-center rounded-[9px] bg-ink font-bold text-white", className)}>
+  <span aria-hidden className={cn("flex shrink-0 items-center justify-center rounded-[0.5625rem] bg-ink font-bold text-white", className)}>
     {name[0]?.toUpperCase() ?? "S"}
   </span>
 );
@@ -80,7 +80,7 @@ export function WorkspaceSwitcher({
               aria-label={`Workspace: ${current.name}. Switch or create a workspace`}
               className="flex w-full items-center gap-2.5 rounded-xl border border-line bg-card p-2.5 text-left hover:border-[#d6d3cb] focus-visible:outline-2 focus-visible:outline-accent"
             >
-              <Tile name={current.name} className="size-[34px] text-[15px]" />
+              <Tile name={current.name} className="size-[2.125rem] text-[0.9375rem]" />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate text-sm font-semibold text-ink">{current.name}</span>
                 <span className="text-xs text-muted">Workspace</span>
@@ -93,9 +93,9 @@ export function WorkspaceSwitcher({
           <Menu.Content
             align="start"
             sideOffset={6}
-            className="z-[60] min-w-[244px] rounded-xl border border-line bg-card p-1.5 shadow-[0_12px_32px_rgba(23,24,28,0.12)]"
+            className="z-[60] min-w-[15.25rem] rounded-xl border border-line bg-card p-1.5 shadow-[0_12px_32px_rgba(23,24,28,0.12)]"
           >
-            <Menu.Label className="px-2 pt-1 pb-1.5 text-[11px] font-semibold tracking-[0.08em] text-muted uppercase">
+            <Menu.Label className="px-2 pt-1 pb-1.5 text-[0.6875rem] font-semibold tracking-[0.08em] text-muted uppercase">
               Workspaces
             </Menu.Label>
             {(list ?? [{ ...current, role: "member" as const, current: true }]).map((w) => (
@@ -133,7 +133,7 @@ export function WorkspaceSwitcher({
         description="A separate space with its own projects, people and agents. You will own it."
       >
         <form onSubmit={submit} className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1.5 text-[13px] font-medium text-ink">
+          <label className="flex flex-col gap-1.5 text-[0.8125rem] font-medium text-ink">
             Name
             <input
               required

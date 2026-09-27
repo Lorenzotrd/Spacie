@@ -14,7 +14,7 @@ import { CommentList } from "@/features/rail/comment-list";
 import { isDocument, principalById, relativeTime, typeLabel } from "@/features/workspace/derive";
 import type { Controller } from "@/features/workspace/use-controller";
 
-const action = "flex h-16 flex-col items-center justify-center gap-[5px] rounded-[14px] border border-line bg-card text-[13px] font-medium text-ink disabled:opacity-50";
+const action = "flex h-16 flex-col items-center justify-center gap-[0.3125rem] rounded-[0.875rem] border border-line bg-card text-[0.8125rem] font-medium text-ink disabled:opacity-50";
 
 export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
   const state = ctl.state!;
@@ -34,7 +34,7 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
 
   return (
     <>
-      <div className="flex flex-col gap-[18px] px-5 pt-5 pb-[calc(84px+env(safe-area-inset-bottom,0px))]">
+      <div className="flex flex-col gap-[1.125rem] px-5 pt-5 pb-[calc(84px+env(safe-area-inset-bottom,0px))]">
         <div className="flex items-center gap-2">
           <button type="button" onClick={ctl.closeFile} aria-label="Back" className="-ml-2.5 flex size-11 items-center justify-center">
             <ChevronLeft size={22} aria-hidden />
@@ -52,8 +52,8 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <h1 className="m-0 text-[21px] leading-[1.3] font-semibold tracking-[-0.015em] break-words">{file.name}</h1>
-          <span className="flex items-center gap-1.5 text-[13px] text-muted">
+          <h1 className="m-0 text-[1.3125rem] leading-[1.3] font-semibold tracking-[-0.015em] break-words">{file.name}</h1>
+          <span className="flex items-center gap-1.5 text-[0.8125rem] text-muted">
             <Badge tone="type">{typeLabel(file)}</Badge>
             Edited by {by?.name ?? "someone"} {relativeTime(file.updatedAt)}
           </span>
@@ -61,7 +61,7 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
         <div
           className={cn(
             "relative overflow-hidden",
-            doc && !expanded && "max-h-[196px] rounded-2xl border border-[#eceae4] bg-card",
+            doc && !expanded && "max-h-[12.25rem] rounded-2xl border border-[#eceae4] bg-card",
           )}
         >
           <FileBody compact file={file} detail={ctl.detail} url={url} previewUrl={previewUrl} onDownload={download}
@@ -94,12 +94,12 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
           </button>
         </div>
         <section className="flex flex-col gap-2.5">
-          <h2 className="m-0 text-[17px] font-semibold">Versions</h2>
+          <h2 className="m-0 text-[1.0625rem] font-semibold">Versions</h2>
           {!ctl.detail &&
             (ctl.detailError ? (
               <ErrorState message={ctl.detailError} onRetry={ctl.retryDetail} />
             ) : (
-              <SkeletonRows rows={2} height="h-[68px]" />
+              <SkeletonRows rows={2} height="h-[4.25rem]" />
             ))}
           <div role="radiogroup" aria-label="Pick a version to restore" className="flex flex-col gap-2.5">
             {versions.map((v) => {
@@ -113,20 +113,20 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
                   aria-checked={active}
                   onClick={() => setPicked(v.number)}
                   className={cn(
-                    "flex min-h-[68px] items-center gap-3 rounded-[14px] bg-card px-3.5 text-left",
-                    active ? "border-[1.5px] border-accent" : "border border-[#eceae4]",
+                    "flex min-h-[4.25rem] items-center gap-3 rounded-[0.875rem] bg-card px-3.5 text-left",
+                    active ? "border-[0.09375rem] border-accent" : "border border-[#eceae4]",
                   )}
                 >
                   {who?.type === "agent" ? (
-                    <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-accent-soft text-accent">
+                    <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] bg-accent-soft text-accent">
                       <AgentMark size={15} />
                     </span>
                   ) : (
                     <Avatar person={who} size="lg" className="size-9" />
                   )}
                   <span className="flex flex-1 flex-col gap-0.5">
-                    <span className="text-[15px] font-semibold">Version {v.number}</span>
-                    <span className="text-[13px] text-muted">
+                    <span className="text-[0.9375rem] font-semibold">Version {v.number}</span>
+                    <span className="text-[0.8125rem] text-muted">
                       {who?.name ?? "Someone"} · {relativeTime(v.createdAt)}
                     </span>
                   </span>
@@ -137,7 +137,7 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
           </div>
         </section>
         <section className="flex flex-col gap-2.5">
-          <h2 className="m-0 text-[17px] font-semibold">Comments</h2>
+          <h2 className="m-0 text-[1.0625rem] font-semibold">Comments</h2>
           {ctl.detail && <CommentList state={state} comments={ctl.detail.comments} mutate={ctl.mutate} />}
         </section>
       </div>

@@ -28,23 +28,23 @@ export function ClientDetail({
   onError: (message: string) => void;
 }) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-[18px] overflow-y-auto rounded-2xl border border-line-soft bg-card p-[22px]">
+    <div className="flex min-w-0 flex-1 flex-col gap-[1.125rem] overflow-y-auto rounded-2xl border border-line-soft bg-card p-[1.375rem]">
       <div className="flex items-center gap-3.5">
         <ClientLogo client={client} connected={!!agents.length} size="lg" />
         <div className="flex flex-col gap-0.5">
-          <h2 className="m-0 text-[19px] font-semibold tracking-[-0.01em]">{client.name}</h2>
-          <span className="text-[13px] text-muted">{client.via}</span>
+          <h2 className="m-0 text-[1.1875rem] font-semibold tracking-[-0.01em]">{client.name}</h2>
+          <span className="text-[0.8125rem] text-muted">{client.via}</span>
         </div>
       </div>
       <section aria-label="How to connect" className="flex flex-col gap-2.5">
-        <h3 className="m-0 text-[13px] font-semibold">How to connect it</h3>
+        <h3 className="m-0 text-[0.8125rem] font-semibold">How to connect it</h3>
         <ol className="m-0 flex list-none flex-col gap-2.5 p-0">
           {client.steps.map((text, i) => (
             <li key={text} className="flex items-start gap-2.5">
-              <span className="flex size-[22px] shrink-0 items-center justify-center rounded-full bg-accent-soft text-xs font-semibold text-accent-hover">
+              <span className="flex size-[1.375rem] shrink-0 items-center justify-center rounded-full bg-accent-soft text-xs font-semibold text-accent-hover">
                 {i + 1}
               </span>
-              <span className="text-[13px] leading-normal text-ink-2">{text}</span>
+              <span className="text-[0.8125rem] leading-normal text-ink-2">{text}</span>
             </li>
           ))}
         </ol>
@@ -57,7 +57,7 @@ export function ClientDetail({
         <AgentAccessCard key={a.id} state={state} agent={a} canManage={canManage} run={run} />
       ))}
       {!agents.length && client.auth === "oauth" && (
-        <p className="text-[13px] text-muted">Not connected yet. Its rights appear here once you approve it.</p>
+        <p className="text-[0.8125rem] text-muted">Not connected yet. Its rights appear here once you approve it.</p>
       )}
     </div>
   );

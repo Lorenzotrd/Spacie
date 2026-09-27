@@ -40,7 +40,7 @@ export function StatCards({
         return (
           <div key={st.key} className="flex flex-col gap-3.5 rounded-card border border-line-soft bg-card p-4">
             <div className="flex items-center">
-              <span className="flex size-[34px] items-center justify-center rounded-[9px] bg-accent-tint text-accent">
+              <span className="flex size-[2.125rem] items-center justify-center rounded-[0.5625rem] bg-accent-tint text-accent">
                 {Icon === "agent" ? <AgentMark size={15} /> : <Icon size={17} strokeWidth={1.8} aria-hidden />}
               </span>
               <button
@@ -53,9 +53,9 @@ export function StatCards({
               </button>
             </div>
             <div className="flex flex-col gap-0.5">
-              <span className="text-[26px] font-semibold tracking-[-0.02em]">{st.value}</span>
-              <span className="text-[13px] text-muted">{st.label}</span>
-              {st.hint && <span className="text-[11px] text-muted">{st.hint}</span>}
+              <span className="text-[1.625rem] font-semibold tracking-[-0.02em]">{st.value}</span>
+              <span className="text-[0.8125rem] text-muted">{st.label}</span>
+              {st.hint && <span className="text-[0.6875rem] text-muted">{st.hint}</span>}
             </div>
           </div>
         );

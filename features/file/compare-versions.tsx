@@ -55,10 +55,10 @@ function DocumentDiff({ file, before, after }: { file: FileMeta; before: number;
   const removed = lines.filter((l) => l.change === "removed").length;
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[13px] text-muted">
+      <p className="text-[0.8125rem] text-muted">
         {added || removed ? `${added} paragraph${added === 1 ? "" : "s"} added · ${removed} removed` : "No text changes between these versions."}
       </p>
-      <ol className="max-h-[55vh] overflow-y-auto rounded-xl border border-line-soft bg-subtle p-3 text-[13px] leading-relaxed">
+      <ol className="max-h-[55vh] overflow-y-auto rounded-xl border border-line-soft bg-subtle p-3 text-[0.8125rem] leading-relaxed">
         {lines.map((l, i) => (
           <li
             key={i}
@@ -90,7 +90,7 @@ function VersionCard({ state, file, version, url, onError }: {
       ) : image ? (
         <Skeleton className="h-64 w-full" />
       ) : null}
-      <figcaption className="flex flex-col gap-1 text-[13px]">
+      <figcaption className="flex flex-col gap-1 text-[0.8125rem]">
         <span className="font-semibold">Version {version.number}{file.version === version.number ? " · current" : ""}</span>
         <span className="text-muted">
           {who?.name ?? "Someone"} · {relativeTime(version.createdAt)}
@@ -153,12 +153,12 @@ export function CompareVersions({
     >
       {file && (
         <div className="flex flex-col gap-4">
-          <label className="flex items-center gap-2 text-[13px] text-ink-2">
+          <label className="flex items-center gap-2 text-[0.8125rem] text-ink-2">
             Compare
             <select
               value={before}
               onChange={(e) => setBefore(Number(e.target.value))}
-              className="h-9 rounded-lg border border-line bg-card px-2 text-[13px]"
+              className="h-9 rounded-lg border border-line bg-card px-2 text-[0.8125rem]"
             >
               {versions.filter((v) => v.number !== current).map((v) => (
                 <option key={v.id} value={v.number}>Version {v.number}</option>

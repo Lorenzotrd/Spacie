@@ -14,7 +14,7 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
 export function SectionLabel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("text-[11px] font-semibold tracking-[0.08em] text-muted uppercase", className)}
+      className={cn("text-[0.6875rem] font-semibold tracking-[0.08em] text-muted uppercase", className)}
       {...props}
     />
   );

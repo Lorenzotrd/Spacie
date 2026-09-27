@@ -53,8 +53,8 @@ export function TimelineItem({
         <Avatar person={who} size="sm" />
         <span aria-hidden className="min-h-3.5 w-px flex-1 bg-line-soft" />
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-[3px] pb-[18px]">
-        <div className="text-[13px] leading-[1.45] text-[#55575f]">{children}</div>
+      <div className="flex min-w-0 flex-1 flex-col gap-[0.1875rem] pb-[1.125rem]">
+        <div className="text-[0.8125rem] leading-[1.45] text-[#55575f]">{children}</div>
         <time className="text-xs text-muted">{when}</time>
         {footer}
       </div>

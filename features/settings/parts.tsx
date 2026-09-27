@@ -15,10 +15,10 @@ export function SettingsCard({
   children: ReactNode;
 }) {
   return (
-    <Card className={cn("flex flex-col gap-4 p-[22px]", className)}>
+    <Card className={cn("flex flex-col gap-4 p-[1.375rem]", className)}>
       {(title || action) && (
         <div className="flex items-center gap-3">
-          {title && <h2 className="m-0 flex-1 text-[15px] font-semibold">{title}</h2>}
+          {title && <h2 className="m-0 flex-1 text-[0.9375rem] font-semibold">{title}</h2>}
           {action}
         </div>
       )}
@@ -31,9 +31,9 @@ export function SettingsCard({
 export function SettingRow({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <div className="setting-row flex flex-wrap items-center gap-x-4 gap-y-2.5 border-divider [.setting-row+&]:border-t [.setting-row+&]:pt-3.5">
-      <div className="flex min-w-[180px] flex-1 flex-col gap-[3px]">
+      <div className="flex min-w-[11.25rem] flex-1 flex-col gap-[0.1875rem]">
         <span className="text-sm font-medium">{label}</span>
-        {hint && <span className="text-[13px] leading-normal text-muted">{hint}</span>}
+        {hint && <span className="text-[0.8125rem] leading-normal text-muted">{hint}</span>}
       </div>
       {children}
     </div>
@@ -49,10 +49,10 @@ export function Field({
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
   return (
     <label className={cn("flex min-w-0 flex-1 flex-col gap-1.5", className)}>
-      <span className="text-[13px] font-medium text-ink-2">{label}</span>
+      <span className="text-[0.8125rem] font-medium text-ink-2">{label}</span>
       <input
         {...input}
-        className="h-[42px] rounded-control border border-line bg-card px-3 text-sm text-ink outline-none placeholder:text-[#a3a5ac] focus:border-accent focus-visible:shadow-[0_0_0_3px_#eaeffc] read-only:bg-subtle read-only:text-ink-2"
+        className="h-[2.625rem] rounded-control border border-line bg-card px-3 text-sm text-ink outline-none placeholder:text-[#a3a5ac] focus:border-accent focus-visible:shadow-[0_0_0_3px_#eaeffc] read-only:bg-subtle read-only:text-ink-2"
       />
       {hint && <span className="text-xs text-muted">{hint}</span>}
     </label>
@@ -62,9 +62,9 @@ export function Field({
 /** A big number with its caption, as on the Public links page. */
 export function Stat({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <Card className="flex flex-col gap-1.5 p-4 md:p-[22px]">
-      <span className="text-xs leading-snug text-muted md:text-[13px]">{label}</span>
-      <span className="text-2xl font-semibold tracking-[-0.02em] md:text-[28px]">{value}</span>
+    <Card className="flex flex-col gap-1.5 p-4 md:p-[1.375rem]">
+      <span className="text-xs leading-snug text-muted md:text-[0.8125rem]">{label}</span>
+      <span className="text-2xl font-semibold tracking-[-0.02em] md:text-[1.75rem]">{value}</span>
     </Card>
   );
 }
@@ -79,7 +79,7 @@ export function Pill({ tone, children }: { tone: "danger" | "warning" | "success
     ink: "bg-ink text-white",
   };
   return (
-    <span className={cn("inline-flex rounded-full px-[9px] py-[3px] text-xs font-medium whitespace-nowrap", tones[tone])}>
+    <span className={cn("inline-flex rounded-full px-[0.5625rem] py-[0.1875rem] text-xs font-medium whitespace-nowrap", tones[tone])}>
       {children}
     </span>
   );

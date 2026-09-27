@@ -48,14 +48,14 @@ export function CommentComposer({
         </button>
       )}
       <div className="flex items-center gap-2.5">
-        <label className={cn("flex flex-1 items-center rounded-[14px] bg-[#f4f3ef] px-3.5", large ? "h-[46px]" : "h-10")}>
+        <label className={cn("flex flex-1 items-center rounded-[0.875rem] bg-[#f4f3ef] px-3.5", large ? "h-[2.875rem]" : "h-10")}>
           <span className="sr-only">{placeholder}</span>
           <input
             value={text}
             maxLength={MAX_COMMENT}
             onChange={(e) => setText(e.target.value)}
             placeholder={placeholder}
-            className={cn("w-24 flex-1 border-none bg-transparent text-ink outline-none placeholder:text-muted", large ? "text-[15px]" : "text-[13px]")}
+            className={cn("w-24 flex-1 border-none bg-transparent text-ink outline-none placeholder:text-muted", large ? "text-[0.9375rem]" : "text-[0.8125rem]")}
           />
         </label>
         <button
@@ -63,8 +63,8 @@ export function CommentComposer({
           aria-label="Send comment"
           disabled={!trimmed || sending}
           className={cn(
-            "flex shrink-0 items-center justify-center rounded-[14px] bg-accent text-white hover:bg-accent-hover disabled:opacity-50",
-            large ? "size-[46px]" : "size-10",
+            "flex shrink-0 items-center justify-center rounded-[0.875rem] bg-accent text-white hover:bg-accent-hover disabled:opacity-50",
+            large ? "size-[2.875rem]" : "size-10",
           )}
         >
           <ArrowUp size={18} aria-hidden />

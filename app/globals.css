@@ -58,6 +58,21 @@
 }
 
 /* Older class-based styles sit below Tailwind utilities so utilities always win. */
+/*
+ * Desktop density: the interface is drawn at 95% from 768px (sizes are in rem, so
+ * they follow the root size). Phones keep 100% for 44px touch targets; very large
+ * screens go back to 100%. Lucide icons use pixel sizes, so they are scaled too.
+ */
+@media (min-width: 768px) and (max-width: 1799px) {
+  html {
+    font-size: 95%;
+  }
+  svg.lucide,
+  svg.agent-mark {
+    zoom: 0.95;
+  }
+}
+
 @layer components {
 * {
   box-sizing: border-box;

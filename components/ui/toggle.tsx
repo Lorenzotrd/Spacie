@@ -22,7 +22,7 @@ export function Toggle({
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={cn(
-        "flex h-[26px] w-11 shrink-0 rounded-full p-[3px] transition-colors",
+        "flex h-[1.625rem] w-11 shrink-0 rounded-full p-[0.1875rem] transition-colors",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
         "disabled:cursor-not-allowed disabled:opacity-50",
         checked ? "justify-end bg-accent" : "justify-start bg-[#bdb9b0]",

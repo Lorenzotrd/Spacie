@@ -70,7 +70,7 @@ export function AgentAccessCard({
         </p>
       )}
       <div className={row}>
-        <span className="flex-1 text-[13px] text-ink-2">Can</span>
+        <span className="flex-1 text-[0.8125rem] text-ink-2">Can</span>
         <Tabs
           label={`${agent.name} access level`}
           items={LEVELS}
@@ -79,7 +79,7 @@ export function AgentAccessCard({
         />
       </div>
       <div className={row}>
-        <span className="flex-1 text-[13px] text-ink-2">Visible projects</span>
+        <span className="flex-1 text-[0.8125rem] text-ink-2">Visible projects</span>
         <div className="flex max-w-[60%] flex-wrap justify-end gap-1.5">
           {visible.map((p) => (
             <Badge key={p.id} tone="accent">{p.name}</Badge>
@@ -99,7 +99,7 @@ export function AgentAccessCard({
         )}
       </div>
       <div className={row}>
-        <span className="flex-1 text-[13px] text-ink-2">Can create public links</span>
+        <span className="flex-1 text-[0.8125rem] text-ink-2">Can create public links</span>
         <Toggle
           checked={access.publish}
           disabled={!canManage || busy}

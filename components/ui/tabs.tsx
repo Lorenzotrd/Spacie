@@ -38,7 +38,7 @@ export function Tabs<T extends string>({
     <div
       role="tablist"
       aria-label={label}
-      className={cn("flex gap-0.5 rounded-control bg-segment p-[3px]", stretch && "w-full", className)}
+      className={cn("flex gap-0.5 rounded-control bg-segment p-[0.1875rem]", stretch && "w-full", className)}
     >
       {items.map((t, i) => {
         const active = t.id === value;
@@ -55,7 +55,7 @@ export function Tabs<T extends string>({
             onClick={() => onChange(t.id)}
             onKeyDown={(e) => onKey(e, i)}
             className={cn(
-              "flex items-center justify-center gap-1.5 rounded-lg px-3 text-[13px] whitespace-nowrap transition-colors",
+              "flex items-center justify-center gap-1.5 rounded-lg px-3 text-[0.8125rem] whitespace-nowrap transition-colors",
               "focus-visible:outline-2 focus-visible:outline-accent",
               size === "touch" ? "h-11 text-sm" : "h-8",
               stretch && "flex-1",
@@ -66,7 +66,7 @@ export function Tabs<T extends string>({
           >
             {t.label}
             {t.count !== undefined && (
-              <span className="font-mono text-[11px] text-muted">{t.count}</span>
+              <span className="font-mono text-[0.6875rem] text-muted">{t.count}</span>
             )}
           </button>
         );

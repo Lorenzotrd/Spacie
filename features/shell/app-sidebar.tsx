@@ -28,7 +28,7 @@ type Props = {
   onError: (message: string) => void;
 };
 
-const navItem = "flex h-[38px] items-center gap-2.5 rounded-control px-2.5 text-sm text-ink-2 hover:bg-card/70";
+const navItem = "flex h-[2.375rem] items-center gap-2.5 rounded-control px-2.5 text-sm text-ink-2 hover:bg-card/70";
 
 function NavButton({ icon: Icon, label, active, onClick }: { icon: LucideIcon; label: string; active: boolean; onClick: () => void }) {
   return (
@@ -86,9 +86,9 @@ export function AppSidebar({
                   active && "border-line bg-card font-medium text-accent-hover",
                 )}
               >
-                <span aria-hidden className="size-2 rounded-[3px]" style={{ background: p.color }} />
+                <span aria-hidden className="size-2 rounded-[0.1875rem]" style={{ background: p.color }} />
                 <span className="flex-1 truncate">{p.name}</span>
-                <span className="font-mono text-[11px] text-muted">{count}</span>
+                <span className="font-mono text-[0.6875rem] text-muted">{count}</span>
               </button>
               {p.id === project &&
                 state.folders
@@ -100,7 +100,7 @@ export function AppSidebar({
                       onClick={() => navigate(p.id, f.id)}
                       aria-current={folder === f.id && view === "space" ? "page" : undefined}
                       className={cn(
-                        "flex h-[34px] w-full items-center gap-2.5 rounded-control pr-2.5 pl-7 text-left text-[13px] text-ink-2 hover:bg-card/70",
+                        "flex h-[2.125rem] w-full items-center gap-2.5 rounded-control pr-2.5 pl-7 text-left text-[0.8125rem] text-ink-2 hover:bg-card/70",
                         folder === f.id && view === "space" && "font-medium text-accent-hover",
                       )}
                     >
@@ -111,7 +111,7 @@ export function AppSidebar({
             </div>
           );
         })}
-        {!state.projects.length && <p className="px-2.5 text-[13px] text-muted">No projects yet.</p>}
+        {!state.projects.length && <p className="px-2.5 text-[0.8125rem] text-muted">No projects yet.</p>}
       </div>
 
       <div className="flex flex-col gap-1">
@@ -126,7 +126,7 @@ export function AppSidebar({
             <Avatar person={p} size="sm" />
             <span className="flex-1 truncate">{p.name}</span>
             {(online.has(p.id) || p.id === state.currentPrincipalId) && (
-              <span className="size-[7px] rounded-full bg-online" role="img" aria-label="Online" />
+              <span className="size-[0.4375rem] rounded-full bg-online" role="img" aria-label="Online" />
             )}
           </button>
         ))}
@@ -145,7 +145,7 @@ export function AppSidebar({
             <span className="flex-1">Storage</span>
             <span className="font-medium text-ink">{formatBytes(storageUsed(state.files))}</span>
           </div>
-          <span className="text-[11px] text-muted">{state.demo ? "Local demo" : "Workspace"}</span>
+          <span className="text-[0.6875rem] text-muted">{state.demo ? "Local demo" : "Workspace"}</span>
         </div>
         <Link
           href="/settings/agents"
@@ -154,7 +154,7 @@ export function AppSidebar({
         >
           <Avatar person={me} size="lg" />
           <span className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate text-[13px] font-semibold">{me?.name}</span>
+            <span className="truncate text-[0.8125rem] font-semibold">{me?.name}</span>
             <span className="text-xs text-muted capitalize">{me?.role ?? "Member"}</span>
           </span>
           <Settings size={16} className="text-muted" aria-hidden />

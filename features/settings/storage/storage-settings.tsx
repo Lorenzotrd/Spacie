@@ -77,8 +77,8 @@ function UsageCard({ usage }: { usage: StorageUsage }) {
   return (
     <SettingsCard>
       <div className="flex flex-col gap-1">
-        <span className="text-[13px] text-muted">Used in this workspace</span>
-        <span className="text-[30px] font-semibold tracking-[-0.02em]">
+        <span className="text-[0.8125rem] text-muted">Used in this workspace</span>
+        <span className="text-[1.875rem] font-semibold tracking-[-0.02em]">
           {bytes(usage.usedBytes)}
           {usage.quotaBytes && <span className="text-base font-normal text-muted"> of {formatBytes(usage.quotaBytes)}</span>}
         </span>
@@ -91,31 +91,31 @@ function UsageCard({ usage }: { usage: StorageUsage }) {
         className="flex h-3 overflow-hidden rounded-full bg-[#eceae4]"
       >
         {usage.byKind.map((k) => (
-          <span key={k.kind} style={{ width: `${(k.bytes / total) * 100}%`, background: KIND_COLOR[k.kind] }} className="block h-full min-w-[3px]" />
+          <span key={k.kind} style={{ width: `${(k.bytes / total) * 100}%`, background: KIND_COLOR[k.kind] }} className="block h-full min-w-[0.1875rem]" />
         ))}
       </div>
       {usage.byKind.length > 0 ? (
         <ul className="m-0 grid list-none grid-cols-1 gap-x-6 gap-y-2.5 p-0 sm:grid-cols-2">
           {usage.byKind.map((k) => (
-            <li key={k.kind} className="flex items-center gap-2 text-[13px]">
-              <span aria-hidden className="size-2.5 rounded-[3px]" style={{ background: KIND_COLOR[k.kind] }} />
+            <li key={k.kind} className="flex items-center gap-2 text-[0.8125rem]">
+              <span aria-hidden className="size-2.5 rounded-[0.1875rem]" style={{ background: KIND_COLOR[k.kind] }} />
               <span className="flex-1 text-ink-2">{k.kind}</span>
               <span className="font-medium">{bytes(k.bytes)}</span>
             </li>
           ))}
           {free !== null && (
-            <li className="flex items-center gap-2 text-[13px]">
-              <span aria-hidden className="size-2.5 rounded-[3px] bg-[#eceae4]" />
+            <li className="flex items-center gap-2 text-[0.8125rem]">
+              <span aria-hidden className="size-2.5 rounded-[0.1875rem] bg-[#eceae4]" />
               <span className="flex-1 text-ink-2">Available</span>
               <span className="font-medium">{formatBytes(free)}</span>
             </li>
           )}
         </ul>
       ) : (
-        <p className="m-0 text-[13px] text-muted">Nothing stored yet.</p>
+        <p className="m-0 text-[0.8125rem] text-muted">Nothing stored yet.</p>
       )}
       {(usage.versionBytes > 0 || usage.trashBytes > 0) && (
-        <p className="m-0 text-[13px] leading-normal text-muted">
+        <p className="m-0 text-[0.8125rem] leading-normal text-muted">
           Includes {bytes(usage.versionBytes)} of older versions and {bytes(usage.trashBytes)} in the trash.
         </p>
       )}
@@ -135,7 +135,7 @@ function ProjectsCard({ usage }: { usage: StorageUsage }) {
             </Tile>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
               <span className="truncate text-sm font-medium">{p.name}</span>
-              <span className="text-[13px] text-muted">
+              <span className="text-[0.8125rem] text-muted">
                 {p.files} {p.files === 1 ? "file" : "files"} · {p.versions} older {p.versions === 1 ? "version" : "versions"}
               </span>
             </div>
@@ -154,15 +154,15 @@ function TrashCard({ usage }: { usage: StorageUsage }) {
         <Tile tone="neutral">
           <Trash2 size={17} strokeWidth={1.8} aria-hidden />
         </Tile>
-        <div className="flex min-w-[180px] flex-1 flex-col gap-0.5">
+        <div className="flex min-w-[11.25rem] flex-1 flex-col gap-0.5">
           <span className="text-sm font-medium">
             {usage.trashCount ? `${usage.trashCount} ${usage.trashCount === 1 ? "file" : "files"} in the trash · ${bytes(usage.trashBytes)}` : "Trash is empty"}
           </span>
-          <span className="text-[13px] leading-normal text-muted">Deleted files can be restored and still count toward storage.</span>
+          <span className="text-[0.8125rem] leading-normal text-muted">Deleted files can be restored and still count toward storage.</span>
         </div>
         <Link
           href="/workspace?view=trash"
-          className="inline-flex h-9 items-center rounded-[9px] border border-line bg-card px-3 text-[13px] font-medium text-ink no-underline hover:bg-subtle"
+          className="inline-flex h-9 items-center rounded-[0.5625rem] border border-line bg-card px-3 text-[0.8125rem] font-medium text-ink no-underline hover:bg-subtle"
         >
           Open trash
         </Link>
@@ -180,12 +180,12 @@ function BackupsCard({ backups }: { backups: Backup[] | null }) {
       action={backups && (healthy ? <Pill tone="success">Healthy</Pill> : <Pill tone="warning">{latest ? "Behind" : "None yet"}</Pill>)}
     >
       {backups === null ? (
-        <p className="m-0 text-[13px] leading-normal text-muted">
+        <p className="m-0 text-[0.8125rem] leading-normal text-muted">
           Backups run on the server and are not listed here. To show them, set <code className="font-mono text-xs">SPACIE_BACKUP_DIR</code> to the
           folder they are written to.
         </p>
       ) : backups.length === 0 ? (
-        <p className="m-0 text-[13px] text-muted">No backup has been written yet.</p>
+        <p className="m-0 text-[0.8125rem] text-muted">No backup has been written yet.</p>
       ) : (
         <>
           <ul className="m-0 flex list-none flex-col p-0">
@@ -196,14 +196,14 @@ function BackupsCard({ backups }: { backups: Backup[] | null }) {
                 </span>
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="text-sm font-medium">{when(b.at)}</span>
-                  <span className="truncate text-[13px] text-muted" title={b.name}>
+                  <span className="truncate text-[0.8125rem] text-muted" title={b.name}>
                     Files and database · {bytes(b.bytes)}
                   </span>
                 </div>
               </li>
             ))}
           </ul>
-          <p className="m-0 text-[13px] leading-normal text-muted">
+          <p className="m-0 text-[0.8125rem] leading-normal text-muted">
             {backups.length} {backups.length === 1 ? "backup" : "backups"} kept on the server. Restoring one is done from the server.
           </p>
         </>

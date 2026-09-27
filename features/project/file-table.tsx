@@ -18,7 +18,7 @@ const stretched = "after:absolute after:inset-0 after:content-[''] focus-visible
 
 function FolderRow({ folder, onOpen }: { folder: Folder; onOpen: () => void }) {
   return (
-    <div className={cn(columns, "relative h-[58px] border-b border-[#f3f1ed] text-[13px] hover:bg-subtle")}>
+    <div className={cn(columns, "relative h-[3.625rem] border-b border-[#f3f1ed] text-[0.8125rem] hover:bg-subtle")}>
       <div className="flex min-w-0 items-center gap-3">
         <FileIcon folder />
         <button type="button" onClick={onOpen} className={cn("truncate text-left font-medium text-ink", stretched)}>
@@ -37,7 +37,7 @@ function FolderRow({ folder, onOpen }: { folder: Folder; onOpen: () => void }) {
 function FileRow({ ctl, state, file }: { ctl: Controller; state: PublicState; file: FileMeta }) {
   const by = principalById(state, file.updatedBy);
   return (
-    <div className={cn(columns, "relative h-[58px] border-b border-[#f3f1ed] text-[13px] hover:bg-subtle")}>
+    <div className={cn(columns, "relative h-[3.625rem] border-b border-[#f3f1ed] text-[0.8125rem] hover:bg-subtle")}>
       <div className="flex min-w-0 items-center gap-3">
         <FileIcon file={file} />
         <button
@@ -77,7 +77,7 @@ function FileTile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
           <FileMenu label={`Actions for ${file.name}`} items={fileActions(ctl, file)} />
         </div>
       </div>
-      <button type="button" onClick={() => ctl.openFile(file)} className={cn("truncate text-left text-[13px] font-medium", stretched)}>
+      <button type="button" onClick={() => ctl.openFile(file)} className={cn("truncate text-left text-[0.8125rem] font-medium", stretched)}>
         {file.name}
       </button>
       <div className="flex items-center gap-2">
@@ -123,7 +123,7 @@ export function FileTable({
               key={f.id}
               type="button"
               onClick={() => ctl.navigate(f.projectId, f.id)}
-              className="flex items-center gap-3 rounded-xl border border-line-soft p-3.5 text-left text-[13px] font-medium hover:border-line"
+              className="flex items-center gap-3 rounded-xl border border-line-soft p-3.5 text-left text-[0.8125rem] font-medium hover:border-line"
             >
               <FileIcon folder size="md" />
               <span className="truncate">{f.name}</span>

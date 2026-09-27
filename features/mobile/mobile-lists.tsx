@@ -11,12 +11,12 @@ import { FileIcon } from "@/features/workspace/file-icon";
 import type { Controller } from "@/features/workspace/use-controller";
 
 const card = "flex flex-col overflow-hidden rounded-2xl border border-[#eceae4] bg-card";
-const row = "flex min-h-[60px] w-full items-center gap-3 border-b border-[#f3f1ed] px-3.5 text-left last:border-b-0";
+const row = "flex min-h-[3.75rem] w-full items-center gap-3 border-b border-[#f3f1ed] px-3.5 text-left last:border-b-0";
 
 function Screen({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-[18px] px-5 pt-7 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
-      <h1 className="m-0 text-[26px] font-semibold tracking-[-0.02em]">{title}</h1>
+    <div className="flex flex-col gap-[1.125rem] px-5 pt-7 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
+      <h1 className="m-0 text-[1.625rem] font-semibold tracking-[-0.02em]">{title}</h1>
       {children}
     </div>
   );
@@ -29,12 +29,12 @@ export function MobileProjects({ ctl }: { ctl: Controller }) {
       <div className={card}>
         {state.projects.map((p) => (
           <button key={p.id} type="button" onClick={() => ctl.navigate(p.id)} className={row}>
-            <span className="flex size-10 items-center justify-center rounded-[11px] bg-accent-soft text-accent">
+            <span className="flex size-10 items-center justify-center rounded-[0.6875rem] bg-accent-soft text-accent">
               <Box size={18} aria-hidden />
             </span>
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="truncate text-[15px] font-medium">{p.name}</span>
-              <span className="text-[13px] text-muted">
+              <span className="truncate text-[0.9375rem] font-medium">{p.name}</span>
+              <span className="text-[0.8125rem] text-muted">
                 {fileCount(state.files, p.id)}
               </span>
             </span>
@@ -71,18 +71,18 @@ export function MobileMe({ ctl }: { ctl: Controller }) {
       <div className="flex items-center gap-3">
         <Avatar person={ctl.me} size="lg" className="size-12 text-base" />
         <div className="flex flex-col">
-          <span className="text-[17px] font-semibold">{ctl.me?.name}</span>
-          <span className="text-[13px] text-muted capitalize">
+          <span className="text-[1.0625rem] font-semibold">{ctl.me?.name}</span>
+          <span className="text-[0.8125rem] text-muted capitalize">
             {ctl.me?.role} · {state.workspace.name} · {formatBytes(storageUsed(state.files))} stored
           </span>
         </div>
       </div>
       <div className={card}>
         <Link href="/settings/agents" className={`${row} text-ink no-underline`}>
-          <span className="flex size-10 items-center justify-center rounded-[11px] bg-accent-soft text-accent">
+          <span className="flex size-10 items-center justify-center rounded-[0.6875rem] bg-accent-soft text-accent">
             <AgentMark size={16} />
           </span>
-          <span className="flex-1 text-[15px] font-medium">AI agents</span>
+          <span className="flex-1 text-[0.9375rem] font-medium">AI agents</span>
           <ChevronRight size={18} className="text-[#a3a5ac]" aria-hidden />
         </Link>
           <button
@@ -95,13 +95,13 @@ export function MobileMe({ ctl }: { ctl: Controller }) {
               )
             }
           >
-            <span className="flex size-10 items-center justify-center rounded-[11px] bg-[#f1f0ec] text-ink-2">
+            <span className="flex size-10 items-center justify-center rounded-[0.6875rem] bg-[#f1f0ec] text-ink-2">
               <LogOut size={18} aria-hidden />
             </span>
-            <span className="flex-1 text-[15px] font-medium">Sign out</span>
+            <span className="flex-1 text-[0.9375rem] font-medium">Sign out</span>
           </button>
       </div>
-      <h2 className="m-0 flex items-center gap-2 text-[17px] font-semibold">
+      <h2 className="m-0 flex items-center gap-2 text-[1.0625rem] font-semibold">
         <Trash2 size={17} aria-hidden /> Trash
       </h2>
       <div className={card}>
@@ -109,8 +109,8 @@ export function MobileMe({ ctl }: { ctl: Controller }) {
           <div key={f.id} className={row}>
             <FileIcon file={f} size="md" />
             <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="truncate text-[15px] font-medium">{f.name}</span>
-              <span className="text-[13px] text-muted">{relativeTime(f.updatedAt)}</span>
+              <span className="truncate text-[0.9375rem] font-medium">{f.name}</span>
+              <span className="text-[0.8125rem] text-muted">{relativeTime(f.updatedAt)}</span>
             </span>
             <Button size="lg" className="h-11" onClick={() => void ctl.mutate({ action: "restore_file", id: f.id }).catch(() => undefined)}>
               Restore

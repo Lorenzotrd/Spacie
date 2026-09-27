@@ -10,9 +10,9 @@ import type { Controller } from "./use-controller";
 
 function Page({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-5 overflow-y-auto px-7 pt-7 pb-6">
+    <div className="flex min-w-0 flex-1 flex-col gap-5 overflow-y-auto px-7 pt-7 pb-6 *:shrink-0">
       <div className="flex flex-col gap-1.5">
-        <h1 className="m-0 text-[30px] font-semibold tracking-[-0.025em]">{title}</h1>
+        <h1 className="m-0 text-[1.875rem] font-semibold tracking-[-0.025em]">{title}</h1>
         <p className="text-sm text-muted">{hint}</p>
       </div>
       {children}
@@ -20,7 +20,7 @@ function Page({ title, hint, children }: { title: string; hint: string; children
   );
 }
 
-const row = "flex min-h-[58px] w-full items-center gap-3 border-b border-[#f3f1ed] px-4 text-left text-[13px] last:border-b-0";
+const row = "flex min-h-[3.625rem] w-full items-center gap-3 border-b border-[#f3f1ed] px-4 text-left text-[0.8125rem] last:border-b-0";
 
 export function HomeView({ ctl }: { ctl: Controller }) {
   const state = ctl.state!;
@@ -35,19 +35,19 @@ export function HomeView({ ctl }: { ctl: Controller }) {
             onClick={() => ctl.navigate(p.id)}
             className="flex flex-col items-start gap-4 rounded-card border border-line-soft bg-card p-4 text-left hover:border-line"
           >
-            <span className="flex size-[38px] items-center justify-center rounded-[11px] bg-accent-soft text-accent">
+            <span className="flex size-[2.375rem] items-center justify-center rounded-[0.6875rem] bg-accent-soft text-accent">
               <Box size={18} aria-hidden />
             </span>
             <span className="flex flex-col gap-0.5">
-              <span className="text-[15px] font-semibold">{p.name}</span>
-              <span className="text-[13px] text-muted">
+              <span className="text-[0.9375rem] font-semibold">{p.name}</span>
+              <span className="text-[0.8125rem] text-muted">
                 {fileCount(state.files, p.id)}
               </span>
             </span>
           </button>
         ))}
       </div>
-      <h2 className="m-0 text-[17px] font-semibold">Recent files</h2>
+      <h2 className="m-0 text-[1.0625rem] font-semibold">Recent files</h2>
       <Card className="overflow-hidden">
         {recent.map((f) => (
           <button key={f.id} type="button" onClick={() => ctl.openFile(f)} className={`${row} hover:bg-subtle`}>

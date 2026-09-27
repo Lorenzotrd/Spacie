@@ -77,7 +77,7 @@ export function AgentSettings() {
             <div className="grid gap-3 md:grid-cols-3">
               {PILLARS.map(({ icon: Icon, title, text }) => (
                 <div key={title} className="flex items-center gap-3 rounded-card border border-accent-border bg-accent-tint px-4 py-3.5">
-                  <span className="flex size-[34px] shrink-0 items-center justify-center rounded-[9px] bg-accent text-white">
+                  <span className="flex size-[2.125rem] shrink-0 items-center justify-center rounded-[0.5625rem] bg-accent text-white">
                     <Icon size={16} aria-hidden />
                   </span>
                   <span className="flex flex-col gap-0.5">
@@ -88,8 +88,8 @@ export function AgentSettings() {
               ))}
             </div>
             <div className="flex flex-col gap-5 md:flex-row">
-              <div className="flex shrink-0 flex-col gap-2 md:w-[400px] xl:w-[440px]">
-                <p className="px-0.5 pb-1 text-[13px] text-muted">
+              <div className="flex shrink-0 flex-col gap-2 md:w-[25rem] xl:w-[27.5rem]">
+                <p className="px-0.5 pb-1 text-[0.8125rem] text-muted">
                   {connected.length} connected · {available} available
                 </p>
                 {CLIENTS.map((c) => {
@@ -103,12 +103,12 @@ export function AgentSettings() {
                       aria-pressed={active}
                       className={cn(
                         "flex min-h-16 items-center gap-3 rounded-card bg-card px-3.5 text-left",
-                        active ? "border-[1.5px] border-accent shadow-[0_0_0_3px_#eaeffc]" : "border border-line-soft hover:border-line",
+                        active ? "border-[0.09375rem] border-accent shadow-[0_0_0_3px_#eaeffc]" : "border border-line-soft hover:border-line",
                       )}
                     >
                       <ClientLogo client={c} connected={!!agents.length} />
                       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <span className="text-[15px] font-semibold text-ink">{c.name}</span>
+                        <span className="text-[0.9375rem] font-semibold text-ink">{c.name}</span>
                         <span className="truncate text-xs text-muted">{c.via}</span>
                       </span>
                       {agents.length ? (

@@ -76,9 +76,9 @@ export function RightRail({ ctl, onCompare }: { ctl: Controller; onCompare: (fil
   };
 
   return (
-    <aside aria-label={file ? "In this file" : "In this project"} className="flex w-80 shrink-0 flex-col gap-[18px] border-l border-[#eeece7] px-5 py-6">
+    <aside aria-label={file ? "In this file" : "In this project"} className="flex w-80 shrink-0 flex-col gap-[1.125rem] border-l border-[#eeece7] px-5 py-6">
       <div className="flex items-center">
-        <h2 className="flex-1 text-[15px] font-semibold">{file ? "In this file" : "In this project"}</h2>
+        <h2 className="flex-1 text-[0.9375rem] font-semibold">{file ? "In this file" : "In this project"}</h2>
         <IconButton label="Close panel" onClick={() => ctl.setShowRail(false)}>
           <X size={16} />
         </IconButton>

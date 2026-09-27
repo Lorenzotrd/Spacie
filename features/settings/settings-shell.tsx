@@ -57,11 +57,11 @@ export function SettingsShell({
         canManage={canManage}
       />
       <main className="flex min-w-0 flex-1 flex-col overflow-y-auto rounded-panel border border-line bg-panel">
-        <div className="flex flex-col gap-[22px] px-4 pt-6 pb-7 md:px-7 md:pt-[30px]">
+        <div className="flex flex-col gap-[1.375rem] px-4 pt-6 pb-7 md:px-7 md:pt-[1.875rem]">
           <div className="flex flex-col gap-4 md:flex-row md:items-end">
             <div className="flex flex-1 flex-col gap-1.5">
-              <span className="text-[13px] text-muted">Settings / {section === "profile" ? "Account" : "Workspace"}</span>
-              <h1 className="m-0 text-[26px] font-semibold tracking-[-0.025em] md:text-[30px]">{title}</h1>
+              <span className="text-[0.8125rem] text-muted">Settings / {section === "profile" ? "Account" : "Workspace"}</span>
+              <h1 className="m-0 text-[1.625rem] font-semibold tracking-[-0.025em] md:text-[1.875rem]">{title}</h1>
               <p className="text-sm text-muted">{description}</p>
             </div>
             {action?.(ctx)}
@@ -71,7 +71,7 @@ export function SettingsShell({
       </main>
       {(error || notice) && (
         <div role={error ? "alert" : "status"} className="fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
-          <div className="flex items-center gap-3 rounded-xl bg-ink px-4 py-2.5 text-[13px] text-white shadow-lg">
+          <div className="flex items-center gap-3 rounded-xl bg-ink px-4 py-2.5 text-[0.8125rem] text-white shadow-lg">
             {error || notice}
             {error && (
               <button type="button" onClick={() => setError("")} className="min-h-8 rounded-lg px-2 text-white/80 hover:bg-white/10">

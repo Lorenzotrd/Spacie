@@ -13,7 +13,7 @@ export function AgentMark({ size = 12, className }: { size?: number; className?:
       strokeWidth={2.7}
       strokeLinecap="round"
       aria-hidden="true"
-      className={className}
+      className={cn("agent-mark", className)}
     >
       <path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4" />
     </svg>
@@ -22,10 +22,10 @@ export function AgentMark({ size = 12, className }: { size?: number; className?:
 
 type Size = "xs" | "sm" | "md" | "lg";
 const boxes: Record<Size, { box: string; text: string; mark: number; radius: string }> = {
-  xs: { box: "size-4", text: "text-[8px]", mark: 8, radius: "rounded-[5px]" },
-  sm: { box: "size-6", text: "text-[11px]", mark: 11, radius: "rounded-[7px]" },
-  md: { box: "size-[30px]", text: "text-xs", mark: 13, radius: "rounded-[9px]" },
-  lg: { box: "size-[34px]", text: "text-sm", mark: 15, radius: "rounded-[10px]" },
+  xs: { box: "size-4", text: "text-[0.5rem]", mark: 8, radius: "rounded-[0.3125rem]" },
+  sm: { box: "size-6", text: "text-[0.6875rem]", mark: 11, radius: "rounded-[0.4375rem]" },
+  md: { box: "size-[1.875rem]", text: "text-xs", mark: 13, radius: "rounded-[0.5625rem]" },
+  lg: { box: "size-[2.125rem]", text: "text-sm", mark: 15, radius: "rounded-[0.625rem]" },
 };
 
 const initial = (person?: Pick<Principal, "name" | "initials">) =>
@@ -86,7 +86,7 @@ export function AvatarStack({
         <Avatar key={p.id} person={p} ring className={i ? "-ml-1.5" : undefined} />
       ))}
       {rest > 0 && (
-        <span className="-ml-1.5 inline-flex size-[30px] items-center justify-center rounded-full border-2 border-panel bg-segment text-[11px] font-semibold text-ink-2">
+        <span className="-ml-1.5 inline-flex size-[1.875rem] items-center justify-center rounded-full border-2 border-panel bg-segment text-[0.6875rem] font-semibold text-ink-2">
           +{rest}
         </span>
       )}

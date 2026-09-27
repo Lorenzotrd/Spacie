@@ -41,11 +41,11 @@ export function TabBar({
         onClick={() => onNavigate(t.view)}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "relative flex h-[52px] w-[60px] flex-col items-center justify-center gap-1 text-[11px] font-medium",
+          "relative flex h-[3.25rem] w-[3.75rem] flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium",
           active ? "text-accent" : "text-muted",
         )}
       >
-        {Icon === "me" ? <Avatar person={me} size="sm" className="size-[22px] text-[11px]" /> : <Icon size={22} strokeWidth={1.9} aria-hidden />}
+        {Icon === "me" ? <Avatar person={me} size="sm" className="size-[1.375rem] text-[0.6875rem]" /> : <Icon size={22} strokeWidth={1.9} aria-hidden />}
         {t.label}
         {t.view === "activity" && unread && (
           <span className="absolute top-1 right-3.5 size-2 rounded-full border-2 border-card bg-accent" role="img" aria-label="New activity" />
@@ -64,7 +64,7 @@ export function TabBar({
         aria-label="Add a file"
         onClick={onAdd}
         disabled={busy}
-        className="flex size-[52px] items-center justify-center rounded-2xl bg-accent text-white shadow-[0_6px_16px_rgba(43,89,217,0.3)] disabled:opacity-60"
+        className="flex size-[3.25rem] items-center justify-center rounded-2xl bg-accent text-white shadow-[0_6px_16px_rgba(43,89,217,0.3)] disabled:opacity-60"
       >
         <Plus size={22} strokeWidth={2.2} aria-hidden />
       </button>

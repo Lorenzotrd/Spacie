@@ -14,7 +14,7 @@ const TABS: { id: FileTab; label: string }[] = [
   { id: "docs", label: "Docs" },
   { id: "assets", label: "Files" },
 ];
-const row = "flex min-h-[68px] w-full items-center gap-3 border-b border-[#f3f1ed] px-3.5 text-left last:border-b-0";
+const row = "flex min-h-[4.25rem] w-full items-center gap-3 border-b border-[#f3f1ed] px-3.5 text-left last:border-b-0";
 
 export function MobileProject({ ctl }: { ctl: Controller }) {
   const state = ctl.state!;
@@ -37,7 +37,7 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
   const whoLabel = (id: string) => (id === state.currentPrincipalId ? "You" : principalById(state, id)?.name ?? "Someone");
 
   return (
-    <div className="flex flex-col gap-[18px] px-5 pt-5 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
+    <div className="flex flex-col gap-[1.125rem] px-5 pt-5 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
       <div className="flex items-center gap-2">
         <button type="button" onClick={back} aria-label="Back" className="-ml-2.5 flex size-11 items-center justify-center">
           <ChevronLeft size={22} aria-hidden />
@@ -49,7 +49,7 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
         </Button>
       </div>
       <div className="flex flex-col gap-1">
-        <h1 className="m-0 text-[26px] font-semibold tracking-[-0.02em]">{ctl.currentFolder?.name ?? project.name}</h1>
+        <h1 className="m-0 text-[1.625rem] font-semibold tracking-[-0.02em]">{ctl.currentFolder?.name ?? project.name}</h1>
         <span className="text-sm text-muted">
           {total} files · {members.length} members
         </span>
@@ -59,9 +59,9 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
         {folders.map((f) => (
           <button key={f.id} type="button" onClick={() => ctl.navigate(project.id, f.id)} className={row}>
             <FileIcon folder size="lg" className="bg-[#f1f0ec]" />
-            <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <span className="truncate text-[15px] font-medium">{f.name}</span>
-              <span className="text-[13px] text-muted">Folder</span>
+            <span className="flex min-w-0 flex-1 flex-col gap-[0.1875rem]">
+              <span className="truncate text-[0.9375rem] font-medium">{f.name}</span>
+              <span className="text-[0.8125rem] text-muted">Folder</span>
             </span>
             <ChevronRight size={18} className="text-[#a3a5ac]" aria-hidden />
           </button>
@@ -69,11 +69,11 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
         {files.map((f) => (
           <button key={f.id} type="button" onClick={() => ctl.openFile(f)} className={row}>
             <FileIcon file={f} size="lg" className="bg-[#f1f0ec]" />
-            <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <span className="truncate text-[15px] font-medium">{f.name}</span>
-              <span className="flex items-center gap-1.5 text-[13px] text-muted">
+            <span className="flex min-w-0 flex-1 flex-col gap-[0.1875rem]">
+              <span className="truncate text-[0.9375rem] font-medium">{f.name}</span>
+              <span className="flex items-center gap-1.5 text-[0.8125rem] text-muted">
                 {isAgent(state, f.updatedBy) && (
-                  <span aria-hidden className="flex size-4 items-center justify-center rounded-[5px] bg-accent-soft text-accent">
+                  <span aria-hidden className="flex size-4 items-center justify-center rounded-[0.3125rem] bg-accent-soft text-accent">
                     <AgentMark size={8} />
                   </span>
                 )}
@@ -89,7 +89,7 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
         )}
       </div>
       {!!(files.length || folders.length) && (
-        <p className="text-center text-[13px] text-muted">Tap + to add a photo, a PDF or a document</p>
+        <p className="text-center text-[0.8125rem] text-muted">Tap + to add a photo, a PDF or a document</p>
       )}
     </div>
   );

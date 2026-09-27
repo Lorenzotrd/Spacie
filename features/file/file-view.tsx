@@ -20,8 +20,8 @@ export function FileView({ ctl, file, onCompare }: { ctl: Controller; file: File
   const here = ctl.presence.filter((e) => e.resourceId === file.id && e.principalId !== state.currentPrincipalId);
   const download = () => downloadFile(file, ctl.detail?.file.content).catch((e: Error) => ctl.setError(e.message));
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-5 overflow-y-auto px-7 pt-6 pb-6">
-      <button type="button" onClick={ctl.closeFile} className="inline-flex h-8 items-center gap-1.5 self-start text-[13px] text-muted hover:text-ink">
+    <div className="flex min-w-0 flex-1 flex-col gap-5 overflow-y-auto px-7 pt-6 pb-6 *:shrink-0">
+      <button type="button" onClick={ctl.closeFile} className="inline-flex h-8 items-center gap-1.5 self-start text-[0.8125rem] text-muted hover:text-ink">
         <ArrowLeft size={15} aria-hidden />
         Back to {ctl.currentFolder?.name ?? ctl.currentProject?.name ?? "project"}
       </button>
@@ -29,7 +29,7 @@ export function FileView({ ctl, file, onCompare }: { ctl: Controller; file: File
         <FileIcon file={file} size="lg" />
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <h1 className="m-0 truncate text-2xl font-semibold tracking-[-0.02em]">{file.name}</h1>
-          <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted">
+          <div className="flex flex-wrap items-center gap-2 text-[0.8125rem] text-muted">
             <Badge tone="type">{typeLabel(file)}</Badge>
             {file.version > 1 ? <Badge tone="accent">{versionLabel(file.version)}</Badge> : <span>{versionLabel(1)}</span>}
             <span className="inline-flex items-center gap-1.5">

@@ -10,7 +10,7 @@ import { AiBanner } from "./ai-banner";
 import { FileTable } from "./file-table";
 import { StatCards } from "./stat-cards";
 
-const toggle = "flex size-[30px] items-center justify-center rounded-[7px]";
+const toggle = "flex size-[1.875rem] items-center justify-center rounded-[0.4375rem]";
 
 export function ProjectView({ ctl, onCompare }: { ctl: Controller; onCompare: (fileId: string) => void }) {
   const state = ctl.state!;
@@ -42,7 +42,7 @@ export function ProjectView({ ctl, onCompare }: { ctl: Controller; onCompare: (f
 
   return (
     <div
-      className={cn("flex min-w-0 flex-1 flex-col gap-5 overflow-y-auto px-7 pt-7 pb-6", dragging && "bg-accent-tint/60")}
+      className={cn("flex min-w-0 flex-1 flex-col gap-5 overflow-y-auto px-7 pt-7 pb-6 *:shrink-0", dragging && "bg-accent-tint/60")}
       onDragOver={(e) => {
         if (!e.dataTransfer.types.includes("Files")) return;
         e.preventDefault();
@@ -54,7 +54,7 @@ export function ProjectView({ ctl, onCompare }: { ctl: Controller; onCompare: (f
       onDrop={onDrop}
     >
       <div className="flex flex-col gap-1.5">
-        <h1 className="m-0 text-[30px] font-semibold tracking-[-0.025em]">
+        <h1 className="m-0 text-[1.875rem] font-semibold tracking-[-0.025em]">
           {ctl.currentFolder?.name ?? ctl.currentProject?.name}
         </h1>
         {!ctl.currentFolder && ctl.currentProject?.description && (
@@ -84,7 +84,7 @@ export function ProjectView({ ctl, onCompare }: { ctl: Controller; onCompare: (f
             <ArrowDownUp size={15} aria-hidden />
             Sort: {ctl.sort === "recent" ? "recent" : "name"}
           </Button>
-          <div role="group" aria-label="Layout" className="flex gap-0.5 rounded-[9px] bg-segment p-[3px]">
+          <div role="group" aria-label="Layout" className="flex gap-0.5 rounded-[0.5625rem] bg-segment p-[0.1875rem]">
             <button
               type="button"
               aria-label="List view"

@@ -54,7 +54,7 @@ export const InviteCard = forwardRef<HTMLInputElement, {
     <SettingsCard title="Invite people">
       <form onSubmit={submit} className="flex flex-col gap-2.5 sm:flex-row sm:items-end">
         <label className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="text-[13px] font-medium text-ink-2">Email addresses</span>
+          <span className="text-[0.8125rem] font-medium text-ink-2">Email addresses</span>
           <input
             ref={ref}
             value={emails}
@@ -62,18 +62,18 @@ export const InviteCard = forwardRef<HTMLInputElement, {
             placeholder="name@company.com, another@company.com"
             autoComplete="off"
             aria-invalid={invalid.length > 0}
-            className="h-[42px] rounded-control border border-line bg-card px-3 text-sm text-ink outline-none placeholder:text-[#a3a5ac] focus:border-accent aria-invalid:border-danger-border"
+            className="h-[2.625rem] rounded-control border border-line bg-card px-3 text-sm text-ink outline-none placeholder:text-[#a3a5ac] focus:border-accent aria-invalid:border-danger-border"
           />
         </label>
-        <label className="flex flex-col gap-1.5 sm:w-[150px]">
-          <span className="text-[13px] font-medium text-ink-2">Role</span>
-          <RoleSelect value={role} onChange={setRole} allowAdmin={isOwner} label="Role for the invitation" className="h-[42px]" />
+        <label className="flex flex-col gap-1.5 sm:w-[9.375rem]">
+          <span className="text-[0.8125rem] font-medium text-ink-2">Role</span>
+          <RoleSelect value={role} onChange={setRole} allowAdmin={isOwner} label="Role for the invitation" className="h-[2.625rem]" />
         </label>
-        <Button type="submit" variant="primary" disabled={busy} className="h-[42px] px-4">
+        <Button type="submit" variant="primary" disabled={busy} className="h-[2.625rem] px-4">
           {busy ? "Creating…" : list.length > 1 ? `Create ${list.length} links` : "Create invite link"}
         </Button>
       </form>
-      <p className="m-0 text-[13px] leading-normal text-muted">
+      <p className="m-0 text-[0.8125rem] leading-normal text-muted">
         Each link works once and expires in 7 days. Spacie does not send email: share the link yourself. Leave the address
         empty for a link anyone can use once.
       </p>
@@ -83,7 +83,7 @@ export const InviteCard = forwardRef<HTMLInputElement, {
             <li key={c.link} className="flex items-center gap-3 rounded-xl bg-subtle py-2 pr-2 pl-3.5">
               <Link2 size={16} className="shrink-0 text-accent" aria-hidden />
               <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate font-mono text-[12.5px] text-ink-2">{c.link.replace(/^https?:\/\//, "")}</span>
+                <span className="truncate font-mono text-[0.78125rem] text-ink-2">{c.link.replace(/^https?:\/\//, "")}</span>
                 <span className="text-xs text-muted">{c.email ?? "Anyone with the link"}</span>
               </span>
               <Button

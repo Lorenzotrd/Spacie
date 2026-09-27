@@ -17,6 +17,8 @@ import { useWorkspace } from "@/features/workspace/use-workspace";
 import { postJson, useJson } from "../api";
 import { Pill, SettingsCard } from "../parts";
 import { SettingsShell } from "../settings-shell";
+import { clientById, clientOf } from "../agents/catalog";
+import { ClientLogo } from "../agents/client-logo";
 import { InviteCard } from "./invite-card";
 import { RoleSelect, type EditableRole } from "./role-select";
 
@@ -73,7 +75,7 @@ export function MembersSettings() {
                 {ROLES.map((r) => (
                   <div key={r.role} className="flex flex-col gap-1 rounded-xl bg-subtle p-3.5">
                     <span className="text-sm font-semibold">{r.role}</span>
-                    <span className="text-[13px] leading-normal text-muted">{r.text}</span>
+                    <span className="text-[0.8125rem] leading-normal text-muted">{r.text}</span>
                   </div>
                 ))}
               </SettingsCard>
@@ -98,13 +100,13 @@ function SeatsCard({ team }: { team: Team }) {
   return (
     <SettingsCard title="Seats">
       <div className="flex items-baseline gap-2">
-        <span className="text-[30px] font-semibold tracking-[-0.02em]">{people}</span>
-        <span className="text-[13px] text-muted">
+        <span className="text-[1.875rem] font-semibold tracking-[-0.02em]">{people}</span>
+        <span className="text-[0.8125rem] text-muted">
           {people === 1 ? "person" : "people"}
           {team.invitations.length > 0 && ` · ${team.invitations.length} invited`}
         </span>
       </div>
-      <span className="text-[13px] leading-normal text-muted">
+      <span className="text-[0.8125rem] leading-normal text-muted">
         {agents} AI {agents === 1 ? "agent" : "agents"} connected. AI agents never take a seat.
       </span>
     </SettingsCard>
@@ -114,11 +116,11 @@ function SeatsCard({ team }: { team: Team }) {
 /** Mobile: who and actions on one line, role and last activity below. Desktop: four columns. */
 function Row({ who, role, last, actions }: { who: ReactNode; role: ReactNode; last: ReactNode; actions: ReactNode }) {
   return (
-    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-[#f3f1ed] px-4 py-3 not-first:border-t md:min-h-16 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_150px] md:px-[18px] md:py-2">
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 border-[#f3f1ed] px-4 py-3 not-first:border-t md:min-h-16 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_150px] md:px-[1.125rem] md:py-2">
       {who}
       <div className="flex items-center gap-3 max-md:col-span-2 max-md:row-start-2 md:contents">
         <div>{role}</div>
-        <span className="text-[13px] text-[#55575f]">{last}</span>
+        <span className="text-[0.8125rem] text-[#55575f]">{last}</span>
       </div>
       <div className="flex justify-end gap-1.5 max-md:col-start-2 max-md:row-start-1">{actions}</div>
     </li>
@@ -167,7 +169,7 @@ function MemberTable({
 
   return (
     <Card className="overflow-hidden">
-      <div className="hidden h-[42px] grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_150px] items-center gap-3 border-b border-[#efede8] bg-subtle px-[18px] text-xs font-medium text-muted md:grid">
+      <div className="hidden h-[2.625rem] grid-cols-[minmax(0,2.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_150px] items-center gap-3 border-b border-[#efede8] bg-subtle px-[1.125rem] text-xs font-medium text-muted md:grid">
         <span>Member</span>
         <span>Role</span>
         <span>Last active</span>
@@ -180,7 +182,7 @@ function MemberTable({
               key={m.id}
               who={
                 <Who
-                  avatar={<Avatar person={{ type: "agent", name: m.name, initials: m.initials }} size="lg" className="size-9" />}
+                  avatar={<ClientLogo client={clientById(clientOf({ name: m.name, provider: m.provider ?? undefined }))} connected={false} size="sm" />}
                   name={m.name}
                   sub={`AI agent${m.provider && m.provider !== "Custom" ? ` · ${m.provider}` : ""}`}
                 />
@@ -189,7 +191,7 @@ function MemberTable({
               last={m.lastActiveAt ? relativeTime(m.lastActiveAt) : "Never"}
               actions={
                 team.canManage && (
-                  <Link href={`/settings/agents?agent=${m.id}`} className="flex min-h-9 items-center px-2 text-[13px] font-medium no-underline">
+                  <Link href={`/settings/agents?agent=${m.id}`} className="flex min-h-9 items-center px-2 text-[0.8125rem] font-medium no-underline">
                     Manage
                   </Link>
                 )
@@ -212,7 +214,7 @@ function MemberTable({
                     allowAdmin={isOwner}
                     disabled={busy === m.id}
                     label={`Role of ${m.name}`}
-                    className="w-[130px]"
+                    className="w-[8.125rem]"
                     onChange={(role) => void act(m.id, { action: "change_role", id: m.id, role }, `${m.name} is now ${role === "admin" ? "an admin" : `a ${role}`}`)}
                   />
                 ) : (
@@ -281,7 +283,7 @@ function InviteRow({
       who={
         <Who
           avatar={
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full border-[1.5px] border-dashed border-[#c9c5bc] text-muted">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full border-[0.09375rem] border-dashed border-[#c9c5bc] text-muted">
               <Mail size={15} strokeWidth={1.8} aria-hidden />
             </span>
           }
