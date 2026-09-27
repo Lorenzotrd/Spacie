@@ -255,11 +255,11 @@ export function Hero() {
   return (
     <section id="top" className="relative px-4 pt-10 pb-8 text-center md:px-10 md:pt-[72px] md:pb-16 xl:px-20">
       <div aria-hidden className="absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(#e1ded6_1px,transparent_1px)] bg-[size:20px_20px] opacity-55 md:h-[640px] md:bg-[size:24px_24px]" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 mx-auto hidden max-w-[1440px] xl:block">
+      <div aria-hidden className="pointer-events-none absolute inset-0 mx-auto hidden max-w-[1440px] [--k:0.3] lg:block xl:[--k:1]">
         {HERO_TILES.map((t) => (
-          <div key={t.name} className="absolute" style={{ [t.side]: t.x, top: t.y, transform: `rotate(${t.r}deg)` }}>
+          <div key={t.name} className="absolute" style={{ [t.side]: `calc(var(--k) * ${t.x}px)`, top: t.y, transform: `rotate(${t.r}deg)` }}>
             <div
-              className="flex size-16 animate-[lp-float_var(--dur)_ease-in-out_var(--delay)_infinite] items-center justify-center rounded-[18px] border border-line bg-white shadow-[0_16px_32px_-12px_rgba(23,24,28,0.2)]"
+              className="flex size-14 animate-[lp-float_var(--dur)_ease-in-out_var(--delay)_infinite] items-center justify-center rounded-2xl border border-line bg-white shadow-[0_16px_32px_-12px_rgba(23,24,28,0.2)] xl:size-16 xl:rounded-[18px]"
               style={{ ["--dur" as string]: `${5 + t.d}s`, ["--delay" as string]: `${t.d}s` }}
             >
               <NextImage src={AGENTS[t.name].logo} alt="" width={40} height={40} unoptimized className="object-contain" style={{ width: AGENTS[t.name].size, height: AGENTS[t.name].size }} />
