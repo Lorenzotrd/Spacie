@@ -21,7 +21,7 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
   const whoLabel = (id: string) => (id === state.currentPrincipalId ? "You" : principalById(state, id)?.name ?? "Someone");
 
   return (
-    <div className="flex flex-col gap-[22px] px-5 pt-7 pb-[110px]">
+    <div className="flex flex-col gap-[22px] px-5 pt-7 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
       <div className="flex items-center gap-3">
         <div className="flex flex-1 flex-col gap-0.5">
           <span className="text-[13px] text-muted">{state.workspace.name}</span>

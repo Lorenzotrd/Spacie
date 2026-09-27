@@ -56,7 +56,7 @@ export function TabBar({
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-[#eceae4] bg-card px-3 pt-2 pb-[max(24px,env(safe-area-inset-bottom))]"
+      className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-[#eceae4] bg-card px-3 pt-2 pb-[calc(6px+env(safe-area-inset-bottom,0px))]"
     >
       {LEFT.map(item)}
       <button

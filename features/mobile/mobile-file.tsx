@@ -34,7 +34,7 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
 
   return (
     <>
-      <div className="flex flex-col gap-[18px] px-5 pt-5 pb-[120px]">
+      <div className="flex flex-col gap-[18px] px-5 pt-5 pb-[calc(84px+env(safe-area-inset-bottom,0px))]">
         <div className="flex items-center gap-2">
           <button type="button" onClick={ctl.closeFile} aria-label="Back" className="-ml-2.5 flex size-11 items-center justify-center">
             <ChevronLeft size={22} aria-hidden />
@@ -141,7 +141,7 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
           {ctl.detail && <CommentList state={state} comments={ctl.detail.comments} mutate={ctl.mutate} />}
         </section>
       </div>
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#eceae4] bg-card px-4 pt-3 pb-[max(28px,env(safe-area-inset-bottom))]">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#eceae4] bg-card px-4 pt-3 pb-[calc(10px+env(safe-area-inset-bottom,0px))]">
         <CommentComposer
           large
           placeholder="Comment on this file"

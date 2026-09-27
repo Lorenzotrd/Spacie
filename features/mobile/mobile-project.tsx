@@ -21,7 +21,7 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
   const project = ctl.currentProject;
   if (!project)
     return (
-      <div className="px-5 pt-7 pb-[110px]">
+      <div className="px-5 pt-7 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
         <EmptyState icon={<FolderOpen size={20} />} title="No projects yet" hint="Ask an owner to create one." />
       </div>
     );
@@ -37,7 +37,7 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
   const whoLabel = (id: string) => (id === state.currentPrincipalId ? "You" : principalById(state, id)?.name ?? "Someone");
 
   return (
-    <div className="flex flex-col gap-[18px] px-5 pt-5 pb-[110px]">
+    <div className="flex flex-col gap-[18px] px-5 pt-5 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
       <div className="flex items-center gap-2">
         <button type="button" onClick={back} aria-label="Back" className="-ml-2.5 flex size-11 items-center justify-center">
           <ChevronLeft size={22} aria-hidden />

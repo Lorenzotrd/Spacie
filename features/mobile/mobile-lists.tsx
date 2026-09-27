@@ -15,7 +15,7 @@ const row = "flex min-h-[60px] w-full items-center gap-3 border-b border-[#f3f1e
 
 function Screen({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-[18px] px-5 pt-7 pb-[110px]">
+    <div className="flex flex-col gap-[18px] px-5 pt-7 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
       <h1 className="m-0 text-[26px] font-semibold tracking-[-0.02em]">{title}</h1>
       {children}
     </div>
