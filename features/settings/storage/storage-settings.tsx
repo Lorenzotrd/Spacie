@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Box, Check, MapPin, Trash2 } from "lucide-react";
+import { Box, Check, Trash2 } from "lucide-react";
 import type { Backup, StorageKind, StorageUsage } from "@/lib/storage-usage";
 import { ErrorState, Skeleton } from "@/components/ui/states";
 import { formatBytes } from "@/features/workspace/derive";
@@ -45,22 +45,7 @@ export function StorageSettings() {
               <ProjectsCard usage={usage.data} />
               <TrashCard usage={usage.data} />
             </div>
-            <div className="flex flex-col gap-4">
-              <BackupsCard backups={usage.data.backups} />
-              {usage.data.region && (
-                <SettingsCard>
-                  <div className="flex items-center gap-3">
-                    <Tile tone="accent">
-                      <MapPin size={17} strokeWidth={1.8} aria-hidden />
-                    </Tile>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-sm font-medium">{usage.data.region}</span>
-                      <span className="text-[13px] text-muted">Where your files and backups live.</span>
-                    </div>
-                  </div>
-                </SettingsCard>
-              )}
-            </div>
+            <BackupsCard backups={usage.data.backups} />
           </div>
         ) : usage.error ? (
           <ErrorState message={usage.error} onRetry={() => void usage.reload()} />

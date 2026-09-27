@@ -19,8 +19,6 @@ export type StorageUsage = {
   byProject: { id: string; name: string; bytes: number; files: number; versions: number }[];
   /** Null when the server does not expose its backups (SPACIE_BACKUP_DIR). */
   backups: Backup[] | null;
-  /** Where the data lives, e.g. "Falkenstein, Germany" (SPACIE_DATA_REGION). */
-  region: string | null;
 };
 
 export function kindOf(mime: string, name = ""): StorageKind {
@@ -51,7 +49,11 @@ async function sizeOf(entry: string): Promise<number> {
   return sizes.reduce((a, b) => a + b, 0);
 }
 
-/** The newest backups in SPACIE_BACKUP_DIR, or null when it is not set or not readable. */
+/**
+ * The newest backups in SPACIE_BACKUP_DIR, or null when it is not set or not readable.
+ * A nightly run writes several files (e.g. db-2026-09-27.dump and assets-2026-09-27.tar.gz):
+ * files whose names carry the same date count as one backup.
+ */
 export async function listBackups(dir = process.env.SPACIE_BACKUP_DIR): Promise<Backup[] | null> {
   if (!dir) return null;
   try {
@@ -63,7 +65,16 @@ export async function listBackups(dir = process.env.SPACIE_BACKUP_DIR): Promise<
         return { name, at: info.mtime.toISOString(), bytes: await sizeOf(full) };
       }),
     );
-    return entries.sort((a, b) => b.at.localeCompare(a.at)).slice(0, BACKUP_LIMIT);
+    const runs = new Map<string, Backup>();
+    for (const e of entries) {
+      const key = /\d{4}-\d{2}-\d{2}/.exec(e.name)?.[0] ?? e.name;
+      const run = runs.get(key);
+      runs.set(
+        key,
+        run ? { name: key, at: run.at > e.at ? run.at : e.at, bytes: run.bytes + e.bytes } : { ...e, name: key },
+      );
+    }
+    return [...runs.values()].sort((a, b) => b.at.localeCompare(a.at)).slice(0, BACKUP_LIMIT);
   } catch {
     return null;
   }
@@ -127,6 +138,5 @@ export async function storageUsage(db: Db, actor: Principal): Promise<StorageUsa
     byKind: KIND_ORDER.filter((k) => kinds.get(k)).map((kind) => ({ kind, bytes: kinds.get(kind)! })),
     byProject: [...perProject.values()].sort((a, b) => b.bytes - a.bytes),
     backups: await listBackups(),
-    region: process.env.SPACIE_DATA_REGION?.trim() || null,
   };
 }

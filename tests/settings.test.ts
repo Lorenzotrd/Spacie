@@ -195,3 +195,22 @@ test("file kinds and backups", async () => {
   assert.equal(await listBackups(undefined), null);
   assert.equal(await listBackups("/definitely/not/here"), null);
 });
+
+test("files from the same nightly run are one backup", async () => {
+  const { mkdtemp, writeFile, utimes } = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const path = await import("node:path");
+  const dir = await mkdtemp(path.join(tmpdir(), "spacie-backups-"));
+  const put = async (name: string, size: number, day: string) => {
+    await writeFile(path.join(dir, name), "x".repeat(size));
+    const at = new Date(`${day}T03:30:00Z`);
+    await utimes(path.join(dir, name), at, at);
+  };
+  await put("db-2026-09-26.dump", 10, "2026-09-26");
+  await put("assets-2026-09-26.tar.gz", 30, "2026-09-26");
+  await put("db-2026-09-27.dump", 12, "2026-09-27");
+  assert.deepEqual(
+    (await listBackups(dir))!.map((b) => [b.name, b.bytes]),
+    [["2026-09-27", 12], ["2026-09-26", 40]],
+  );
+});
