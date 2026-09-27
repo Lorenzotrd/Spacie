@@ -18,7 +18,7 @@ export async function POST(request: Request) {
       await (await boundedRequest(request, 10000)).json(),
     );
     await rateLimit(`login:${email.toLowerCase()}`, LOGIN_ATTEMPTS);
-    const token = await signIn(await db(), email, password);
+    const token = await signIn(await db(), email, password, request.headers.get("user-agent"));
     return Response.json({ ok: true }, { headers: { "Set-Cookie": sessionCookie(token) } });
   } catch (e) {
     return failure(e);

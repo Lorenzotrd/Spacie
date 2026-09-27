@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
     const body = input.parse(raw);
     await rateLimit(`join:${body.token.slice(0, 16)}`, 10);
-    const created = await acceptInvitation(await db(), body.token, body);
+    const created = await acceptInvitation(await db(), body.token, { ...body, device: request.headers.get("user-agent") });
     return Response.json({ ok: true }, { headers: { "Set-Cookie": sessionCookie(created) } });
   } catch (e) {
     return failure(e);

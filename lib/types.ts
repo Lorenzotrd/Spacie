@@ -141,6 +141,8 @@ export type PublicState = {
   directUploads: boolean;
   /** Public MCP endpoint agents connect to; set by the HTTP route from SPACIE_ORIGIN. */
   mcpUrl?: string;
+  /** Starting values of the Share dialog for new public links; set by the HTTP route. */
+  linkDefaults?: { expiresInDays: 7 | 30 | 90 | null; allowDownload: boolean; askPassword: boolean };
   principals: Principal[];
   projects: Project[];
   folders: Folder[];

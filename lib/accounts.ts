@@ -44,11 +44,12 @@ let decoy: Promise<string> | undefined;
 
 const newSecret = () => randomBytes(32).toString("base64url");
 
-export async function createSession(db: Db, userId: string) {
+/** `device` is the browser's User-Agent, shown in Settings > Profile > Active sessions. */
+export async function createSession(db: Db, userId: string, device?: string | null) {
   const token = newSecret();
   await db.query(
-    "insert into sessions (token_hash, user_id, expires_at) values ($1, $2, $3)",
-    [hashToken(token), userId, new Date(Date.now() + SESSION_TTL_MS).toISOString()],
+    "insert into sessions (token_hash, user_id, expires_at, user_agent, last_seen_at) values ($1, $2, $3, $4, now())",
+    [hashToken(token), userId, new Date(Date.now() + SESSION_TTL_MS).toISOString(), device?.slice(0, 300) ?? null],
   );
   return token;
 }
@@ -67,7 +68,14 @@ export async function sessionPrincipal(db: Db, token: string): Promise<Principal
      limit 1`,
     [hashToken(token)],
   );
-  return row ? fromRow<Principal>(row) : null;
+  if (!row) return null;
+  // At most one write every five minutes per session.
+  await db.query(
+    `update sessions set last_seen_at = now()
+     where token_hash = $1 and (last_seen_at is null or last_seen_at < now() - interval '5 minutes')`,
+    [hashToken(token)],
+  );
+  return fromRow<Principal>(row);
 }
 
 export async function endSession(db: Db, token: string) {
@@ -75,7 +83,7 @@ export async function endSession(db: Db, token: string) {
 }
 
 /** Returns a new session token, or throws one message for every failure. */
-export async function signIn(db: Db, email: string, password: string) {
+export async function signIn(db: Db, email: string, password: string, device?: string | null) {
   const [user] = await db.query<{ id: string; password_hash: string | null }>(
     "select id, password_hash from users where lower(email) = lower($1)",
     [email.trim()],
@@ -83,7 +91,7 @@ export async function signIn(db: Db, email: string, password: string) {
   decoy ??= hashPassword("decoy-password-never-matches");
   const ok = await verifyPassword(password, user?.password_hash ?? (await decoy));
   if (!user?.password_hash || !ok) throw new Error("UNAUTHORIZED: Wrong email or password.");
-  return createSession(db, user.id);
+  return createSession(db, user.id, device);
 }
 
 export async function createInvitation(
@@ -116,7 +124,7 @@ export const initials = (name: string) =>
 export async function acceptInvitation(
   db: Db,
   token: string,
-  input: { name: string; email: string; password: string },
+  input: { name: string; email: string; password: string; device?: string | null },
 ) {
   const passwordHash = await hashPassword(input.password);
   const email = input.email.trim().toLowerCase();
@@ -146,7 +154,7 @@ export async function acceptInvitation(
       [invite.workspace_id, member.id, input.name.trim()],
     );
     await tx.query("update workspaces set revision = revision + 1 where id = $1", [invite.workspace_id]);
-    return createSession(tx, user.id);
+    return createSession(tx, user.id, input.device);
   });
 }
 

@@ -164,6 +164,100 @@ export async function revokeShareLink(db: Db, actor: Principal, id: string) {
   return { id };
 }
 
+/** Turns a link that was switched off back on, unless it has expired since. */
+export async function restoreShareLink(db: Db, actor: Principal, id: string) {
+  const [row] = await db.query<LinkRow>(
+    "select * from share_links where id = $1 and workspace_id = $2 and revoked_at is not null",
+    [id, actor.workspaceId],
+  );
+  if (!row) throw new Error("Share link not found");
+  if (row.expires_at && new Date(row.expires_at).getTime() <= Date.now())
+    throw new Error("This link has expired. Create a new one instead.");
+  const target: ShareTarget = { type: row.resource_type, id: row.file_id ?? row.folder_id ?? row.project_id };
+  const place = await locate(db, actor.workspaceId, target);
+  requirePermission(await loadAccess(db, actor), actor, "publish", place.resource);
+  await db.transaction(async (tx) => {
+    await tx.query("update share_links set revoked_at = null where id = $1", [id]);
+    await touchWorkspace(tx, actor, "turned back on a public link to", place.name, place);
+  });
+  return { id };
+}
+
+export type LinkStatus = "active" | "expired" | "off";
+export type WorkspaceShareLink = ShareLink & {
+  status: LinkStatus;
+  target: { type: ShareTarget["type"]; id: string; name: string; projectId: string; folderId: string | null };
+  /** The actor may turn this link off or on. */
+  canManage: boolean;
+};
+
+const LIST_LIMIT = 200;
+
+/**
+ * Every public link in the workspace, newest first: owners and admins see all of them,
+ * everyone else the links they made. Links to deleted items are left out.
+ */
+export async function listWorkspaceShareLinks(db: Db, actor: Principal, origin: string): Promise<WorkspaceShareLink[]> {
+  const access = await loadAccess(db, actor);
+  const everyone = can(access, actor, "manage_members", { workspaceId: actor.workspaceId });
+  const rows = await db.query<LinkRow & { target_name: string }>(
+    `select l.*, coalesce(f.name, d.name, p.name) as target_name from share_links l
+     join projects p on p.id = l.project_id
+     left join folders d on d.id = l.folder_id and l.resource_type = 'folder'
+     left join files f on f.id = l.file_id
+     where l.workspace_id = $1 and ($2 or l.created_by = $3) and (f.id is null or not f.deleted)
+     order by l.created_at desc limit ${LIST_LIMIT}`,
+    [actor.workspaceId, everyone, actor.id],
+  );
+  const now = Date.now();
+  return rows.map((row) => {
+    const expired = !!row.expires_at && new Date(row.expires_at).getTime() <= now;
+    const resource: Resource = {
+      workspaceId: actor.workspaceId,
+      projectId: row.project_id,
+      folderId: row.resource_type === "project" ? null : row.folder_id,
+    };
+    return {
+      ...present(row, origin),
+      status: row.revoked_at ? "off" : expired ? "expired" : "active",
+      target: {
+        type: row.resource_type,
+        id: row.file_id ?? row.folder_id ?? row.project_id,
+        name: row.target_name,
+        projectId: row.project_id,
+        folderId: row.folder_id,
+      },
+      canManage: can(access, actor, "publish", resource),
+    };
+  });
+}
+
+/** What the Share dialog starts from for a new link. A default, never a rule. */
+export const linkDefaults = z.object({
+  expiresInDays: z.union([z.literal(7), z.literal(30), z.literal(90), z.null()]).default(30),
+  allowDownload: z.boolean().default(true),
+  askPassword: z.boolean().default(false),
+});
+export type LinkDefaults = z.infer<typeof linkDefaults>;
+
+export async function getLinkDefaults(db: Db, workspaceId: string): Promise<LinkDefaults> {
+  const [row] = await db.query<{ link_defaults: unknown }>("select link_defaults from workspaces where id = $1", [
+    workspaceId,
+  ]);
+  const parsed = linkDefaults.safeParse(row?.link_defaults ?? {});
+  return parsed.success ? parsed.data : linkDefaults.parse({});
+}
+
+export async function setLinkDefaults(db: Db, actor: Principal, input: unknown) {
+  requirePermission(await loadAccess(db, actor), actor, "manage_members", { workspaceId: actor.workspaceId });
+  const next = linkDefaults.parse(input);
+  await db.query("update workspaces set link_defaults = $2::jsonb, revision = revision + 1 where id = $1", [
+    actor.workspaceId,
+    JSON.stringify(next),
+  ]);
+  return next;
+}
+
 // ---- Public side: everything below is reachable without an account. ----
 
 export class ShareAccessError extends Error {

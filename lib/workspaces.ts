@@ -8,11 +8,11 @@ export type WorkspaceSummary = { id: string; name: string; role: Role; current: 
 const WORKSPACE_NAME_MAX = 80;
 
 /** People only: agents belong to exactly one workspace and never switch. */
-function requireHuman(actor: Principal) {
+export function requireHuman(actor: Principal) {
   if (actor.type !== "human") throw new Error("FORBIDDEN: Only people can manage workspaces.");
 }
 
-async function userOf(db: Db, actor: Principal): Promise<{ id: string; name: string; email: string }> {
+export async function userOf(db: Db, actor: Principal): Promise<{ id: string; name: string; email: string }> {
   const [row] = await db.query<{ id: string; name: string; email: string }>(
     `select u.id, u.name, u.email from principals p join users u on u.id = p.user_id
      where p.id = $1 and p.workspace_id = $2 and p.type = 'human'`,
