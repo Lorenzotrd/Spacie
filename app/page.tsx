@@ -6,6 +6,10 @@ import { AgentMarquee, Features, FinalCta, Footer, Problem } from "@/features/la
 import { HowItWorks } from "@/features/landing/how-it-works";
 import { Faq, Pricing } from "@/features/landing/pricing";
 
+// Rendered per request so the MCP URL comes from the running server's SPACIE_ORIGIN
+// (the build does not see the service's environment).
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Spacie · Your team and your AI agents on the same files",
   description:
