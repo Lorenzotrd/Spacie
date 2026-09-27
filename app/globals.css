@@ -1930,3 +1930,44 @@ body {
 .share-invite summary::-webkit-details-marker { display: none; }
 .share-invite[open] summary { margin-bottom: 12px; }
 }
+
+/* ---- Public landing page (features/landing) ---- */
+/* The landing is drawn at its designed size; the 95% density is for the app only. */
+html:has(.landing) {
+  font-size: 100%;
+}
+html:has(.landing) svg.lucide {
+  zoom: 1;
+}
+@keyframes lp-word-in { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes lp-fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes lp-slide-in { from { opacity: 0; transform: translateY(-14px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes lp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes lp-cursor-a { 0% { transform: translate(0, 0); } 22% { transform: translate(210px, 70px); } 45% { transform: translate(160px, 190px); } 70% { transform: translate(-30px, 120px); } 100% { transform: translate(0, 0); } }
+@keyframes lp-cursor-b { 0% { transform: translate(0, 0); } 30% { transform: translate(-120px, -60px); } 60% { transform: translate(-40px, 110px); } 100% { transform: translate(0, 0); } }
+@keyframes lp-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes lp-pulse { 0% { box-shadow: 0 0 0 0 rgba(43, 89, 217, 0.45); } 70% { box-shadow: 0 0 0 12px rgba(43, 89, 217, 0); } 100% { box-shadow: 0 0 0 0 rgba(43, 89, 217, 0); } }
+@keyframes lp-fill { from { width: 0; } to { width: 100%; } }
+@keyframes lp-blink { 50% { opacity: 0; } }
+@keyframes lp-typing { from { width: 0; } to { width: var(--lp-chars); } }
+@keyframes lp-drift-1 { 0%, 100% { transform: rotate(-5deg) translate(0, 0); } 50% { transform: rotate(-3deg) translate(8px, -10px); } }
+@keyframes lp-drift-2 { 0%, 100% { transform: rotate(4deg) translate(0, 0); } 50% { transform: rotate(6deg) translate(-8px, 8px); } }
+@keyframes lp-drift-3 { 0%, 100% { transform: rotate(-2deg) translate(0, 0); } 50% { transform: rotate(1deg) translate(6px, 10px); } }
+@keyframes lp-shimmer { 0% { background-position: -240px 0; } 100% { background-position: 240px 0; } }
+@keyframes lp-line-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes lp-pop-in { 0% { opacity: 0; transform: scale(0.6); } 70% { transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+.landing .lp-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.landing .lp-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(23, 24, 28, 0.08);
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
