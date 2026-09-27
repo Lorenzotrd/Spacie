@@ -3,6 +3,8 @@ import type { Dispatch, SetStateAction, RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { FileText, Folder, Upload, ChevronRight } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Tabs } from "@/components/ui/tabs";
 import { Avatar } from "@/components/ui/avatar";
 import type { PublicState, FileMeta, Principal, Action } from "@/lib/types";
 import { actions } from "@/lib/types";
@@ -575,36 +577,39 @@ export function WorkspaceDialogs({
             onError={setError}
           >
             <form
+              className="flex flex-col gap-3"
               onSubmit={(e) => {
                 e.preventDefault();
                 void submit();
               }}
             >
-              <label className="field-label">
-                Email address (optional: locks the link to this person)
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-medium text-ink-2">Role</span>
+                <Tabs
+                  label="Role"
+                  stretch
+                  items={[
+                    { id: "member", label: "Member" },
+                    { id: "viewer", label: "Viewer" },
+                    { id: "admin", label: "Admin" },
+                  ]}
+                  value={inviteRole}
+                  onChange={(role) => setInviteRole(role)}
+                />
+              </div>
+              <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-2">
+                Email (optional, locks the link to this person)
                 <input
                   type="email"
                   value={replyEmail}
                   onChange={(e) => setReplyEmail(e.target.value)}
                   placeholder="teammate@company.com"
+                  className="h-10 rounded-control border border-line bg-card px-3 text-sm font-normal text-ink outline-none focus:border-accent"
                 />
               </label>
-              <label className="field-label">
-                Role
-                <select
-                  value={inviteRole}
-                  onChange={(e) =>
-                    setInviteRole(e.target.value as typeof inviteRole)
-                  }
-                >
-                  <option value="member">Member</option>
-                  <option value="viewer">Viewer</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </label>
-              <button className="button primary modal-submit" disabled={busy}>
-                Create invitation link
-              </button>
+              <Button type="submit" variant="primary" size="lg" disabled={busy} className="w-full">
+                {busy ? "Creating…" : "Create invitation link"}
+              </Button>
             </form>
           </SharePanel>
         ) : null

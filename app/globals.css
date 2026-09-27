@@ -44,6 +44,16 @@
   --accent: var(--color-accent-soft);
 }
 
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(24px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
 /* Older class-based styles sit below Tailwind utilities so utilities always win. */
 @layer components {
 * {
