@@ -6,11 +6,13 @@ import { SearchBox } from "@/features/shell/search-box";
 import { fileCount, latestAgentAction, principalById, relativeTime } from "@/features/workspace/derive";
 import { FileIcon } from "@/features/workspace/file-icon";
 import type { Controller } from "@/features/workspace/use-controller";
+import { useSeen } from "@/features/workspace/use-seen";
 
 const RECENT = 5;
 
 export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: string) => void }) {
   const state = ctl.state!;
+  const { seen, markSeen } = useSeen(`home:${state.workspace.id}`);
   const recent = state.files.filter((f) => !f.deleted).slice(0, RECENT);
   // The newest agent action across every project the person can see.
   const latest = state.projects
@@ -32,10 +34,13 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
         </span>
       </div>
       <SearchBox state={state} onFile={ctl.openFile} onPerson={(p) => onPerson(p.id)} className="[&_label]:h-12 [&_label]:rounded-[14px] [&_input]:text-[15px] [&_kbd]:hidden" />
-      {latest?.file && !latest.file.deleted && (
+      {latest?.file && !latest.file.deleted && latest.event.id !== seen && (
         <button
           type="button"
-          onClick={() => ctl.openFile(latest.file!)}
+          onClick={() => {
+            markSeen(latest.event.id);
+            ctl.openFile(latest.file!);
+          }}
           className="flex flex-col items-stretch gap-3.5 rounded-[18px] bg-accent p-4 text-left text-white"
         >
           <span className="flex items-center gap-2.5">
