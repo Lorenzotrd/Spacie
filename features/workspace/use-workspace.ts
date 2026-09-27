@@ -10,6 +10,8 @@ export function useWorkspace() {
   const [state, setState] = useState<PublicState | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  /** True while background refreshes fail; the last loaded data stays on screen. */
+  const [offline, setOffline] = useState(false);
   const revision = useRef<number | null>(null);
   const refresh = useCallback(async (force = false) => {
     const since = !force && revision.current !== null ? `?since=${revision.current}` : "";
@@ -22,7 +24,10 @@ export function useWorkspace() {
   }, []);
   useEffect(() => {
     refresh(true).catch((e) => setError(e.message));
-    const interval = setInterval(() => refresh().catch(() => undefined), POLL_MS);
+    const interval = setInterval(
+      () => refresh().then(() => setOffline(false), () => setOffline(true)),
+      POLL_MS,
+    );
     return () => clearInterval(interval);
   }, [refresh]);
   useEffect(() => {
@@ -47,5 +52,5 @@ export function useWorkspace() {
     },
     [refresh],
   );
-  return { state, error, setError, notice, setNotice, mutate, refresh };
+  return { state, error, setError, notice, setNotice, mutate, refresh, offline };
 }

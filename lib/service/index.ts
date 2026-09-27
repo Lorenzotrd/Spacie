@@ -5,6 +5,7 @@ import type { CommandContext } from "./context";
 import { createComment, toggleComment } from "./comments";
 import { createEntry, fileCommand } from "./files";
 import { agentCredentials, createProject, share } from "./members";
+import { updateAgent } from "./agents";
 import type { Command, CommandResult } from "./schema";
 
 export { commandSchema } from "./schema";
@@ -16,6 +17,7 @@ const handlers: Record<Command["action"], (ctx: CommandContext) => Promise<Comma
   connect_agent: agentCredentials,
   rotate_token: agentCredentials,
   disconnect_agent: agentCredentials,
+  update_agent: updateAgent,
   share,
   create_folder: createEntry,
   create_document: createEntry,
