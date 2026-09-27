@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, Download, Link2, RotateCcw } from "lucide-react";
 import type { FileMeta } from "@/lib/types";
-import { AgentMark, Avatar } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { FileMenu } from "@/components/ui/dropdown-menu";
 import { ErrorState, SkeletonRows } from "@/components/ui/states";
@@ -117,13 +117,7 @@ export function MobileFile({ ctl, file }: { ctl: Controller; file: FileMeta }) {
                     active ? "border-[0.09375rem] border-accent" : "border border-[#eceae4]",
                   )}
                 >
-                  {who?.type === "agent" ? (
-                    <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-[0.625rem] bg-accent-soft text-accent">
-                      <AgentMark size={15} />
-                    </span>
-                  ) : (
-                    <Avatar person={who} size="lg" className="size-9" />
-                  )}
+                  <Avatar person={who} size="lg" className="size-9" />
                   <span className="flex flex-1 flex-col gap-0.5">
                     <span className="text-[0.9375rem] font-semibold">Version {v.number}</span>
                     <span className="text-[0.8125rem] text-muted">

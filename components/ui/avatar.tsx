@@ -1,3 +1,5 @@
+import NextImage from "next/image";
+import { CLIENT_LOGOS, clientOf } from "@/lib/agent-clients";
 import type { Principal } from "@/lib/types";
 import { cn } from "./cn";
 
@@ -21,19 +23,29 @@ export function AgentMark({ size = 12, className }: { size?: number; className?:
 }
 
 type Size = "xs" | "sm" | "md" | "lg";
-const boxes: Record<Size, { box: string; text: string; mark: number; radius: string }> = {
-  xs: { box: "size-4", text: "text-[0.5rem]", mark: 8, radius: "rounded-[0.3125rem]" },
-  sm: { box: "size-6", text: "text-[0.6875rem]", mark: 11, radius: "rounded-[0.4375rem]" },
-  md: { box: "size-[1.875rem]", text: "text-xs", mark: 13, radius: "rounded-[0.5625rem]" },
-  lg: { box: "size-[2.125rem]", text: "text-sm", mark: 15, radius: "rounded-[0.625rem]" },
+const boxes: Record<Size, { box: string; text: string; mark: number; radius: string; px: number }> = {
+  xs: { px: 16, box: "size-4", text: "text-[0.5rem]", mark: 8, radius: "rounded-[0.3125rem]" },
+  sm: { px: 24, box: "size-6", text: "text-[0.6875rem]", mark: 11, radius: "rounded-[0.4375rem]" },
+  md: { px: 30, box: "size-[1.875rem]", text: "text-xs", mark: 13, radius: "rounded-[0.5625rem]" },
+  lg: { px: 34, box: "size-[2.125rem]", text: "text-sm", mark: 15, radius: "rounded-[0.625rem]" },
 };
 
 const initial = (person?: Pick<Principal, "name" | "initials">) =>
   (person?.initials?.[0] ?? person?.name?.[0] ?? "?").toUpperCase();
 
+/** An agent's glyph: its client's logo when Spacie knows the client, else the agent mark. */
+function AgentGlyph({ agent, box, mark }: { agent: Pick<Principal, "name" | "provider">; box: number; mark: number }) {
+  const client = clientOf(agent);
+  if (client === "other") return <AgentMark size={mark} />;
+  const logo = CLIENT_LOGOS[client];
+  const px = Math.max(10, Math.round((logo.size / 40) * box));
+  return <NextImage src={logo.src} alt="" width={px} height={px} unoptimized className="object-contain" style={{ width: px, height: px }} />;
+}
+
 /**
- * Humans are a round black disc with their initial; agents are a rounded square
- * with the agent mark. Shape and glyph carry the distinction, never colour alone.
+ * Humans are a round black disc with their initial; agents are a rounded light-blue
+ * square with their client's logo (or the agent mark). Shape carries the distinction,
+ * never colour alone.
  */
 export function Avatar({
   person,
@@ -42,7 +54,7 @@ export function Avatar({
   ring = false,
   className,
 }: {
-  person?: Pick<Principal, "type" | "name" | "initials">;
+  person?: Pick<Principal, "type" | "name" | "initials"> & { provider?: string };
   /** Legacy shorthand for size="sm". */
   small?: boolean;
   size?: Size;
@@ -65,7 +77,7 @@ export function Avatar({
         className,
       )}
     >
-      {agent ? <AgentMark size={s.mark} /> : initial(person)}
+      {agent && person ? <AgentGlyph agent={person} box={s.px} mark={s.mark} /> : initial(person)}
     </span>
   );
 }
@@ -75,7 +87,7 @@ export function AvatarStack({
   people,
   max = 4,
 }: {
-  people: Pick<Principal, "id" | "type" | "name" | "initials">[];
+  people: (Pick<Principal, "id" | "type" | "name" | "initials"> & { provider?: string })[];
   max?: number;
 }) {
   const shown = people.slice(0, max);

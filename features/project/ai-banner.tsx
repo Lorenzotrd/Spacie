@@ -1,7 +1,7 @@
 "use client";
 import { X } from "lucide-react";
 import type { PublicState } from "@/lib/types";
-import { AgentMark } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { Button, IconButton } from "@/components/ui/button";
 import { latestAgentAction, relativeTime } from "@/features/workspace/derive";
 import { useSeen } from "@/features/workspace/use-seen";
@@ -35,9 +35,7 @@ export function AiBanner({
       aria-label="Latest AI activity"
       className="flex items-center gap-3 rounded-xl border border-accent-border bg-accent-tint py-2.5 pr-2 pl-3"
     >
-      <span className="flex size-[1.875rem] shrink-0 items-center justify-center rounded-lg bg-accent text-white">
-        <AgentMark size={14} />
-      </span>
+      <Avatar person={agent} size="md" className="bg-card" />
       <p className="min-w-0 flex-1 text-[0.8125rem] text-ink-2">
         <span className="font-semibold text-ink">{agent.name}</span> {event.action}{" "}
         <span className="font-semibold text-ink">{event.name}</span> · {relativeTime(event.createdAt)}

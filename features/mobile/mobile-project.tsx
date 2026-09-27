@@ -1,6 +1,6 @@
 "use client";
 import { ChevronLeft, ChevronRight, FolderOpen } from "lucide-react";
-import { AgentMark, AvatarStack } from "@/components/ui/avatar";
+import { Avatar, AvatarStack } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/states";
@@ -73,9 +73,7 @@ export function MobileProject({ ctl }: { ctl: Controller }) {
               <span className="truncate text-[0.9375rem] font-medium">{f.name}</span>
               <span className="flex items-center gap-1.5 text-[0.8125rem] text-muted">
                 {isAgent(state, f.updatedBy) && (
-                  <span aria-hidden className="flex size-4 items-center justify-center rounded-[0.3125rem] bg-accent-soft text-accent">
-                    <AgentMark size={8} />
-                  </span>
+                  <Avatar person={state.principals.find((p) => p.id === f.updatedBy)} size="xs" />
                 )}
                 {whoLabel(f.updatedBy)} · {relativeTime(f.updatedAt)}
               </span>

@@ -1,6 +1,6 @@
 "use client";
 import { ArrowRight, Box, ChevronRight, Plus } from "lucide-react";
-import { AgentMark } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/states";
 import { SearchBox } from "@/features/shell/search-box";
 import { WorkspaceSwitcher } from "@/features/shell/workspace-switcher";
@@ -56,9 +56,7 @@ export function MobileHome({ ctl, onPerson }: { ctl: Controller; onPerson: (id: 
           className="flex flex-col items-stretch gap-3.5 rounded-[1.125rem] bg-accent p-4 text-left text-white"
         >
           <span className="flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center rounded-[0.5625rem] bg-white/20">
-              <AgentMark size={14} />
-            </span>
+            <Avatar person={latest.agent} size="md" className="size-8 bg-white" />
             <span className="flex-1 text-[0.8125rem] font-medium">
               {latest.agent.name} · {relativeTime(latest.event.createdAt)}
             </span>

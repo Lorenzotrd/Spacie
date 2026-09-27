@@ -1,13 +1,13 @@
-import type { Principal } from "@/lib/types";
+import { CLIENT_LOGOS, clientOf, type ClientId } from "@/lib/agent-clients";
 
-export type ClientId = "claude" | "claudecode" | "codex" | "hermes" | "openclaw" | "other";
+export { clientOf, type ClientId };
 
 export type ClientGuide = {
   id: ClientId;
   name: string;
   /** Monogram, used as the logo's text alternative. */
   initial: string;
-  /** Logo in /public/agents, and its size in a 40px tile (logos have different padding). */
+  /** Logo in /public/agents, and its size in a 40px tile. */
   logo: { src: string; size: number };
   via: string;
   /** OAuth clients connect from their own app; the others use a token generated here. */
@@ -23,12 +23,11 @@ const jsonConfig = (url: string, token = TOKEN_PLACEHOLDER) =>
   JSON.stringify({ mcpServers: { spacie: { url, headers: { Authorization: `Bearer ${token}` } } } }, null, 2);
 
 /** How to connect each supported client. Copy only; the URL comes from the server. */
-export const CLIENTS: readonly ClientGuide[] = [
+const GUIDES: readonly Omit<ClientGuide, "logo">[] = [
   {
     id: "claude",
     name: "Claude",
     initial: "C",
-    logo: { src: "/agents/claude.webp", size: 22 },
     via: "claude.ai, Desktop and mobile · MCP connector",
     auth: "oauth",
     steps: [
@@ -43,7 +42,6 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "claudecode",
     name: "Claude Code",
     initial: "CC",
-    logo: { src: "/agents/claude-code.png", size: 26 },
     via: "Terminal, VS Code, JetBrains",
     auth: "oauth",
     steps: [
@@ -58,7 +56,6 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "codex",
     name: "Codex",
     initial: "Cx",
-    logo: { src: "/agents/codex.png", size: 26 },
     via: "CLI and IDE · config.toml",
     auth: "oauth",
     steps: [
@@ -73,7 +70,6 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "hermes",
     name: "Hermes",
     initial: "H",
-    logo: { src: "/agents/hermes.png", size: 34 },
     via: "Your agent on a server · agent token",
     auth: "token",
     steps: [
@@ -88,7 +84,6 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "openclaw",
     name: "OpenClaw",
     initial: "OC",
-    logo: { src: "/agents/openclaw.svg", size: 34 },
     via: "Managed agent · agent token",
     auth: "token",
     steps: [
@@ -103,7 +98,6 @@ export const CLIENTS: readonly ClientGuide[] = [
     id: "other",
     name: "Other agent",
     initial: "+",
-    logo: { src: "/agents/mcp.png", size: 26 },
     via: "Any MCP client",
     auth: "token",
     steps: [
@@ -116,18 +110,9 @@ export const CLIENTS: readonly ClientGuide[] = [
   },
 ];
 
-export const clientById = (id: ClientId) => CLIENTS.find((c) => c.id === id)!;
+export const CLIENTS: readonly ClientGuide[] = GUIDES.map((g) => ({ ...g, logo: CLIENT_LOGOS[g.id] }));
 
-/** Which guide an existing agent belongs to, from its provider and name. */
-export function clientOf(agent: Pick<Principal, "provider" | "name">): ClientId {
-  const text = `${agent.provider ?? ""} ${agent.name}`.toLowerCase();
-  if (/claude[\s_-]*code/.test(text)) return "claudecode";
-  if (/codex|openai/.test(text)) return "codex";
-  if (/hermes/.test(text)) return "hermes";
-  if (/openclaw/.test(text)) return "openclaw";
-  if (/claude|anthropic/.test(text)) return "claude";
-  return "other";
-}
+export const clientById = (id: ClientId) => CLIENTS.find((c) => c.id === id)!;
 
 /** Provider stored for agents created from a token guide. */
 export const providerFor = (id: ClientId) => (id === "other" ? "Custom" : clientById(id).name);
