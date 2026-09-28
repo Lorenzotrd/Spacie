@@ -75,6 +75,8 @@ export function seed(): WorkspaceState {
       id: ids.rebond,
       name: "Rebond",
       description: "A fresh perspective. A stronger brand.",
+      instructions:
+        "Rebond is a rebrand for a client. Write in English, keep every claim sourced in the brief, and never overwrite a version without saying why.",
       color: "#8a73d5",
     },
     {
@@ -95,7 +97,7 @@ export function seed(): WorkspaceState {
       description: "How we work, together.",
       color: "#7a96af",
     },
-  ].map((p) => ({ ...p, workspaceId: ids.workspace }));
+  ].map((p) => ({ instructions: "", ...p, workspaceId: ids.workspace }));
   const folders = [
     "Briefs",
     "Campaigns",

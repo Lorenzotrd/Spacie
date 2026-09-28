@@ -147,7 +147,7 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
     const s = await view();
     return { workspace: s.workspace, you: actor.id, projects: s.projects, principals: s.principals, grants: s.grants };
   });
-  read("get_project_context", "A project's folders and files (metadata).", { projectId }, async (a) => {
+  read("get_project_context", "A project's instructions for agents, folders and files (metadata). Follow project.instructions before you act.", { projectId }, async (a) => {
     const s = await view();
     const project = s.projects.find((p) => p.id === a.projectId);
     if (!project) throw new Error("Project not found or access denied");

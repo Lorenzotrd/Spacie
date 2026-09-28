@@ -41,6 +41,8 @@ export type Project = {
   workspaceId: string;
   name: string;
   description: string;
+  /** Context every agent reads before it acts in this project. */
+  instructions: string;
   color: string;
 };
 export type Folder = {

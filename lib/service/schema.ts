@@ -6,6 +6,7 @@ export const commandSchema = z
   .object({
     action: z.enum([
       "create_project",
+      "update_project",
       "create_folder",
       "create_document",
       "update_document",
@@ -30,6 +31,8 @@ export const commandSchema = z
     parentId: z.string().uuid().nullable().optional(),
     name: z.string().trim().min(1).max(180).optional(),
     content: z.string().max(2_000_000).optional(),
+    /** update_project: the project's instructions for agents. */
+    instructions: z.string().max(10_000).optional(),
     version: z.number().int().positive().optional(),
     baseVersion: z.number().int().positive().optional(),
     provider: z.string().max(50).optional(),

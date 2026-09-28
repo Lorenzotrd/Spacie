@@ -6,10 +6,11 @@ import {
   folderFiles,
   formatBytes,
   latestAgentAction,
+  fileHistory,
+  projectFiles,
   projectMembers,
-  projectStats,
   relativeTime,
-  shortAge,
+  shortAction,
   storageUsed,
   tabCounts,
   typeLabel,
@@ -52,15 +53,29 @@ test("typeLabel prefers DOC, then the extension, then the MIME subtype", () => {
   assert.equal(typeLabel({ mime: "", name: "blob" }), "FILE");
 });
 
-test("projectStats counts live files, their versions and agent actions", () => {
+test("projectFiles lists every live file in the project, folders included", () => {
+  assert.deepEqual(projectFiles(files, "p", "recent").map((f) => f.id), ["deck", "brief", "nested"]);
+  assert.deepEqual(projectFiles(files, "p", "name").map((f) => f.id), ["brief", "deck", "nested"]);
+});
+
+test("fileHistory lists who touched a file and its latest change", () => {
+  const deck = files[0];
   const activity = [
-    event("a1", "claude", "2026-01-01T12:00:00Z"),
-    event("a2", "lorenzo", "2026-01-01T12:30:00Z"),
-    event("a3", "claude", "2026-01-01T13:00:00Z", { projectId: "q" }),
+    event("a1", "lorenzo", "2026-01-01T09:00:00Z", { fileId: "deck", action: "uploaded" }),
+    event("a2", "claude", "2026-01-01T12:00:00Z", { fileId: "deck", action: "uploaded a new version of" }),
+    event("a3", "claude", "2026-01-01T13:00:00Z", { fileId: "brief" }),
   ];
-  assert.deepEqual(projectStats({ files, activity, principals }, "p"), {
-    files: 3, versions: 4, aiChanges: 1, lastModified: "2026-01-01T12:00:00Z",
-  });
+  const h = fileHistory({ activity, principals }, deck);
+  assert.deepEqual(h.people.map((p) => p.id), ["claude", "lorenzo"]);
+  assert.equal(h.last.who?.id, "claude");
+  assert.equal(h.last.what, "uploaded a new version");
+  // No activity loaded for the file: fall back to its metadata.
+  const bare = fileHistory({ activity: [], principals }, deck);
+  assert.deepEqual(bare.people.map((p) => p.id), ["lorenzo"]);
+  assert.equal(bare.last.what, "saved v2");
+  assert.equal(bare.last.at, deck.updatedAt);
+  assert.equal(shortAction("commented on"), "commented");
+  assert.equal(shortAction("uploaded"), "uploaded");
 });
 
 test("latestAgentAction returns the newest agent event in the project", () => {
@@ -95,8 +110,6 @@ test("formatting helpers", () => {
   assert.equal(relativeTime("2026-01-01T23:15:00Z", now), "45 min ago");
   assert.equal(relativeTime("2026-01-01T12:00:00Z", now), "12 h ago");
   assert.equal(relativeTime("2025-12-30T00:00:00Z", now), "3 d ago");
-  assert.equal(shortAge("2026-01-01T12:00:00Z", now), "12 h");
-  assert.equal(shortAge(null, now), "—");
   assert.equal(versionLabel(1), "1 version");
   assert.equal(versionLabel(2), "2 versions");
 });

@@ -24,9 +24,9 @@ export async function importSnapshot(db: Db, s: WorkspaceState) {
       );
     for (const [i, p] of s.projects.entries())
       await tx.query(
-        `insert into projects (id, workspace_id, name, description, color, created_at)
-         values ($1, $2, $3, $4, $5, $6)`,
-        [p.id, wid, p.name, p.description, p.color, at(i)],
+        `insert into projects (id, workspace_id, name, description, instructions, color, created_at)
+         values ($1, $2, $3, $4, $5, $6, $7)`,
+        [p.id, wid, p.name, p.description, p.instructions ?? "", p.color, at(i)],
       );
     const pending = [...s.folders];
     const inserted = new Set<string>();

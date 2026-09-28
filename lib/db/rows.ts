@@ -3,7 +3,7 @@ import type { Row } from "./client";
 /** Column lists aliased to the domain types in lib/types.ts. */
 export const columns = {
   principal: `id, workspace_id as "workspaceId", type, name, initials, color, provider, status, role`,
-  project: `id, workspace_id as "workspaceId", name, description, color`,
+  project: `id, workspace_id as "workspaceId", name, description, instructions, color`,
   folder: `id, workspace_id as "workspaceId", project_id as "projectId", parent_id as "parentId", name`,
   fileMeta: `id, workspace_id as "workspaceId", project_id as "projectId", folder_id as "folderId", name, mime, size,
     updated_by as "updatedBy", updated_at as "updatedAt", version, deleted, storage_key as "storageKey",

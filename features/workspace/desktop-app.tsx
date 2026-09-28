@@ -9,7 +9,7 @@ import { projectMembers } from "./derive";
 import { ActivityView, HomeView, TrashView } from "./secondary-views";
 import type { Controller } from "./use-controller";
 
-/** 1440px layout: sidebar, then a rounded main panel with the top bar, content and right rail. */
+/** 1440px layout: sidebar, then a rounded main panel with the top bar, content and, on a file, the right rail. */
 export function DesktopApp({ ctl, onPerson }: { ctl: Controller; onPerson: (p: Principal) => void }) {
   const state = ctl.state!;
   const inSpace = ctl.view === "space";
@@ -25,7 +25,7 @@ export function DesktopApp({ ctl, onPerson }: { ctl: Controller; onPerson: (p: P
   ) : ctl.file ? (
     <FileView ctl={ctl} file={ctl.file} onCompare={() => compare(ctl.file!.id)} />
   ) : ctl.currentProject ? (
-    <ProjectView ctl={ctl} onCompare={compare} />
+    <ProjectView ctl={ctl} onCompare={compare} onPerson={onPerson} />
   ) : (
     <div className="flex flex-1 items-center justify-center p-10 text-center text-sm text-muted">
       No projects yet. Create one from the sidebar to get started.
@@ -57,11 +57,11 @@ export function DesktopApp({ ctl, onPerson }: { ctl: Controller; onPerson: (p: P
           onPerson={onPerson}
           onShare={() => ctl.dialog("share")}
           onNew={() => ctl.dialog("new")}
-          onToggleRail={inSpace && !ctl.showRail ? () => ctl.setShowRail(true) : undefined}
+          onToggleRail={inSpace && ctl.file && !ctl.showRail ? () => ctl.setShowRail(true) : undefined}
         />
         <div className="flex min-h-0 flex-1">
           {content}
-          {inSpace && ctl.showRail && ctl.currentProject && <RightRail ctl={ctl} onCompare={compare} />}
+          {inSpace && ctl.showRail && ctl.file && <RightRail ctl={ctl} file={ctl.file} onCompare={compare} />}
         </div>
       </main>
     </div>

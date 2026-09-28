@@ -12,6 +12,7 @@ import type { ShareTargetRef } from "./share-panel";
 
 export type View = "space" | "home" | "activity" | "trash" | "projects" | "me";
 export type RailTab = "activity" | "comments" | "versions";
+export type ProjectTab = "files" | "activity" | "members" | "settings";
 export type InviteRole = "member" | "viewer" | "admin";
 
 const DEFAULT_AGENT_PERMISSIONS: Action[] = [
@@ -26,6 +27,7 @@ export function useController() {
   const [place, setPlace] = useState<Place>({ project: "", folder: null, selected: null });
   const { project, folder, selected } = place;
   const [view, setView] = useState<View>("space");
+  const [projectTab, setProjectTab] = useState<ProjectTab>("files");
   const [tab, setTab] = useState<FileTab>("all");
   const [sort, setSort] = useState<FileSort>("recent");
   const [grid, setGrid] = useState(false);
@@ -92,6 +94,7 @@ export function useController() {
   const navigate = useCallback((projectId: string, folderId: string | null = null) => {
     setPlace({ project: projectId, folder: folderId, selected: null });
     setView("space");
+    setProjectTab("files");
   }, []);
   const openFile = useCallback((f: FileMeta) => {
     setPlace({ project: f.projectId, folder: f.folderId, selected: f.id });
@@ -212,7 +215,7 @@ export function useController() {
   return {
     ...ws,
     project, folder, selected, file, currentProject: p, currentFolder, me,
-    view, setView, tab, setTab, sort, setSort, grid, setGrid,
+    view, setView, projectTab, setProjectTab, tab, setTab, sort, setSort, grid, setGrid,
     rail, setRail, showRail, setShowRail, presence, busy,
     detail, detailError, retryDetail, loadVersion, fileResults, compare, setCompare,
     navigate, openFile, closeFile, reloadWorkspace, setSelected, dialog, shareOne, copyLink, uploadFiles, upload,

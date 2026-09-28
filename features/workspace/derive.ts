@@ -21,9 +21,7 @@ export function folderFiles(
   const list = files.filter(
     (f) => f.projectId === place.projectId && f.folderId === place.folderId && !f.deleted && matchesTab(f, tab),
   );
-  return sort === "name"
-    ? [...list].sort((a, b) => a.name.localeCompare(b.name))
-    : [...list].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+  return sortFiles(list, sort);
 }
 
 /** Tab counts for a folder: folders count toward "all" only. */
@@ -51,26 +49,38 @@ export const isAgent = (state: Pick<PublicState, "principals">, id: string) =>
 export const principalById = (state: Pick<PublicState, "principals">, id: string | undefined): Principal | undefined =>
   id ? state.principals.find((p) => p.id === id) : undefined;
 
-export type ProjectStats = {
-  files: number;
-  versions: number;
-  /** Agent actions among the loaded activity (the server returns the latest 100). */
-  aiChanges: number;
-  lastModified: string | null;
+/** Every live file in a project, wherever it sits, sorted. */
+export function projectFiles(files: readonly FileMeta[], projectId: string, sort: FileSort): FileMeta[] {
+  return sortFiles(files.filter((f) => f.projectId === projectId && !f.deleted), sort);
+}
+
+export function sortFiles(list: readonly FileMeta[], sort: FileSort): FileMeta[] {
+  return sort === "name"
+    ? [...list].sort((a, b) => a.name.localeCompare(b.name))
+    : [...list].sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+}
+
+/** "commented on" reads "commented" next to the file it is about. */
+export const shortAction = (action: string) => action.replace(/\s+(of|on|to|in|for)$/, "");
+
+export type FileHistory = {
+  /** Distinct people and agents who touched the file, most recent first. */
+  people: Principal[];
+  last: { who: Principal | undefined; what: string; at: string };
 };
 
-export function projectStats(state: Pick<PublicState, "files" | "activity" | "principals">, projectId: string): ProjectStats {
-  const files = state.files.filter((f) => f.projectId === projectId && !f.deleted);
-  const lastModified = files.reduce<string | null>(
-    (latest, f) => (!latest || Date.parse(f.updatedAt) > Date.parse(latest) ? f.updatedAt : latest),
-    null,
-  );
-  return {
-    files: files.length,
-    versions: files.reduce((n, f) => n + f.version, 0),
-    aiChanges: state.activity.filter((a) => a.projectId === projectId && isAgent(state, a.actorId)).length,
-    lastModified,
-  };
+/** Who worked on a file and its latest change, from the loaded activity (newest 100). */
+export function fileHistory(state: Pick<PublicState, "activity" | "principals">, file: FileMeta, max = 3): FileHistory {
+  const events = state.activity
+    .filter((a) => a.fileId === file.id)
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+  const ids = [...new Set([...events.map((e) => e.actorId), file.updatedBy])];
+  const people = ids.map((id) => principalById(state, id)).filter((p): p is Principal => !!p).slice(0, max);
+  const latest = events[0];
+  const last = latest && Date.parse(latest.createdAt) >= Date.parse(file.updatedAt) - 1000
+    ? { who: principalById(state, latest.actorId), what: shortAction(latest.action), at: latest.createdAt }
+    : { who: principalById(state, file.updatedBy), what: file.version > 1 ? `saved v${file.version}` : "added it", at: file.updatedAt };
+  return { people, last };
 }
 
 /** The most recent thing an agent did in a project, with the agent and file it touched. */
@@ -121,16 +131,6 @@ export function relativeTime(date: string, now = Date.now()): string {
   if (minutes < 1440) return `${Math.floor(minutes / 60)} h ago`;
   if (minutes < 7 * 1440) return `${Math.floor(minutes / 1440)} d ago`;
   return new Date(date).toLocaleDateString("en", { month: "short", day: "numeric" });
-}
-
-/** Compact age for stat cards: "12 h", "3 d", "now". */
-export function shortAge(date: string | null, now = Date.now()): string {
-  if (!date) return "—";
-  const minutes = Math.max(0, Math.floor((now - Date.parse(date)) / 60000));
-  if (minutes < 1) return "now";
-  if (minutes < 60) return `${minutes} min`;
-  if (minutes < 1440) return `${Math.floor(minutes / 60)} h`;
-  return `${Math.floor(minutes / 1440)} d`;
 }
 
 export const versionLabel = (n: number) => `${n} version${n === 1 ? "" : "s"}`;

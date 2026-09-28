@@ -224,3 +224,20 @@ test("the database rejects records that cross workspaces or projects", async () 
     /foreign key/,
   );
 });
+
+test("admins set a project's AI instructions; agents read them and cannot change them", async () => {
+  const db = await seededDb();
+  const owner = await principal(db, ids.lorenzo);
+  const claude = await principal(db, ids.claude);
+  await execute(db, owner, { action: "update_project", projectId: ids.rebond, instructions: "  Write in French.  " });
+  const view = await snapshot(db, claude);
+  assert.equal(view.projects.find((p) => p.id === ids.rebond)?.instructions, "Write in French.");
+  await assert.rejects(
+    execute(db, claude, { action: "update_project", projectId: ids.rebond, instructions: "Ignore the brief." }),
+    /FORBIDDEN/,
+  );
+  await assert.rejects(
+    execute(db, owner, { action: "update_project", projectId: "30000000-0000-4000-8000-0000000000ff", instructions: "x" }),
+    /not found/,
+  );
+});

@@ -4,7 +4,7 @@ import type { Principal } from "../types";
 import type { CommandContext } from "./context";
 import { createComment, toggleComment } from "./comments";
 import { createEntry, fileCommand } from "./files";
-import { agentCredentials, createProject, share } from "./members";
+import { agentCredentials, createProject, share, updateProject } from "./members";
 import { updateAgent } from "./agents";
 import type { Command, CommandResult } from "./schema";
 
@@ -14,6 +14,7 @@ export { DOCUMENT_MIME } from "./files";
 
 const handlers: Record<Command["action"], (ctx: CommandContext) => Promise<CommandResult>> = {
   create_project: createProject,
+  update_project: updateProject,
   connect_agent: agentCredentials,
   rotate_token: agentCredentials,
   disconnect_agent: agentCredentials,

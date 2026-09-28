@@ -25,6 +25,20 @@ export async function createProject(ctx: CommandContext): Promise<CommandResult>
   return { id: project.id };
 }
 
+/** Admins edit a project's instructions for agents. */
+export async function updateProject(ctx: CommandContext): Promise<CommandResult> {
+  const { tx, actor, access, c } = ctx;
+  requirePermission(access, actor, "manage_members", { workspaceId: actor.workspaceId });
+  const id = required(c.projectId, "Project");
+  const [project] = await tx.query<{ name: string }>(
+    "update projects set instructions = $3 where id = $1 and workspace_id = $2 returning name",
+    [id, actor.workspaceId, (c.instructions ?? "").trim()],
+  );
+  if (!project) throw new Error("Project not found");
+  await record(ctx, "updated the AI instructions of", project.name, { projectId: id });
+  return { id };
+}
+
 async function createAgent(ctx: CommandContext) {
   const { tx, actor, access, c } = ctx;
   const scopes = c.scope ?? [];
