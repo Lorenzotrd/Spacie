@@ -121,6 +121,36 @@ export async function inspectInvitation(db: Db, token: string) {
 export const initials = (name: string) =>
   name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
 
+export type PendingInvitation = { id: string; workspace_id: string; role: Role; email: string | null };
+
+/** Locks a live invitation for redemption by `email` (lowercase), or throws. Call inside a transaction. */
+export async function claimInvitation(tx: Db, token: string, email: string) {
+  const [invite] = await tx.query<PendingInvitation>(
+    `select id, workspace_id, role, email from invitations
+     where token_hash = $1 and accepted_at is null and expires_at > now() for update`,
+    [hashToken(token)],
+  );
+  if (!invite) throw new Error("This invitation link is invalid or has expired.");
+  if (invite.email && invite.email !== email)
+    throw new Error("This invitation was sent to a different email address.");
+  return invite;
+}
+
+/** Adds the person to the invitation's workspace and uses up the invitation. */
+export async function addMember(tx: Db, invite: PendingInvitation, user: { id: string; name: string }) {
+  const [member] = await tx.query<{ id: string }>(
+    `insert into principals (workspace_id, type, user_id, name, initials, color, status, role)
+     values ($1, 'human', $2, $3, $4, '#4568f5', 'online', $5) returning id`,
+    [invite.workspace_id, user.id, user.name, initials(user.name), invite.role],
+  );
+  await tx.query("update invitations set accepted_at = now() where id = $1", [invite.id]);
+  await tx.query(
+    `insert into activity_events (workspace_id, actor_id, action, name) values ($1, $2, 'joined', $3)`,
+    [invite.workspace_id, member.id, user.name],
+  );
+  await tx.query("update workspaces set revision = revision + 1 where id = $1", [invite.workspace_id]);
+}
+
 /** Creates the account and its workspace membership from a single-use link, then signs in. */
 export async function acceptInvitation(
   db: Db,
@@ -129,32 +159,16 @@ export async function acceptInvitation(
 ) {
   const passwordHash = await hashPassword(input.password);
   const email = input.email.trim().toLowerCase();
+  const name = input.name.trim();
   return db.transaction(async (tx) => {
-    const [invite] = await tx.query<{ id: string; workspace_id: string; role: Role; email: string | null }>(
-      `select id, workspace_id, role, email from invitations
-       where token_hash = $1 and accepted_at is null and expires_at > now() for update`,
-      [hashToken(token)],
-    );
-    if (!invite) throw new Error("This invitation link is invalid or has expired.");
-    if (invite.email && invite.email !== email)
-      throw new Error("This invitation was sent to a different email address.");
+    const invite = await claimInvitation(tx, token, email);
     const [existing] = await tx.query("select 1 from users where lower(email) = $1", [email]);
     if (existing) throw new Error("An account already exists for this email. Sign in instead.");
     const [user] = await tx.query<{ id: string }>(
       "insert into users (id, email, name, password_hash) values (gen_random_uuid(), $1, $2, $3) returning id",
-      [email, input.name.trim(), passwordHash],
+      [email, name, passwordHash],
     );
-    const [member] = await tx.query<{ id: string }>(
-      `insert into principals (workspace_id, type, user_id, name, initials, color, status, role)
-       values ($1, 'human', $2, $3, $4, '#4568f5', 'online', $5) returning id`,
-      [invite.workspace_id, user.id, input.name.trim(), initials(input.name), invite.role],
-    );
-    await tx.query("update invitations set accepted_at = now() where id = $1", [invite.id]);
-    await tx.query(
-      `insert into activity_events (workspace_id, actor_id, action, name) values ($1, $2, 'joined', $3)`,
-      [invite.workspace_id, member.id, input.name.trim()],
-    );
-    await tx.query("update workspaces set revision = revision + 1 where id = $1", [invite.workspace_id]);
+    await addMember(tx, invite, { id: user.id, name });
     return createSession(tx, user.id, input.device);
   });
 }
