@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Box, Download, FileText, Film, Image as ImageIcon, Lock } from "lucide-react";
+import { ArrowLeft, Download, FileText, Film, Image as ImageIcon, Lock } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 import { PdfPreview } from "@/features/workspace/pdf-preview";
 import { DocumentView } from "@/features/workspace/document-view";
 
@@ -90,7 +91,7 @@ export function PublicShare({ token }: { token: string }) {
   if (error)
     return (
       <div className="loading-screen">
-        <Box size={35} />
+        <Logo variant="icon" size={40} />
         <h1>Link unavailable</h1>
         <p>{error} It may have expired or been turned off by its owner.</p>
       </div>
@@ -122,7 +123,7 @@ export function PublicShare({ token }: { token: string }) {
   if (!view)
     return (
       <div className="loading-screen">
-        <Box size={35} />
+        <Logo variant="icon" size={40} />
         <p>Opening shared content…</p>
       </div>
     );
@@ -131,7 +132,7 @@ export function PublicShare({ token }: { token: string }) {
   return (
     <div className="public-share">
       <header className="public-bar">
-        <span className="public-brand"><Box size={18} /> spacie</span>
+        <span className="public-brand"><Logo size={22} /></span>
         <span className="public-meta">Shared by {view.sharedBy} · {view.workspace}</span>
         {open && open.hasBinary && view.allowDownload && (
           <a className="button" href={assetLink(open, { download: true })}>

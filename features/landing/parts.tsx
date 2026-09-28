@@ -1,4 +1,5 @@
 import NextImage from "next/image";
+import { Logo } from "@/components/brand/logo";
 import type { CSSProperties, ReactNode } from "react";
 import { FileCode, FileText, Image as ImageIcon, Presentation, FileType2 } from "lucide-react";
 import { cn } from "@/components/ui/cn";
@@ -80,7 +81,7 @@ export function SectionHead({
   return (
     <div className={cn("flex max-w-[760px] flex-col gap-3 md:gap-4", center && "items-center text-center", className)}>
       <span className="text-xs font-semibold tracking-[0.08em] text-accent md:text-[13px]">{eyebrow}</span>
-      <h2 className="m-0 text-[34px] leading-[1.08] font-semibold tracking-[-0.035em] md:text-[52px] md:leading-[1.05] md:tracking-[-0.04em]">
+      <h2 className="font-display m-0 text-[34px] leading-[1.08] font-semibold tracking-[-0.035em] md:text-[52px] md:leading-[1.05] md:tracking-[-0.04em]">
         {title}
       </h2>
       {lead && <p className="m-0 text-base leading-[1.55] text-[#55575f] md:text-lg">{lead}</p>}
@@ -88,16 +89,7 @@ export function SectionHead({
   );
 }
 
-/** The Spacie mark: a white cube on a blue tile. */
+/** The Atelio app icon. */
 export function Mark({ size = 32 }: { size?: number }) {
-  return (
-    <span
-      className="flex shrink-0 items-center justify-center bg-accent"
-      style={{ width: size, height: size, borderRadius: Math.round(size * 0.28) }}
-    >
-      <svg width={Math.round(size * 0.53)} height={Math.round(size * 0.53)} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M12 2 3 7v10l9 5 9-5V7zM3 7l9 5 9-5M12 12v10" />
-      </svg>
-    </span>
-  );
+  return <Logo variant="icon" size={size} />;
 }

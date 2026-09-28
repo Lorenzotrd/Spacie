@@ -35,6 +35,7 @@
   --radius-panel: 18px;
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-bricolage), var(--font-geist), ui-sans-serif, sans-serif;
 }
 
 /* Legacy names used by older class-based styles, mapped onto the tokens above. */

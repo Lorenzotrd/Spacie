@@ -129,7 +129,7 @@ export function WorkspaceDialogs({
             share: shareTarget ? `Share ${shareTarget.name}` : "Invite your team",
             workspace: "Your workspace",
           } as Record<string, string>
-        )[modal] ?? "Spacie"
+        )[modal] ?? "Atelio"
       }
       description={
         modal === "connect"
@@ -413,7 +413,7 @@ export function WorkspaceDialogs({
             <input
               readOnly
               onFocus={(e) => e.target.select()}
-              value={`claude mcp add --transport http spacie ${typeof window !== "undefined" ? window.location.origin : ""}/api/mcp --header "Authorization: Bearer ${token}"`}
+              value={`claude mcp add --transport http atelio ${typeof window !== "undefined" ? window.location.origin : ""}/api/mcp --header "Authorization: Bearer ${token}"`}
             />
           </label>
           <label className="field-label">
@@ -427,7 +427,7 @@ export function WorkspaceDialogs({
             {JSON.stringify(
               {
                 mcpServers: {
-                  spacie: {
+                  atelio: {
                     url:
                       typeof window !== "undefined"
                         ? window.location.origin + "/api/mcp"
@@ -448,7 +448,7 @@ export function WorkspaceDialogs({
                   JSON.stringify(
                     {
                       mcpServers: {
-                        spacie: {
+                        atelio: {
                           url: window.location.origin + "/api/mcp",
                           headers: { Authorization: "Bearer " + token },
                         },

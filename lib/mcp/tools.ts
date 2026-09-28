@@ -103,7 +103,7 @@ const mutations: Record<string, Mutation> = {
 /** Builds a per-request MCP server bound to one authenticated agent. */
 /** `origin` is the public base URL, used to build upload links. */
 export function buildServer(db: Db, actor: Principal, origin = "") {
-  const server = new McpServer({ name: "spacie", version: "0.2.0" });
+  const server = new McpServer({ name: "atelio", version: "0.2.0" });
   const read = (name: string, description: string, input: z.ZodRawShape, run: (args: Record<string, unknown>) => Promise<unknown>) =>
     server.registerTool(name, { description, inputSchema: input }, (args) => guard(() => run(args)));
   /** The agent's view; project instructions are left out when the workspace turned them off. */
@@ -206,7 +206,7 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
     {
       description:
         "Create a public, read-only link to a file, a folder (with subfolders) or a whole project, for people " +
-        "without a Spacie account (e.g. a client). Pass exactly one of fileId, folderId or projectId. " +
+        "without an Atelio account (e.g. a client). Pass exactly one of fileId, folderId or projectId. " +
         "Requires the publish permission. Returns the URL; the owner can turn it off anytime.",
       inputSchema: {
         fileId: id.optional().describe("Share one file"),
@@ -253,7 +253,7 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
       inputSchema: {
         projectId,
         folderId,
-        name: z.string().min(1).max(180).describe("File name shown in Spacie, with its extension, e.g. Audit.pdf"),
+        name: z.string().min(1).max(180).describe("File name shown in Atelio, with its extension, e.g. Audit.pdf"),
         mime: z.string().max(120).describe("e.g. application/pdf, application/vnd.openxmlformats-officedocument.presentationml.presentation, image/png"),
       },
     },
@@ -266,7 +266,7 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
     "create_download_link",
     {
       description:
-        "Read a stored file that is not a Spacie document (PDF, PowerPoint, Word, Excel, image, CSV…). Returns a link valid " +
+        "Read a stored file that is not an Atelio document (PDF, PowerPoint, Word, Excel, image, CSV…). Returns a link valid " +
         "15 minutes: run curl --fail -o <name> \"<url>\" in your sandbox or terminal, then open the file there. Small text " +
         "files are also returned inline as `text`. Pass version (from get_versions) for an older upload, or preview: true " +
         "for the PDF rendition of an Office file. Your sandbox must be allowed to reach this server's domain.",

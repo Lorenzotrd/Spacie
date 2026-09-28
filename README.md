@@ -1,4 +1,4 @@
-# Spacie
+# Atelio
 
 The collaborative filesystem for humans and AI agents.
 
@@ -39,7 +39,7 @@ npm run build
 ```json
 {
   "mcpServers": {
-    "spacie": {
+    "atelio": {
       "url": "http://localhost:3000/api/mcp",
       "headers": { "Authorization": "Bearer YOUR_ONE_TIME_TOKEN" }
     }

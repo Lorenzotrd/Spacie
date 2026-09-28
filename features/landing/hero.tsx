@@ -95,7 +95,7 @@ function DesktopMock() {
           ))}
           <div className="mx-auto flex h-7 items-center gap-2 rounded-lg border border-[#eceae4] bg-white px-3.5 text-xs text-muted">
             <Lock size={12} aria-hidden />
-            spacie / spacie / launch
+            atelio / atelio / launch
           </div>
           <span className="w-[50px]" />
         </div>
@@ -103,12 +103,12 @@ function DesktopMock() {
           <div className="hidden w-[210px] shrink-0 flex-col gap-1 border-r border-divider bg-[#faf9f6] px-3 py-[18px] lg:flex">
             <div className="flex items-center gap-[9px] px-2 pb-3.5">
               <Mark size={26} />
-              <span className="text-[13px] font-semibold">Spacie</span>
+              <span className="text-[13px] font-semibold">Atelio</span>
             </div>
             <div className="px-2 pb-1.5 text-[10px] font-semibold tracking-[0.08em] text-muted">PROJECTS</div>
             <div className="flex h-[34px] items-center gap-2 rounded-lg bg-accent-soft px-2 text-[13px] font-medium text-accent-hover">
               <span className="size-[7px] rounded-[2px] bg-accent" />
-              Spacie launch
+              Atelio launch
             </div>
             {["Brand", "Website"].map((p) => (
               <div key={p} className="flex h-[34px] items-center gap-2 px-2 text-[13px] text-ink-2">
@@ -128,7 +128,7 @@ function DesktopMock() {
           <div className="flex min-w-0 flex-1 flex-col gap-4 px-6 py-[22px]">
             <div className="flex items-center gap-2.5">
               <div className="flex flex-1 flex-col gap-[3px]">
-                <span className="text-xl font-semibold tracking-[-0.02em]">Spacie launch</span>
+                <span className="text-xl font-semibold tracking-[-0.02em]">Atelio launch</span>
                 <span className="text-xs text-muted">5 files · 3 agents connected</span>
               </div>
               <span className="flex h-8 items-center rounded-lg border border-line px-3 text-xs font-medium">Share</span>
@@ -223,7 +223,7 @@ function MobileMock() {
       <div className="flex items-center gap-2.5 border-b border-divider p-4">
         <Mark size={30} />
         <div className="flex flex-1 flex-col gap-px">
-          <span className="text-[15px] font-semibold">Spacie launch</span>
+          <span className="text-[15px] font-semibold">Atelio launch</span>
           <span className="text-xs text-muted">5 files · 3 agents connected</span>
         </div>
         <LivePill />
@@ -280,7 +280,7 @@ export function Hero() {
           </span>
         </div>
 
-        <h1 className="m-0 mt-[22px] animate-[lp-fade-up_.8s_ease_.1s_both] text-[42px] leading-[1.12] font-semibold tracking-[-0.04em] md:mt-7 md:text-[60px] md:leading-[1.1] md:tracking-[-0.045em] xl:text-[76px] xl:whitespace-nowrap">
+        <h1 className="font-display m-0 mt-[22px] animate-[lp-fade-up_.8s_ease_.1s_both] text-[42px] leading-[1.12] font-semibold tracking-[-0.04em] md:mt-7 md:text-[60px] md:leading-[1.1] md:tracking-[-0.045em] xl:text-[76px] xl:whitespace-nowrap">
           Your team and <br className="md:hidden" />
           <RotatingAgent />
           <br />

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PublicShare } from "@/features/public/public-share";
 
 export const metadata: Metadata = {
-  title: "Shared with you · Spacie",
+  title: "Shared with you · Atelio",
   robots: { index: false, follow: false },
   referrer: "no-referrer",
 };

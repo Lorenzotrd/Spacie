@@ -74,7 +74,7 @@ export const InviteCard = forwardRef<HTMLInputElement, {
         </Button>
       </form>
       <p className="m-0 text-[0.8125rem] leading-normal text-muted">
-        Each link works once and expires in 7 days. Spacie does not send email: share the link yourself. Leave the address
+        Each link works once and expires in 7 days. Atelio does not send email: share the link yourself. Leave the address
         empty for a link anyone can use once.
       </p>
       {created.length > 0 && (

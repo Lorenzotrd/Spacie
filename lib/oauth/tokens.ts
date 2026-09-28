@@ -37,7 +37,7 @@ async function assertAgentActive(tx: Db, agentId: string) {
     "select status from principals where id = $1 and type = 'agent'",
     [agentId],
   );
-  if (!agent || agent.status === "offline") throw invalidGrant("This connection was revoked in Spacie.");
+  if (!agent || agent.status === "offline") throw invalidGrant("This connection was revoked in Atelio.");
 }
 
 /** A short-lived access token (an agent token row) plus a rotating refresh token. */

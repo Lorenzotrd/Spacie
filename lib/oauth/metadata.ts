@@ -15,7 +15,7 @@ export function protectedResource(origin: string) {
     authorization_servers: [origin],
     scopes_supported: [SCOPE],
     bearer_methods_supported: ["header"],
-    resource_name: "Spacie",
+    resource_name: "Atelio",
   };
 }
 

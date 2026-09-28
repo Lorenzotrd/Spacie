@@ -118,7 +118,7 @@ function ProfileBody({
           <form onSubmit={save} className="flex flex-col gap-4">
             <div className="flex items-center gap-4">
               <Avatar person={me && { ...me, name: name || me.name, initials: (name || me.name)[0] ?? "?" }} size="lg" className="size-16 text-[1.5625rem]" />
-              <p className="text-[0.8125rem] leading-normal text-muted">Your initial is your avatar everywhere in Spacie. Agents get the blue mark.</p>
+              <p className="text-[0.8125rem] leading-normal text-muted">Your initial is your avatar everywhere in Atelio. Agents get the blue mark.</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Field label="First name" value={first} onChange={(e) => setFirst(e.target.value)} required maxLength={40} autoComplete="given-name" className="min-w-40" />
@@ -140,7 +140,7 @@ function ProfileBody({
               <select className={selectClass} value="en" disabled aria-describedby="language-hint">
                 <option value="en">English</option>
               </select>
-              <span id="language-hint" className="text-xs text-muted">Spacie is in English for now.</span>
+              <span id="language-hint" className="text-xs text-muted">Atelio is in English for now.</span>
             </label>
             <label className="flex min-w-40 flex-1 flex-col gap-1.5">
               <span className="text-[0.8125rem] font-medium text-ink-2">Time zone</span>
@@ -159,7 +159,7 @@ function ProfileBody({
                   </option>
                 ))}
               </select>
-              <span className="text-xs text-muted">Dates and times across Spacie use it.</span>
+              <span className="text-xs text-muted">Dates and times across Atelio use it.</span>
             </label>
           </div>
         </SettingsCard>

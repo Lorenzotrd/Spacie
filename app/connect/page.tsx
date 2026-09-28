@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 
 type Consent = {
   client: { name: string; redirectHost: string };
@@ -78,7 +78,7 @@ export default function Connect() {
 
   return (
     <div className="loading-screen">
-      <Box size={35} />
+      <Logo variant="icon" size={40} />
       <h1>{consent ? `Connect ${consent.client.name}` : "Connect an app"}</h1>
       {consent && (
         <>
@@ -94,7 +94,7 @@ export default function Connect() {
             }}
           >
             <label className="field-label">
-              Name in Spacie
+              Name in Atelio
               <input required maxLength={80} value={name} onChange={(e) => setName(e.target.value)} />
             </label>
             <label className="field-label">

@@ -8,7 +8,7 @@ test("every guide has three steps and builds its code from the given URL", () =>
     assert.equal(c.steps.length, 3, c.id);
     assert.ok(c.code(url).includes(url), c.id);
   }
-  assert.equal(clientById("claudecode").code(url), `claude mcp add --transport http spacie ${url}`);
+  assert.equal(clientById("claudecode").code(url), `claude mcp add --transport http atelio ${url}`);
   assert.ok(clientById("hermes").code(url).includes(TOKEN_PLACEHOLDER));
   assert.ok(clientById("hermes").code(url, "tok_123").includes("Bearer tok_123"));
   assert.doesNotThrow(() => JSON.parse(clientById("openclaw").code(url, "t")));

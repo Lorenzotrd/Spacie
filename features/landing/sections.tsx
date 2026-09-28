@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { ArrowRight, Link2, Monitor, ShieldCheck } from "lucide-react";
 import { FORMATS, HISTORY, MARQUEE, TIMELINE } from "./data";
-import { AgentTile, Mark, SectionHead, WhoAvatar } from "./parts";
+import { AgentTile, SectionHead, WhoAvatar } from "./parts";
 import { PermissionsDemo } from "./permissions-demo";
 import { cn } from "@/components/ui/cn";
+import { Logo } from "@/components/brand/logo";
 
 const SECTION = "mx-auto max-w-[1440px] px-4 md:px-10 xl:px-20";
 
 export function AgentMarquee() {
   const row = [...MARQUEE, ...MARQUEE];
   return (
-    <section className="flex flex-col items-center gap-4 pt-3 pb-9 md:gap-[22px] md:pt-9 md:pb-11" aria-label="Agents that work with Spacie">
+    <section className="flex flex-col items-center gap-4 pt-3 pb-9 md:gap-[22px] md:pt-9 md:pb-11" aria-label="Agents that work with Atelio">
       <span className="text-[13px] text-muted">Plug in the agents you already use</span>
       <div className="relative w-full max-w-[1440px] overflow-hidden">
         <div aria-hidden className="absolute inset-y-0 left-0 z-10 hidden w-40 bg-gradient-to-r from-[#faf9f6] to-transparent md:block" />
@@ -49,8 +50,8 @@ export function Problem() {
         lead="A deck in a Claude chat, a PDF in your downloads, the “latest version” on WhatsApp. And nobody knows who changed what."
       />
       <div className="grid gap-3.5 md:grid-cols-2 md:gap-5">
-        <div className="relative h-[300px] overflow-hidden rounded-[20px] bg-[#f1efea] md:h-[420px] md:rounded-3xl" aria-label="Without Spacie: files scattered across chats, downloads and drives">
-          <span className="absolute top-4 left-[18px] text-xs font-semibold text-muted md:top-6 md:left-7 md:text-[13px]">WITHOUT SPACIE</span>
+        <div className="relative h-[300px] overflow-hidden rounded-[20px] bg-[#f1efea] md:h-[420px] md:rounded-3xl" aria-label="Without Atelio: files scattered across chats, downloads and drives">
+          <span className="absolute top-4 left-[18px] text-xs font-semibold text-muted md:top-6 md:left-7 md:text-[13px]">WITHOUT ATELIO</span>
           {MESS.map((m, i) => (
             <div
               key={i}
@@ -72,7 +73,7 @@ export function Problem() {
         </div>
 
         <div className="lp-lift flex flex-col gap-3.5 rounded-[20px] border border-line bg-white p-[18px] md:h-[420px] md:gap-[18px] md:rounded-3xl md:px-7 md:py-6">
-          <span className="text-xs font-semibold text-accent md:text-[13px]">WITH SPACIE</span>
+          <span className="text-xs font-semibold text-accent md:text-[13px]">WITH ATELIO</span>
           <div className="flex items-center gap-3 rounded-[14px] border border-[#eceae4] bg-[#faf9f6] p-3 md:gap-3.5 md:rounded-2xl md:p-4">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-[11px] bg-accent-soft text-accent md:size-11 md:rounded-xl">
               <Monitor size={20} strokeWidth={1.8} aria-hidden />
@@ -192,7 +193,7 @@ export function Features() {
           <div className="flex animate-[lp-float_5s_ease-in-out_infinite] flex-col gap-2.5 rounded-[14px] bg-white p-3.5 text-ink md:rounded-2xl md:p-4">
             <div className="flex h-9 items-center gap-2 rounded-[9px] bg-[#f4f3ef] px-3 font-mono text-xs text-ink-2 md:h-[38px] md:rounded-[10px]">
               <Link2 size={13} className="text-accent" aria-hidden />
-              spacie / l / 8fk2q
+              atelio / l / 8fk2q
             </div>
             <div className="flex flex-wrap gap-1.5">
               <span className="rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent-hover">Password</span>
@@ -236,7 +237,7 @@ export function FinalCta() {
           <WhoAvatar who={{ name: "Tom", ai: false }} size={50} />
         </div>
         <div aria-hidden className="absolute top-[60px] right-[220px] hidden size-11 animate-[lp-float_7s_ease-in-out_.5s_infinite] rounded-xl bg-white/10 lg:block" />
-        <h2 className="relative m-0 text-4xl leading-[1.05] font-semibold tracking-[-0.04em] text-white md:text-[60px] md:leading-[1.02] md:tracking-[-0.045em]">
+        <h2 className="font-display relative m-0 text-4xl leading-[1.05] font-semibold tracking-[-0.04em] text-white md:text-[60px] md:leading-[1.02] md:tracking-[-0.045em]">
           Give your AI a desk.
         </h2>
         <p className="relative m-0 text-base leading-normal text-accent-border md:text-lg">Create your space, connect Claude, invite your team. Two minutes.</p>
@@ -265,10 +266,9 @@ export function Footer() {
     <footer className="border-t border-[#eceae4] text-sm text-muted">
       <div className={cn(SECTION, "flex flex-col gap-[18px] py-7 md:h-[110px] md:flex-row md:items-center md:gap-8 md:py-0")}>
         <div className="flex items-center gap-2 text-ink md:gap-2.5">
-          <Mark size={26} />
-          <span className="text-[17px] font-bold tracking-[-0.03em]">spacie</span>
+          <Logo size={26} />
         </div>
-        <span className="order-last md:order-none">© {new Date().getFullYear()} Spacie.</span>
+        <span className="order-last md:order-none">© {new Date().getFullYear()} Atelio.</span>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-3 md:ml-auto md:flex md:gap-7">
           {links.map((l) => (
             <a key={l.label} href={l.href} className="text-[#55575f] no-underline transition-colors hover:text-ink md:text-muted">

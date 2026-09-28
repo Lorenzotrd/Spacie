@@ -51,7 +51,7 @@ export async function validateAuthorization(
     try {
       sameOrigin = new URL(resource).origin === origin;
     } catch {}
-    if (!sameOrigin) throw reject("invalid_target", "Tokens can only be issued for this Spacie server.");
+    if (!sameOrigin) throw reject("invalid_target", "Tokens can only be issued for this Atelio server.");
   }
   const state = params.get("state");
   if (state && state.length > 1000) throw reject("invalid_request", "State is too long.");

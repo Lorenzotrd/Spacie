@@ -141,7 +141,7 @@ export function Faq() {
     <section id="faq" className="mx-auto flex max-w-[1440px] scroll-mt-4 flex-col gap-3.5 px-4 pt-14 pb-5 md:flex-row md:gap-20 md:px-10 md:pt-[110px] md:pb-[60px] xl:px-20">
       <div className="flex shrink-0 flex-col gap-3.5 md:w-[380px] md:gap-4">
         <span className="text-xs font-semibold tracking-[0.08em] text-accent md:text-[13px]">FAQ</span>
-        <h2 className="m-0 text-[32px] leading-[1.1] font-semibold tracking-[-0.035em] md:text-[44px] md:leading-[1.08]">Questions we get asked.</h2>
+        <h2 className="font-display m-0 text-[32px] leading-[1.1] font-semibold tracking-[-0.035em] md:text-[44px] md:leading-[1.08]">Questions we get asked.</h2>
       </div>
       <div className="flex flex-1 flex-col">
         {FAQ.map((item, i) => {

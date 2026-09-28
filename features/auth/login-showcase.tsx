@@ -1,5 +1,6 @@
-import { Box, History, KeyRound, Link2 } from "lucide-react";
+import { History, KeyRound, Link2 } from "lucide-react";
 import { LiveFeed, LivePill } from "@/features/landing/hero";
+import { Logo } from "@/components/brand/logo";
 import { AgentTile } from "@/features/landing/parts";
 import type { AgentName } from "@/features/landing/data";
 
@@ -11,11 +12,11 @@ const PROMISES = [
   { icon: Link2, text: "Clients see one clean link" },
 ];
 
-/** The dark left half of the sign-in page: what Spacie is, shown with the landing's live feed. */
+/** The dark left half of the sign-in page: what Atelio is, shown with the landing's live feed. */
 export function LoginShowcase() {
   return (
     <section
-      aria-label="About Spacie"
+      aria-label="About Atelio"
       className="relative hidden overflow-hidden rounded-[1.75rem] bg-ink p-12 text-white lg:flex lg:flex-col xl:p-14"
     >
       {/* A soft blue glow and a faint dot grid give the panel depth without competing with the feed. */}
@@ -26,10 +27,7 @@ export function LoginShowcase() {
       />
 
       <div className="relative flex items-center gap-2.5">
-        <span className="flex size-9 items-center justify-center rounded-[0.625rem] bg-accent text-white">
-          <Box size={19} strokeWidth={2} aria-hidden />
-        </span>
-        <span className="text-[1.375rem] font-bold tracking-[-0.02em]">spacie</span>
+        <Logo theme="dark" size={36} />
       </div>
 
       <div className="relative mt-auto flex flex-col gap-9 pt-12">

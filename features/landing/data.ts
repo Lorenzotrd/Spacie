@@ -133,11 +133,11 @@ export const EXTRA_STORAGE = { price: 5, stepGb: 100, max: 20, baseGb: 200 };
 
 export const FAQ = [
   {
-    q: "Does Spacie pay for my AI?",
-    a: "No. Your agents use their own subscription (Claude, ChatGPT, etc.). Spacie simply gives them access to your files, with the permissions you choose.",
+    q: "Does Atelio pay for my AI?",
+    a: "No. Your agents use their own subscription (Claude, ChatGPT, etc.). Atelio simply gives them access to your files, with the permissions you choose.",
   },
   {
-    q: "Which AIs work with Spacie?",
+    q: "Which AIs work with Atelio?",
     a: "Claude, Claude Code, Codex, Hermes, OpenClaw, Muse, Grok Bot, and any MCP compatible client. Each agent shows up in your team under its own name.",
   },
   {

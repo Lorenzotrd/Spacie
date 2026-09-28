@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertCircle, ArrowRight, Box, Eye, EyeOff } from "lucide-react";
 import { LoginShowcase } from "@/features/auth/login-showcase";
+import { Logo } from "@/components/brand/logo";
 import { GoogleButton, googleError, OrDivider } from "@/features/auth/google-button";
 
 /** Only same-site paths: `next` must never send someone to another origin. */
@@ -59,14 +60,11 @@ export function LoginForm({ google }: { google: boolean }) {
 
       <main className="flex flex-col rounded-[1.75rem] bg-panel px-6 py-8 sm:px-10 lg:border lg:border-line">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-ink no-underline lg:invisible" aria-label="Spacie home">
-            <span className="flex size-8 items-center justify-center rounded-[0.5625rem] bg-accent text-white">
-              <Box size={17} strokeWidth={2} aria-hidden />
-            </span>
-            <span className="text-lg font-bold tracking-[-0.02em]">spacie</span>
+          <Link href="/" className="flex items-center text-ink no-underline lg:invisible" aria-label="Atelio home">
+            <Logo size={32} />
           </Link>
           <Link href="/" className="text-[0.8125rem] text-muted no-underline hover:text-ink">
-            What is Spacie?
+            What is Atelio?
           </Link>
         </div>
 
@@ -142,7 +140,7 @@ export function LoginForm({ google }: { google: boolean }) {
               <Box size={17} strokeWidth={1.9} aria-hidden />
             </span>
             <p className="m-0 text-[0.8125rem] leading-normal text-ink-2">
-              <span className="font-semibold text-ink">New here?</span> Spacie is invite-only for now. Ask a teammate for
+              <span className="font-semibold text-ink">New here?</span> Atelio is invite-only for now. Ask a teammate for
               an invitation link.
             </p>
           </div>

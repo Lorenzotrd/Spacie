@@ -11,7 +11,7 @@ import { Faq, Pricing } from "@/features/landing/pricing";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Spacie · Your team and your AI agents on the same files",
+  title: "Atelio · Your team and your AI agents on the same files",
   description:
     "Claude, Codex or Hermes drop their docs, decks and PDFs straight into your projects. See who changed what, and roll back in one click.",
 };
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default function Landing() {
   // The connect command shows this server's real MCP endpoint.
   const origin = (process.env.SPACIE_ORIGIN ?? "https://your-domain").replace(/\/$/, "");
-  const command = `claude mcp add --transport http spacie ${mcpResource(origin)}`;
+  const command = `claude mcp add --transport http atelio ${mcpResource(origin)}`;
   return (
     <div className="landing min-h-dvh overflow-x-clip bg-[#faf9f6] text-ink antialiased">
       <a

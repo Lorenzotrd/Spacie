@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { Mark } from "./parts";
+import { Logo } from "@/components/brand/logo";
 
 const LINKS = [
   { href: "#how", label: "How it works" },
@@ -23,9 +23,8 @@ export function LandingNav() {
   return (
     <header className="relative z-30 border-b border-[#eceae4]">
       <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-2.5 px-4 md:h-20 md:gap-10 md:px-10 xl:px-20">
-        <a href="#top" className="flex flex-1 items-center gap-2 text-ink no-underline md:flex-none md:gap-2.5" aria-label="Spacie, back to top">
-          <Mark size={30} />
-          <span className="text-xl font-bold tracking-[-0.03em] md:text-[21px]">spacie</span>
+        <a href="#top" className="flex flex-1 items-center gap-2 text-ink no-underline md:flex-none md:gap-2.5" aria-label="Atelio, back to top">
+          <Logo size={30} />
         </a>
         <nav aria-label="Sections" className="hidden gap-8 text-sm md:flex">
           {LINKS.map((l) => (

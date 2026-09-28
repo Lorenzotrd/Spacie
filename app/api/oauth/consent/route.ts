@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       return Response.json({
         redirect: clientRedirect(auth, origin, {
           error: "access_denied",
-          error_description: "The request was declined in Spacie.",
+          error_description: "The request was declined in Atelio.",
         }),
       });
     const code = await approveAuthorization(database, human, auth, body.choice);

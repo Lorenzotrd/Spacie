@@ -70,7 +70,7 @@ export function TokenForm({
     <form onSubmit={submit} className="flex flex-col gap-3 rounded-xl border border-line-soft bg-subtle p-4">
       <span className="text-[0.8125rem] font-semibold">Generate an agent token</span>
       <label className="flex flex-col gap-1.5 text-[0.8125rem] font-medium text-ink">
-        Name in Spacie
+        Name in Atelio
         <input
           required
           maxLength={80}

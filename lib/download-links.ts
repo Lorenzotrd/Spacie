@@ -21,7 +21,7 @@ async function resolve(db: Db, actor: Principal, input: DownloadLinkInput): Prom
   const file = await findReadableFile(db, actor, input.fileId);
   if (!file || file.deleted) throw new Error("File not found or access denied");
   if (file.mime === DOCUMENT_MIME)
-    throw new Error("This is a Spacie document: use read_document to get its HTML.");
+    throw new Error("This is an Atelio document: use read_document to get its HTML.");
   if (input.preview) {
     const [row] = await db.query<{ preview_key: string | null }>(
       "select preview_key from files where id = $1 and preview_status = 'ready'",

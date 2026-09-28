@@ -20,7 +20,7 @@ export type ClientGuide = {
 export const TOKEN_PLACEHOLDER = "[AGENT TOKEN]";
 
 const jsonConfig = (url: string, token = TOKEN_PLACEHOLDER) =>
-  JSON.stringify({ mcpServers: { spacie: { url, headers: { Authorization: `Bearer ${token}` } } } }, null, 2);
+  JSON.stringify({ mcpServers: { atelio: { url, headers: { Authorization: `Bearer ${token}` } } } }, null, 2);
 
 /** How to connect each supported client. Copy only; the URL comes from the server. */
 const GUIDES: readonly Omit<ClientGuide, "logo">[] = [
@@ -33,7 +33,7 @@ const GUIDES: readonly Omit<ClientGuide, "logo">[] = [
     steps: [
       "In Claude, open Settings, then Connectors.",
       "Add a custom connector and paste the URL below.",
-      "Sign in to Spacie and choose the projects it may use.",
+      "Sign in to Atelio and choose the projects it may use.",
     ],
     codeLabel: "Connector URL",
     code: (url) => url,
@@ -46,11 +46,11 @@ const GUIDES: readonly Omit<ClientGuide, "logo">[] = [
     auth: "oauth",
     steps: [
       "Run this command in your terminal.",
-      "Type /mcp in Claude Code and pick spacie to sign in.",
-      "Approve its access in the Spacie window.",
+      "Type /mcp in Claude Code and pick atelio to sign in.",
+      "Approve its access in the Atelio window.",
     ],
     codeLabel: "Terminal",
-    code: (url) => `claude mcp add --transport http spacie ${url}`,
+    code: (url) => `claude mcp add --transport http atelio ${url}`,
   },
   {
     id: "codex",
@@ -61,10 +61,10 @@ const GUIDES: readonly Omit<ClientGuide, "logo">[] = [
     steps: [
       "Add this block to ~/.codex/config.toml.",
       "Restart Codex and sign in when it asks.",
-      "Approve its access in the Spacie window.",
+      "Approve its access in the Atelio window.",
     ],
     codeLabel: "~/.codex/config.toml",
-    code: (url) => `[mcp_servers.spacie]\nurl = "${url}"`,
+    code: (url) => `[mcp_servers.atelio]\nurl = "${url}"`,
   },
   {
     id: "hermes",

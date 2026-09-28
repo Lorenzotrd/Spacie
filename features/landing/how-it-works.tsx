@@ -29,9 +29,9 @@ function Terminal({ command }: { command: string }) {
           </span>
           <span className="inline-block h-3.5 w-[7px] shrink-0 animate-[lp-blink_1s_steps(1)_infinite] self-center bg-[#8fa8f0] md:h-[18px] md:w-2" />
         </div>
-        <div className="animate-[lp-fade-up_.4s_ease_.6s_both] text-[#6fd39b] md:[animation-delay:2.4s]">✓ Added MCP server &quot;spacie&quot;</div>
+        <div className="animate-[lp-fade-up_.4s_ease_.6s_both] text-[#6fd39b] md:[animation-delay:2.4s]">✓ Added MCP server &quot;atelio&quot;</div>
         <div className="hidden animate-[lp-fade-up_.4s_ease_2.8s_both] text-code-muted md:block">
-          Sign in to Spacie to choose which projects it can access.
+          Sign in to Atelio to choose which projects it can access.
         </div>
       </div>
     </div>

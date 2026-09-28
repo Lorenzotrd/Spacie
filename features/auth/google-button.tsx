@@ -36,7 +36,7 @@ export function OrDivider() {
 const MESSAGES: Record<string, string> = {
   cancelled: "Google sign-in was cancelled.",
   failed: "Could not sign you in with Google. Try again.",
-  no_account: "No Spacie account uses this Google address. Ask a teammate for an invitation link.",
+  no_account: "No Atelio account uses this Google address. Ask a teammate for an invitation link.",
   unverified: "This Google address is not verified.",
   invite: "This invitation is invalid, has expired, or was sent to a different email address.",
 };

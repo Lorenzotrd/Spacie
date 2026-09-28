@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box } from "lucide-react";
+import { Logo } from "@/components/brand/logo";
 import { MIN_PASSWORD } from "@/lib/password-rules";
 import { GoogleButton, googleError, OrDivider } from "@/features/auth/google-button";
 
@@ -60,8 +60,8 @@ export function JoinForm({ google }: { google: boolean }) {
   const signInLink = `/login?next=${encodeURIComponent(`/join?token=${token}`)}`;
   return (
     <div className="loading-screen">
-      <Box size={35} />
-      <h1>{invite ? `Join ${invite.workspace}` : "Join Spacie"}</h1>
+      <Logo variant="icon" size={40} />
+      <h1>{invite ? `Join ${invite.workspace}` : "Join Atelio"}</h1>
       <p>{invite ? `You're invited as ${invite.role}.` : "Your team. Your agents. One shared space."}</p>
       {invite && signedIn && !newAccount && (
         <div style={{ width: 320, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -136,7 +136,7 @@ export function JoinForm({ google }: { google: boolean }) {
       <p role="status">{message}</p>
       {invite && !signedIn && (
         <p className="subtle-copy">
-          Already have a Spacie account? <a href={signInLink}>Sign in to join with it</a>
+          Already have an Atelio account? <a href={signInLink}>Sign in to join with it</a>
         </p>
       )}
     </div>

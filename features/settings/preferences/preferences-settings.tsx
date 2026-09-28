@@ -21,7 +21,7 @@ const SORT = [
 export function PreferencesSettings() {
   const ws = useWorkspace();
   return (
-    <SettingsShell ws={ws} section="preferences" title="Preferences" description="Make Spacie work the way you do.">
+    <SettingsShell ws={ws} section="preferences" title="Preferences" description="Make Atelio work the way you do.">
       {({ state }) =>
         !state.account ? (
           <p className="text-sm text-muted">Sign in with your account to set your preferences.</p>
@@ -66,7 +66,7 @@ function PreferencesBody({
         <SettingRow label="Density" hint="Space between rows in file lists, activity and members.">
           <Tabs label="Density" items={[...DENSITY]} value={prefs.density} onChange={(density) => change({ density })} />
         </SettingRow>
-        <SettingRow label="Default sort" hint="How project files are ordered when you open Spacie.">
+        <SettingRow label="Default sort" hint="How project files are ordered when you open Atelio.">
           <Tabs label="Default sort" items={[...SORT]} value={prefs.sort} onChange={(sort) => change({ sort })} />
         </SettingRow>
       </SettingsCard>
