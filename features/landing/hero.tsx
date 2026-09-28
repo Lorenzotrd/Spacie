@@ -31,7 +31,7 @@ function RotatingAgent() {
 }
 
 /** Newest event highlighted on top, then three older ones; one new event every 2.6 s. */
-function LiveFeed({ older = 3, compact = false }: { older?: number; compact?: boolean }) {
+export function LiveFeed({ older = 3, compact = false }: { older?: number; compact?: boolean }) {
   const tick = useTicker(2600);
   const newest = at(EVENTS, tick);
   const rest = Array.from({ length: older }, (_, k) => ({ ...at(EVENTS, tick - k - 1), when: EVENT_AGES[k] }));
@@ -62,7 +62,7 @@ function LiveFeed({ older = 3, compact = false }: { older?: number; compact?: bo
   );
 }
 
-function LivePill() {
+export function LivePill() {
   return (
     <span className="flex items-center gap-1.5 text-[11px] font-semibold text-accent-hover">
       <span className="size-[7px] animate-[lp-pulse_1.8s_infinite] rounded-full bg-accent" />
