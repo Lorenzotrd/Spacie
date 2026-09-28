@@ -60,7 +60,7 @@ export function SettingsShell({
         <div className="flex flex-col gap-[1.375rem] px-4 pt-6 pb-7 md:px-7 md:pt-[1.875rem]">
           <div className="flex flex-col gap-4 md:flex-row md:items-end">
             <div className="flex flex-1 flex-col gap-1.5">
-              <span className="text-[0.8125rem] text-muted">Settings / {section === "profile" ? "Account" : "Workspace"}</span>
+              <span className="text-[0.8125rem] text-muted">Settings / {section === "profile" || section === "preferences" ? "Account" : "Workspace"}</span>
               <h1 className="m-0 text-[1.625rem] font-semibold tracking-[-0.025em] md:text-[1.875rem]">{title}</h1>
               <p className="text-sm text-muted">{description}</p>
             </div>

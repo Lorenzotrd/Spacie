@@ -1,18 +1,22 @@
 "use client";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { ChevronLeft, HardDrive, Link2, User, Users, type LucideIcon } from "lucide-react";
+import { Box, ChevronLeft, HardDrive, Link2, SlidersVertical, User, Users, type LucideIcon } from "lucide-react";
 import type { Principal } from "@/lib/types";
 import { Avatar, AgentMark } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { SectionLabel } from "@/components/ui/card";
 import { cn } from "@/components/ui/cn";
 
-export type SettingsSection = "profile" | "members" | "agents" | "links" | "storage";
+export type SettingsSection = "profile" | "preferences" | "general" | "members" | "agents" | "links" | "storage";
 
 type Item = { id: SettingsSection; label: string; href: string; icon: LucideIcon | "agent" };
-const ACCOUNT: Item[] = [{ id: "profile", label: "Profile", href: "/settings/profile", icon: User }];
+const ACCOUNT: Item[] = [
+  { id: "profile", label: "Profile", href: "/settings/profile", icon: User },
+  { id: "preferences", label: "Preferences", href: "/settings/preferences", icon: SlidersVertical },
+];
 const WORKSPACE: Item[] = [
+  { id: "general", label: "General", href: "/settings/general", icon: Box },
   { id: "members", label: "Members", href: "/settings/members", icon: Users },
   { id: "agents", label: "AI agents", href: "/settings/agents", icon: "agent" },
   { id: "links", label: "Public links", href: "/settings/links", icon: Link2 },
@@ -21,7 +25,7 @@ const WORKSPACE: Item[] = [
 
 /**
  * Settings sidebar; a scrolling row of chips on phones. Only sections backed by the
- * API are listed: Profile needs an account, Storage needs an owner or admin.
+ * API are listed: Profile and Preferences need an account, General and Storage an owner or admin.
  */
 export function SettingsNav({
   me,
@@ -40,7 +44,7 @@ export function SettingsNav({
 }) {
   const groups = [
     { title: "Account", items: hasAccount ? ACCOUNT : [] },
-    { title: "Workspace", items: WORKSPACE.filter((i) => i.id !== "storage" || canManage) },
+    { title: "Workspace", items: WORKSPACE.filter((i) => (i.id !== "storage" && i.id !== "general") || canManage) },
   ].filter((g) => g.items.length);
   // On phones the sections are a scrolling row: bring the open one into view.
   const current = useRef<HTMLAnchorElement>(null);

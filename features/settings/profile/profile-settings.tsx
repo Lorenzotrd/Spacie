@@ -1,9 +1,10 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Laptop, LogOut, Smartphone } from "lucide-react";
 import { MIN_PASSWORD } from "@/lib/password-rules";
 import type { Profile, SessionSummary } from "@/lib/profile";
+import type { UserPreferences } from "@/lib/types";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -15,7 +16,30 @@ import { Field, Pill, SettingRow, SettingsCard } from "../parts";
 import { SettingsShell } from "../settings-shell";
 import { describeDevice } from "./device";
 
-type Account = { profile: Profile; sessions: SessionSummary[] };
+type Account = { profile: Profile; sessions: SessionSummary[]; preferences: UserPreferences };
+
+/** "Lorenzo Trichard" → ["Lorenzo", "Trichard"]; the account keeps one name. */
+const splitName = (full: string): [string, string] => {
+  const [first = "", ...rest] = full.trim().split(/\s+/);
+  return [first, rest.join(" ")];
+};
+
+const selectClass =
+  "h-[2.625rem] w-full rounded-control border border-line bg-card px-3 text-sm text-ink outline-none focus:border-accent disabled:bg-subtle disabled:text-ink-2";
+
+/** Every IANA zone with its current offset, e.g. "Asia/Makassar (GMT+8)". */
+function useTimeZones() {
+  return useMemo(() => {
+    const zones = typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("timeZone") : [];
+    const now = new Date();
+    return zones.map((zone) => {
+      const offset = new Intl.DateTimeFormat("en", { timeZone: zone, timeZoneName: "shortOffset" })
+        .formatToParts(now)
+        .find((p) => p.type === "timeZoneName")?.value;
+      return { zone, label: `${zone.replace(/_/g, " ")}${offset ? ` (${offset})` : ""}` };
+    });
+  }, []);
+}
 
 export function ProfileSettings() {
   const ws = useWorkspace();
@@ -61,7 +85,11 @@ function ProfileBody({
   fail: (m: string) => void;
 }) {
   const router = useRouter();
-  const [name, setName] = useState(account.profile.name);
+  const [first, setFirst] = useState(() => splitName(account.profile.name)[0]);
+  const [last, setLast] = useState(() => splitName(account.profile.name)[1]);
+  const name = [first.trim(), last.trim()].filter(Boolean).join(" ");
+  const zones = useTimeZones();
+  const deviceZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const [busy, setBusy] = useState("");
   const [changing, setChanging] = useState(false);
   const others = account.sessions.filter((s) => !s.current);
@@ -85,21 +113,57 @@ function ProfileBody({
 
   return (
     <div className="grid items-start gap-4 lg:grid-cols-2">
-      <SettingsCard title="Personal info">
-        <form onSubmit={save} className="flex flex-col gap-4">
-          <div className="flex items-center gap-4">
-            <Avatar person={me && { ...me, name: name || me.name, initials: (name || me.name)[0] ?? "?" }} size="lg" className="size-16 text-[1.5625rem]" />
-            <p className="text-[0.8125rem] leading-normal text-muted">Your initial is your avatar everywhere in Spacie. Agents get the blue mark.</p>
+      <div className="flex flex-col gap-4">
+        <SettingsCard title="Personal info">
+          <form onSubmit={save} className="flex flex-col gap-4">
+            <div className="flex items-center gap-4">
+              <Avatar person={me && { ...me, name: name || me.name, initials: (name || me.name)[0] ?? "?" }} size="lg" className="size-16 text-[1.5625rem]" />
+              <p className="text-[0.8125rem] leading-normal text-muted">Your initial is your avatar everywhere in Spacie. Agents get the blue mark.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Field label="First name" value={first} onChange={(e) => setFirst(e.target.value)} required maxLength={40} autoComplete="given-name" className="min-w-40" />
+              <Field label="Last name" value={last} onChange={(e) => setLast(e.target.value)} maxLength={40} autoComplete="family-name" placeholder="Last name" className="min-w-40" />
+            </div>
+            <Field label="Email" value={account.profile.email} readOnly hint="You sign in with this address." />
+            <div className="flex justify-end">
+              <Button type="submit" variant="primary" disabled={busy === "profile" || !first.trim() || name === account.profile.name}>
+                {busy === "profile" ? "Saving…" : "Save changes"}
+              </Button>
+            </div>
+          </form>
+        </SettingsCard>
+
+        <SettingsCard title="Language and region">
+          <div className="flex flex-wrap gap-3">
+            <label className="flex min-w-40 flex-1 flex-col gap-1.5">
+              <span className="text-[0.8125rem] font-medium text-ink-2">Language</span>
+              <select className={selectClass} value="en" disabled aria-describedby="language-hint">
+                <option value="en">English</option>
+              </select>
+              <span id="language-hint" className="text-xs text-muted">Spacie is in English for now.</span>
+            </label>
+            <label className="flex min-w-40 flex-1 flex-col gap-1.5">
+              <span className="text-[0.8125rem] font-medium text-ink-2">Time zone</span>
+              <select
+                className={selectClass}
+                value={account.preferences.timeZone ?? ""}
+                disabled={busy === "tz"}
+                onChange={(e) =>
+                  void act("tz", { action: "update_preferences", preferences: { timeZone: e.target.value || null } }, "Time zone saved")
+                }
+              >
+                <option value="">Follow this device ({deviceZone.replace(/_/g, " ")})</option>
+                {zones.map((z) => (
+                  <option key={z.zone} value={z.zone}>
+                    {z.label}
+                  </option>
+                ))}
+              </select>
+              <span className="text-xs text-muted">Dates and times across Spacie use it.</span>
+            </label>
           </div>
-          <Field label="Name" value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} autoComplete="name" />
-          <Field label="Email" value={account.profile.email} readOnly hint="You sign in with this address." />
-          <div className="flex justify-end">
-            <Button type="submit" variant="primary" disabled={busy === "profile" || !name.trim() || name.trim() === account.profile.name}>
-              {busy === "profile" ? "Saving…" : "Save changes"}
-            </Button>
-          </div>
-        </form>
-      </SettingsCard>
+        </SettingsCard>
+      </div>
 
       <div className="flex flex-col gap-4">
         <SettingsCard title="Security">

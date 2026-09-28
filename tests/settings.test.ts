@@ -21,6 +21,9 @@ import {
 } from "../lib/share-links";
 import { kindOf, listBackups, storageUsage } from "../lib/storage-usage";
 import { execute } from "../lib/service";
+import { getPreferences, setPreferences } from "../lib/preferences";
+import { getAgentDefaults, setAgentDefaults } from "../lib/agent-defaults";
+import { renameWorkspace } from "../lib/workspaces";
 import { ids } from "../lib/seed";
 import { principal, seededDb } from "./helpers";
 
@@ -213,4 +216,25 @@ test("files from the same nightly run are one backup", async () => {
     (await listBackups(dir))!.map((b) => [b.name, b.bytes]),
     [["2026-09-27", 12], ["2026-09-26", 40]],
   );
+});
+
+test("preferences merge per person, validate the time zone and follow the account", async () => {
+  const { db, owner, ben } = await studio();
+  assert.deepEqual(await getPreferences(db, owner), { density: "comfortable", sort: "recent", openPanel: true, timeZone: null });
+  await setPreferences(db, owner, { density: "compact", timeZone: "Asia/Makassar" });
+  await setPreferences(db, owner, { sort: "name" });
+  assert.deepEqual(await getPreferences(db, owner), { density: "compact", sort: "name", openPanel: true, timeZone: "Asia/Makassar" });
+  assert.equal((await getPreferences(db, ben.actor)).density, "comfortable", "others keep theirs");
+  await rejects(setPreferences(db, owner, { timeZone: "Mars/Olympus" }), /Unknown time zone/);
+});
+
+test("owners and admins rename the workspace and set defaults for new agents; members cannot", async () => {
+  const { db, owner, ada, ben } = await studio();
+  assert.deepEqual(await getAgentDefaults(db, owner.workspaceId), { access: "write", allowPublish: false, readInstructions: true });
+  await setAgentDefaults(db, ada.actor, { access: "comment", allowPublish: true });
+  assert.deepEqual(await getAgentDefaults(db, owner.workspaceId), { access: "comment", allowPublish: true, readInstructions: true });
+  await rejects(setAgentDefaults(db, ben.actor, { access: "write" }), /FORBIDDEN/);
+  assert.deepEqual(await renameWorkspace(db, owner, "  Studio North "), { name: "Studio North" });
+  await rejects(renameWorkspace(db, ben.actor, "Mine now"), /FORBIDDEN/);
+  await rejects(renameWorkspace(db, owner, "   "), /Name is required/);
 });

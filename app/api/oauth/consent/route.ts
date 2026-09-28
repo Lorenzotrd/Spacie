@@ -11,6 +11,7 @@ import {
   validateAuthorization,
 } from "@/lib/oauth/authorize";
 import { publicOrigin } from "@/lib/oauth/metadata";
+import { getAgentDefaults } from "@/lib/agent-defaults";
 export const runtime = "nodejs";
 
 async function signedInHuman(request: Request) {
@@ -37,6 +38,7 @@ export async function GET(request: Request) {
         projects: (await shareableProjects(database, human)).map((p) => ({ id: p.id, name: p.name })),
         canShareAll: human.role === "owner" || human.role === "admin",
         canWrite: grantableActions(human).includes("write"),
+        defaults: await getAgentDefaults(database, human.workspaceId),
       },
       { headers: { "Cache-Control": "no-store" } },
     );

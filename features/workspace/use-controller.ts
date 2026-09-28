@@ -65,6 +65,16 @@ export function useController() {
     const linked = new URLSearchParams(window.location.search).get("view");
     if (linked === "trash" || linked === "activity" || linked === "home") setView(linked);
   }, []);
+  // Preferences (Settings > Preferences): the default sort, and whether files open with the side panel.
+  const preferredSort = state?.preferences?.sort;
+  useEffect(() => {
+    if (preferredSort) setSort(preferredSort);
+  }, [preferredSort]);
+  const openPanel = useRef(true);
+  const preferredPanel = state?.preferences?.openPanel ?? true;
+  useEffect(() => {
+    openPanel.current = preferredPanel;
+  }, [preferredPanel]);
   useDeepLink(state, place, (next) => {
     setPlace(next);
     setView("space");
@@ -99,7 +109,7 @@ export function useController() {
   const openFile = useCallback((f: FileMeta) => {
     setPlace({ project: f.projectId, folder: f.folderId, selected: f.id });
     setView("space");
-    setShowRail(true);
+    setShowRail(openPanel.current);
     setRail("comments");
   }, []);
   /** After switching workspace: reload everything and start from its first project. */

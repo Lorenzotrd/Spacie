@@ -27,7 +27,7 @@ function metaLine(state: PublicState, file: FileMeta, showFolder: boolean): stri
 function FileRow({ ctl, state, file, showFolder }: { ctl: Controller; state: PublicState; file: FileMeta; showFolder: boolean }) {
   const { people, last } = fileHistory(state, file);
   return (
-    <div className={cn(columns, "relative h-[3.75rem] border-b border-[#f3f1ed] text-[0.8125rem] hover:bg-subtle")}>
+    <div className={cn(columns, "relative h-[3.75rem] border-b group-data-[density=compact]/app:h-12 border-[#f3f1ed] text-[0.8125rem] hover:bg-subtle")}>
       <div className="flex min-w-0 items-center gap-3">
         <FileIcon file={file} tinted />
         <div className="flex min-w-0 flex-col gap-0.5">

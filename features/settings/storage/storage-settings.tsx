@@ -4,6 +4,7 @@ import { Box, Check, Trash2 } from "lucide-react";
 import type { Backup, StorageKind, StorageUsage } from "@/lib/storage-usage";
 import { ErrorState, Skeleton } from "@/components/ui/states";
 import { formatBytes } from "@/features/workspace/derive";
+import { calendarDaysBetween, withZone } from "@/features/workspace/time-zone";
 import { useWorkspace } from "@/features/workspace/use-workspace";
 import { useJson } from "../api";
 import { Pill, SettingsCard } from "../parts";
@@ -26,9 +27,9 @@ const bytes = (n: number) => (n === 0 ? "0 B" : formatBytes(n));
 
 function when(iso: string) {
   const d = new Date(iso);
-  const days = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(iso).setHours(0, 0, 0, 0)) / 86_400_000);
-  const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-  const day = days === 0 ? "Today" : days === 1 ? "Yesterday" : d.toLocaleDateString("en", { month: "short", day: "numeric" });
+  const days = calendarDaysBetween(d, new Date());
+  const time = d.toLocaleTimeString("en-GB", withZone({ hour: "2-digit", minute: "2-digit" }));
+  const day = days === 0 ? "Today" : days === 1 ? "Yesterday" : d.toLocaleDateString("en", withZone({ month: "short", day: "numeric" }));
   return `${day}, ${time}`;
 }
 

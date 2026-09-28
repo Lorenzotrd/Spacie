@@ -33,7 +33,7 @@ export function DesktopApp({ ctl, onPerson }: { ctl: Controller; onPerson: (p: P
   );
 
   return (
-    <div className="flex h-dvh gap-3.5 bg-app p-3.5">
+    <div data-density={state.preferences?.density ?? "comfortable"} className="group/app flex h-dvh gap-3.5 bg-app p-3.5">
       <AppSidebar
         state={state}
         project={ctl.project}

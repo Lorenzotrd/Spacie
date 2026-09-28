@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PublicState } from "@/lib/types";
 import type { Command, CommandResult } from "@/lib/service";
+import { setDisplayTimeZone } from "./time-zone";
 
 /** Revision checks are one indexed row read; the snapshot is refetched only on change. */
 const POLL_MS = 4000;
@@ -20,6 +21,7 @@ export function useWorkspace() {
     if (!response.ok) throw new Error(data.error);
     if (data.unchanged) return;
     revision.current = data.revision;
+    setDisplayTimeZone((data as PublicState).preferences?.timeZone);
     setState(data as PublicState);
   }, []);
   useEffect(() => {

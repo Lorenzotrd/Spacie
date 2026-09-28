@@ -133,6 +133,20 @@ export type WorkspaceState = {
 /** File listing entry: everything except the document body. */
 export type FileMeta = Omit<FileRecord, "content">;
 export type VersionMeta = Omit<Version, "content">;
+/** A person's display preferences (Settings > Preferences and the time zone in Profile). */
+export type UserPreferences = {
+  density: "comfortable" | "compact";
+  sort: "recent" | "name";
+  openPanel: boolean;
+  timeZone: string | null;
+};
+/** What a newly connected agent starts with (Settings > General). */
+export type AgentDefaults = {
+  access: "read" | "comment" | "write";
+  allowPublish: boolean;
+  readInstructions: boolean;
+};
+
 /** What a principal may see of a workspace. Bodies are loaded per file. */
 export type PublicState = {
   workspace: WorkspaceState["workspace"];
@@ -146,6 +160,10 @@ export type PublicState = {
   /** Public MCP endpoint agents connect to; set by the HTTP route from SPACIE_ORIGIN. */
   mcpUrl?: string;
   /** Starting values of the Share dialog for new public links; set by the HTTP route. */
+  /** The signed-in person's preferences; set by the HTTP route. */
+  preferences?: UserPreferences;
+  /** Defaults for new agents; set by the HTTP route. */
+  agentDefaults?: AgentDefaults;
   linkDefaults?: { expiresInDays: 7 | 30 | 90 | null; allowDownload: boolean; askPassword: boolean };
   /** The viewer is a person signed in with an account (Profile settings apply). */
   account?: boolean;

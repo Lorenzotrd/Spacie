@@ -21,6 +21,7 @@ import { clientById, clientOf } from "../agents/catalog";
 import { ClientLogo } from "../agents/client-logo";
 import { InviteCard } from "./invite-card";
 import { RoleSelect, type EditableRole } from "./role-select";
+import { withZone } from "@/features/workspace/time-zone";
 
 const LEVEL: Record<AccessLevel, string> = { read: "Read", comment: "Comment", write: "Edit" };
 const ROLES = [
@@ -292,7 +293,7 @@ function InviteRow({
         />
       }
       role={<Pill tone="warning">Pending</Pill>}
-      last={`Expires ${new Date(invite.expiresAt).toLocaleDateString("en", { month: "short", day: "numeric" })}`}
+      last={`Expires ${new Date(invite.expiresAt).toLocaleDateString("en", withZone({ month: "short", day: "numeric" }))}`}
       actions={
         <>
           <Button

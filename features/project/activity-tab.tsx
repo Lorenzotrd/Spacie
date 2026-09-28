@@ -29,7 +29,7 @@ function Timeline({ ctl }: { ctl: Controller }) {
         const who = principalById(state, a.actorId);
         const file = a.fileId ? state.files.find((f) => f.id === a.fileId && !f.deleted) : undefined;
         return (
-          <li key={a.id} className="flex min-h-[3.75rem] items-center gap-3.5 border-b border-[#f3f1ed] last:border-b-0">
+          <li key={a.id} className="flex min-h-[3.75rem] items-center group-data-[density=compact]/app:min-h-12 gap-3.5 border-b border-[#f3f1ed] last:border-b-0">
             <Avatar person={who} size="lg" />
             <p className="min-w-0 flex-1 text-sm text-[#55575f]">
               <span className="font-semibold text-ink">{who?.name ?? "Someone"}</span> {a.action}{" "}

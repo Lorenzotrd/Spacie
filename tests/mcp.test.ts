@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { buildServer } from "../lib/mcp/tools";
+import { setAgentDefaults } from "../lib/agent-defaults";
 import { ids } from "../lib/seed";
 import type { Db } from "../lib/db/client";
 import { principal, seededDb } from "./helpers";
@@ -61,4 +62,16 @@ test("an agent cannot see or write outside its grants through MCP", async () => 
   assert.match(denied.data.error, /FORBIDDEN/);
   const missing = await call("read_document", { id: "40000000-0000-4000-8000-000000009999" });
   assert.equal(missing.isError, true);
+});
+
+test("agents get project instructions unless the workspace turned them off", async () => {
+  const db = await seededDb();
+  const { call } = await connect(db, ids.claude);
+  const before = await call("get_project_context", { projectId: ids.rebond });
+  assert.match(before.data.project.instructions, /Rebond/);
+  await setAgentDefaults(db, await principal(db, ids.lorenzo), { readInstructions: false });
+  const after = await call("get_project_context", { projectId: ids.rebond });
+  assert.equal(after.data.project.instructions, "");
+  const listed = await call("list_projects");
+  assert.ok(listed.data.every((p: { instructions: string }) => p.instructions === ""));
 });

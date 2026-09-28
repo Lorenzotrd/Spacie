@@ -38,7 +38,7 @@ export function MembersTab({
               <button
                 type="button"
                 onClick={() => onPerson(m)}
-                className="flex min-h-[3.875rem] w-full items-center gap-3.5 text-left"
+                className="flex min-h-[3.875rem] w-full group-data-[density=compact]/app:min-h-12 items-center gap-3.5 text-left"
               >
                 <Avatar person={m} size="lg" />
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">

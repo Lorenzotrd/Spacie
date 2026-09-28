@@ -6,6 +6,8 @@ import { db } from "@/lib/db/client";
 import { rateLimit } from "@/lib/rate-limit";
 import { mcpResource, publicOrigin } from "@/lib/oauth/metadata";
 import { getLinkDefaults } from "@/lib/share-links";
+import { getAgentDefaults } from "@/lib/agent-defaults";
+import { getPreferences } from "@/lib/preferences";
 import { readCookie, sessionPrincipal, SESSION_COOKIE } from "@/lib/accounts";
 export const runtime = "nodejs";
 const noStore = { "Cache-Control": "no-store" };
@@ -20,15 +22,17 @@ export async function GET(request: Request) {
       if (String(revision) === since)
         return Response.json({ unchanged: true, revision }, { headers: noStore });
     }
-    const [state, linkDefaults] = await Promise.all([
+    const [state, linkDefaults, agentDefaults, preferences] = await Promise.all([
       snapshot(database, actor),
       getLinkDefaults(database, actor.workspaceId),
+      getAgentDefaults(database, actor.workspaceId),
+      getPreferences(database, actor),
     ]);
     // Outside demo mode every person has an account; in it, only those signed in with one.
     const session = readCookie(request, SESSION_COOKIE);
     const account = actor.type === "human" && (!state.demo || (!!session && !!(await sessionPrincipal(database, session))));
     return Response.json(
-      { ...state, mcpUrl: mcpResource(publicOrigin(request)), linkDefaults, account },
+      { ...state, mcpUrl: mcpResource(publicOrigin(request)), linkDefaults, agentDefaults, preferences, account },
       { headers: noStore },
     );
   } catch (e) {

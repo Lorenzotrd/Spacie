@@ -17,6 +17,7 @@ import { createUploadLink } from "../upload-links";
 import { createDownloadLink } from "../download-links";
 import { createShareLink, revokeShareLink } from "../share-links";
 import type { Principal } from "../types";
+import { getAgentDefaults } from "../agent-defaults";
 
 const MAX_INLINE_UPLOAD = 5 * 1024 * 1024;
 
@@ -105,7 +106,11 @@ export function buildServer(db: Db, actor: Principal, origin = "") {
   const server = new McpServer({ name: "spacie", version: "0.2.0" });
   const read = (name: string, description: string, input: z.ZodRawShape, run: (args: Record<string, unknown>) => Promise<unknown>) =>
     server.registerTool(name, { description, inputSchema: input }, (args) => guard(() => run(args)));
-  const view = () => snapshot(db, actor);
+  /** The agent's view; project instructions are left out when the workspace turned them off. */
+  const view = async () => {
+    const [s, defaults] = await Promise.all([snapshot(db, actor), getAgentDefaults(db, actor.workspaceId)]);
+    return defaults.readInstructions ? s : { ...s, projects: s.projects.map((p) => ({ ...p, instructions: "" })) };
+  };
 
   read("list_workspaces", "List the workspace you can access.", {}, async () => {
     const s = await view();

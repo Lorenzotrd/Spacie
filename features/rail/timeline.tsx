@@ -2,17 +2,14 @@ import type { ReactNode } from "react";
 import type { Principal } from "@/lib/types";
 import { Avatar } from "@/components/ui/avatar";
 import { SectionLabel } from "@/components/ui/card";
+import { calendarDaysBetween, withZone } from "@/features/workspace/time-zone";
 
 export function dayLabel(date: string, now = new Date()): string {
   const d = new Date(date);
-  const days = Math.round(
-    (new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() -
-      new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()) /
-      86_400_000,
-  );
+  const days = calendarDaysBetween(d, now);
   if (days <= 0) return "Today";
   if (days === 1) return "Yesterday";
-  return d.toLocaleDateString("en", { weekday: "long", month: "short", day: "numeric" });
+  return d.toLocaleDateString("en", withZone({ weekday: "long", month: "short", day: "numeric" }));
 }
 
 /** Splits dated items into consecutive day groups, keeping their order. */
@@ -63,4 +60,4 @@ export function TimelineItem({
 }
 
 export const timeOf = (date: string) =>
-  new Date(date).toLocaleTimeString("en", { hour: "numeric", minute: "2-digit" });
+  new Date(date).toLocaleTimeString("en", withZone({ hour: "numeric", minute: "2-digit" }));

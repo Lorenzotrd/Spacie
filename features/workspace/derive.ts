@@ -1,4 +1,5 @@
 import type { Activity, FileMeta, Principal, PublicState } from "@/lib/types";
+import { withZone } from "./time-zone";
 
 /** Native Spacie documents; everything else in a project is an uploaded asset. */
 export const DOCUMENT_MIME = "application/x-spacie-doc";
@@ -130,7 +131,7 @@ export function relativeTime(date: string, now = Date.now()): string {
   if (minutes < 60) return `${minutes} min ago`;
   if (minutes < 1440) return `${Math.floor(minutes / 60)} h ago`;
   if (minutes < 7 * 1440) return `${Math.floor(minutes / 1440)} d ago`;
-  return new Date(date).toLocaleDateString("en", { month: "short", day: "numeric" });
+  return new Date(date).toLocaleDateString("en", withZone({ month: "short", day: "numeric" }));
 }
 
 export const versionLabel = (n: number) => `${n} version${n === 1 ? "" : "s"}`;

@@ -10,6 +10,8 @@ type Consent = {
   projects: { id: string; name: string }[];
   canShareAll: boolean;
   canWrite: boolean;
+  /** The workspace's defaults for new agents (Settings > General). */
+  defaults: { access: Access; allowPublish: boolean };
 };
 type Access = "read" | "comment" | "write";
 
@@ -45,7 +47,9 @@ export default function Connect() {
         if (!r.ok) throw new Error(data.error);
         setConsent(data);
         setName(`${data.client.name} (${data.user})`);
-        setAccess(data.canWrite ? "write" : "read");
+        const wanted: Access = data.defaults?.access ?? "write";
+        setAccess(!data.canWrite && wanted !== "read" ? "read" : wanted);
+        setAllowPublish(!!data.defaults?.allowPublish && data.canWrite);
       })
       .catch((e: Error) => setMessage(e.message || "This connection request is invalid."));
   }, [router]);

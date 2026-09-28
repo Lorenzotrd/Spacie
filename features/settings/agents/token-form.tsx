@@ -26,10 +26,10 @@ export function TokenForm({
   onError: (message: string) => void;
 }) {
   const [name, setName] = useState(client.id === "other" ? "" : client.name);
-  const [level, setLevel] = useState<AccessLevel>("write");
+  const [level, setLevel] = useState<AccessLevel>(state.agentDefaults?.access ?? "write");
   const [projects, setProjects] = useState<string[]>([]);
   const [all, setAll] = useState(false);
-  const [publish, setPublish] = useState(false);
+  const [publish, setPublish] = useState(state.agentDefaults?.allowPublish ?? false);
   const [busy, setBusy] = useState(false);
   const [token, setToken] = useState("");
 

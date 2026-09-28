@@ -5,6 +5,7 @@ import { MIN_PASSWORD, readCookie, SESSION_COOKIE, sessionPrincipal } from "@/li
 import { changePassword, endOtherSessions, getProfile, listSessions, NAME_MAX, updateProfile } from "@/lib/profile";
 import { db } from "@/lib/db/client";
 import { rateLimit } from "@/lib/rate-limit";
+import { getPreferences, setPreferences, userPreferences } from "@/lib/preferences";
 export const runtime = "nodejs";
 
 /**
@@ -25,8 +26,12 @@ export async function GET(request: Request) {
   try {
     const { session, actor } = await signedIn(request);
     const database = await db();
-    const [profile, sessions] = await Promise.all([getProfile(database, actor), listSessions(database, actor, session)]);
-    return Response.json({ profile, sessions }, { headers: { "Cache-Control": "no-store" } });
+    const [profile, sessions, preferences] = await Promise.all([
+      getProfile(database, actor),
+      listSessions(database, actor, session),
+      getPreferences(database, actor),
+    ]);
+    return Response.json({ profile, sessions, preferences }, { headers: { "Cache-Control": "no-store" } });
   } catch (e) {
     return failure(e);
   }
@@ -41,6 +46,7 @@ const command = z.discriminatedUnion("action", [
   }),
   z.object({ action: z.literal("end_session"), id: z.string().uuid() }),
   z.object({ action: z.literal("end_other_sessions") }),
+  z.object({ action: z.literal("update_preferences"), preferences: userPreferences.partial() }),
 ]);
 
 export async function POST(request: Request) {
@@ -60,6 +66,8 @@ export async function POST(request: Request) {
         return Response.json(await endOtherSessions(database, actor, session, body.id));
       case "end_other_sessions":
         return Response.json(await endOtherSessions(database, actor, session));
+      case "update_preferences":
+        return Response.json(await setPreferences(database, actor, body.preferences));
     }
   } catch (e) {
     return failure(e);

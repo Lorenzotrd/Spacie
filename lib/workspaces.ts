@@ -123,3 +123,14 @@ export async function joinWithSession(db: Db, actor: Principal, sessionToken: st
     return { id: invite.workspace_id };
   });
 }
+
+/** Owners and admins rename the open workspace. */
+export async function renameWorkspace(db: Db, actor: Principal, name: string) {
+  requireHuman(actor);
+  if (actor.role !== "owner" && actor.role !== "admin")
+    throw new Error("FORBIDDEN: Only owners and admins can rename the workspace.");
+  const clean = name.trim().slice(0, WORKSPACE_NAME_MAX);
+  if (!clean) throw new Error("Name is required");
+  await db.query("update workspaces set name = $2, revision = revision + 1 where id = $1", [actor.workspaceId, clean]);
+  return { name: clean };
+}
