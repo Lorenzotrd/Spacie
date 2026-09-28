@@ -141,6 +141,8 @@ export type PublicState = {
   demo: boolean;
   /** Browser uploads go straight to object storage when it is configured. */
   directUploads: boolean;
+  /** Storage allowance in bytes, shown against usage. */
+  storageQuotaBytes: number;
   /** Public MCP endpoint agents connect to; set by the HTTP route from SPACIE_ORIGIN. */
   mcpUrl?: string;
   /** Starting values of the Share dialog for new public links; set by the HTTP route. */

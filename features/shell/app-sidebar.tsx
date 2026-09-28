@@ -48,6 +48,9 @@ export function AppSidebar({
   state, project, folder, view, presence, me, navigate, setView, onNewProject, onPerson, onWorkspaceChanged, onError,
 }: Props) {
   const online = new Set(presence.map((p) => p.principalId));
+  const used = storageUsed(state.files);
+  // A sliver stays visible once anything is stored, however small against the allowance.
+  const percent = used ? Math.min(100, Math.max(2, (used / state.storageQuotaBytes) * 100)) : 0;
   const humans = state.principals.filter((p) => p.type === "human");
   // Disconnected agents keep their history but leave the sidebar.
   const agents = state.principals.filter((p) => p.type === "agent" && p.status !== "offline");
@@ -140,10 +143,22 @@ export function AppSidebar({
       </div>
 
       <div className="mt-auto flex flex-col gap-2.5">
-        <div className="flex flex-col gap-1 rounded-xl border border-line bg-card p-3.5">
+        <div className="flex flex-col gap-2 rounded-xl border border-line bg-card p-3.5">
           <div className="flex text-xs text-muted">
             <span className="flex-1">Storage</span>
-            <span className="font-medium text-ink">{formatBytes(storageUsed(state.files))}</span>
+            <span>
+              <span className="font-medium text-ink">{formatBytes(used)}</span> / {formatBytes(state.storageQuotaBytes)}
+            </span>
+          </div>
+          <div
+            role="progressbar"
+            aria-label="Storage used"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(percent)}
+            className="h-1.5 overflow-hidden rounded-full bg-[#efede8]"
+          >
+            <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
           </div>
           <span className="text-[0.6875rem] text-muted">{state.demo ? "Local demo" : "Workspace"}</span>
         </div>

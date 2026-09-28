@@ -4,6 +4,7 @@ import type { Db } from "./db/client";
 import { loadAccess } from "./access";
 import { requirePermission } from "./permissions";
 import type { Principal } from "./types";
+import { storageQuotaBytes } from "./config";
 
 export type StorageKind = "Presentations" | "Documents" | "Spreadsheets" | "PDFs" | "Images" | "Videos" | "Other";
 export type Backup = { name: string; at: string; bytes: number };
@@ -13,7 +14,7 @@ export type StorageUsage = {
   versionBytes: number;
   trashBytes: number;
   trashCount: number;
-  /** Null when no limit is configured (SPACIE_STORAGE_QUOTA_GB). */
+  /** SPACIE_STORAGE_QUOTA_GB, or the default allowance. */
   quotaBytes: number | null;
   byKind: { kind: StorageKind; bytes: number }[];
   byProject: { id: string; name: string; bytes: number; files: number; versions: number }[];
@@ -35,11 +36,6 @@ export function kindOf(mime: string, name = ""): StorageKind {
 
 const KIND_ORDER: StorageKind[] = ["Presentations", "Documents", "Spreadsheets", "PDFs", "Images", "Videos", "Other"];
 const BACKUP_LIMIT = 30;
-
-function quota(): number | null {
-  const gb = Number(process.env.SPACIE_STORAGE_QUOTA_GB);
-  return Number.isFinite(gb) && gb > 0 ? Math.round(gb * 1024 ** 3) : null;
-}
 
 async function sizeOf(entry: string): Promise<number> {
   const info = await stat(entry);
@@ -134,7 +130,7 @@ export async function storageUsage(db: Db, actor: Principal): Promise<StorageUsa
     versionBytes,
     trashBytes,
     trashCount,
-    quotaBytes: quota(),
+    quotaBytes: storageQuotaBytes(),
     byKind: KIND_ORDER.filter((k) => kinds.get(k)).map((kind) => ({ kind, bytes: kinds.get(kind)! })),
     byProject: [...perProject.values()].sort((a, b) => b.bytes - a.bytes),
     backups: await listBackups(),
