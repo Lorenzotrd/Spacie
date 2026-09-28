@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { Activity, Folder, House, Plus, Settings, Trash2, type LucideIcon } from "lucide-react";
 import type { PresenceEntry } from "@/lib/presence";
@@ -55,6 +56,16 @@ export function AppSidebar({
   // Disconnected agents keep their history but leave the sidebar.
   const agents = state.principals.filter((p) => p.type === "agent" && p.status !== "offline");
   const canManage = me?.role === "owner" || me?.role === "admin";
+  // The open project's folders show unless it was folded by clicking it again.
+  const [folded, setFolded] = useState<string | null>(null);
+  const openProject = (id: string, atRoot: boolean) => {
+    if (atRoot) {
+      setFolded(folded === id ? null : id);
+      return;
+    }
+    setFolded(null);
+    navigate(id);
+  };
   return (
     <aside className="flex w-64 shrink-0 flex-col gap-5 overflow-y-auto px-1.5 pt-2.5 pb-1.5">
       <Brand />
@@ -77,12 +88,15 @@ export function AppSidebar({
         {state.projects.map((p) => {
           const active = p.id === project && view === "space";
           const count = state.files.filter((f) => f.projectId === p.id && !f.deleted).length;
+          const hasFolders = state.folders.some((f) => f.projectId === p.id && !f.parentId);
+          const expanded = p.id === project && folded !== p.id;
           return (
             <div key={p.id} className="flex flex-col">
               <button
                 type="button"
-                onClick={() => navigate(p.id)}
+                onClick={() => openProject(p.id, active && !folder)}
                 aria-current={active && !folder ? "page" : undefined}
+                aria-expanded={p.id === project && hasFolders ? expanded : undefined}
                 className={cn(
                   navItem,
                   "w-full border border-transparent text-left",
@@ -93,7 +107,7 @@ export function AppSidebar({
                 <span className="flex-1 truncate">{p.name}</span>
                 <span className="font-mono text-[0.6875rem] text-muted">{count}</span>
               </button>
-              {p.id === project &&
+              {expanded &&
                 state.folders
                   .filter((f) => f.projectId === p.id && !f.parentId)
                   .map((f) => (
